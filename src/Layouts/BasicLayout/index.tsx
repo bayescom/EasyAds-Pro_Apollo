@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useAuth, useHistory } from 'ice';
-import { Dropdown, Image, Menu, Space, Typography } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Dropdown, Image, Menu, Space, Tooltip, Typography } from 'antd';
+import { DownOutlined, FileTextOutlined } from '@ant-design/icons';
 import ProLayout, { MenuDataItem } from '@ant-design/pro-layout';
 import store from '@/store';
 import { Location } from 'history';
@@ -59,6 +59,10 @@ export default function BasicLayout(
     store.getModelDispatchers('token').logout();
   };
 
+  const skipToHelpDocument = () => {
+    window.open('http://easyads-pro.bayescom.cn/documents/operation');
+  };
+
   return (
     <ProLayout
       title={false}
@@ -82,6 +86,7 @@ export default function BasicLayout(
       headerHeight={52}
       rightContentRender={() => (
         <Space className={styles['header-right']} size={0}>
+          <Tooltip title='帮助文档'><FileTextOutlined onClick={skipToHelpDocument}/></Tooltip>
           <Dropdown
             overlay={<Menu
               items={[
