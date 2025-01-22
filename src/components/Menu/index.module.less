@@ -1,0 +1,15 @@
+.menu-container {
+  margin-bottom: 9px;
+  line-height: 41px;
+  :global {
+    .ant-menu-item-selected .ant-menu-title-content, .ant-menu-item .ant-menu-title-content:hover {
+      a {
+        color: #2364FB;
+      }
+    }
+
+    .ant-menu-item-selected::after, .ant-menu-item:hover::after {
+      border-bottom: 2px solid  #2364FB !important;
+    }
+  }
+}

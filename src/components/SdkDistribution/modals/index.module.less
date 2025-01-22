@@ -1,0 +1,623 @@
+.form-title-row,
+.form-title-row-ab
+ {
+  padding: 0px 0;
+}
+
+.form-title-row-ab {
+  flex-direction: row-reverse;
+  margin-right: 24px;
+  :global {
+    .ant-btn.ant-btn-background-ghost {
+      width: 100%;
+      height: 36px;
+      box-sizing: border-box;
+      border-radius: 5px;
+      color: #2364FB;
+      border-color: #2364FB;
+      padding: 0px 15px;
+    }
+  }
+}
+
+.draggable-item {
+  padding-top: 10px;
+}
+
+.priority-column {
+  text-align: center;
+  line-height: 32px;
+}
+
+.add-targeting-column {
+  padding-bottom: 10px;
+  text-align: right;
+}
+
+.add-targeting-button {
+  margin-right: 32px;
+  padding: 10px 0 0;
+  height: 34px;
+}
+
+.targeting-group-container {
+  :global {
+    .ant-modal-body {
+      padding: 0px 0px 18px 0px;
+      max-height: 60vh;
+      overflow-y: auto;
+      .ant-alert+.ant-row {
+        padding: 14px 18px 18px;
+      }
+
+      .ant-alert {
+        margin: 0px 0px 23px;
+        width: 100%;
+        .ant-alert-message {
+          color: #0B96D4;
+        }
+      }
+    }
+
+    [data-rbd-droppable-id="targetingGroup"] {
+      padding-left: 20px;
+      width: calc(100% - 20px);
+    }
+  }
+}
+
+:global(.ant-collapse > .ant-collapse-item).targeting-group-item-panel {
+  background-color: #fff;
+
+  & > :global(.ant-collapse-header) {
+    padding: 0 0 0 16px;
+
+    :global {
+      .ant-collapse-expand-icon {
+        margin: 5px 0;
+        cursor: pointer;
+      }
+
+      .ant-collapse-header-text {
+        flex: 1 0 auto;
+      }
+    }
+  }
+
+  :global {
+    .ant-collapse-content-box > .ant-row:last-child > .ant-col > .ant-form-item {
+      margin-bottom: 0;
+    }
+
+    .ant-form-item {
+      margin-bottom: 6px;
+    }
+  }
+}
+
+.sdk-adspot-channel-form {
+  display: flex;
+  .segment-divider {
+    margin: 0px;
+  }
+
+  .add-targeting-button-row {
+    margin-bottom: 12px;
+
+    :global(.ant-form-item) {
+      margin-bottom: 0;
+    }
+  }
+
+  :global {
+    .ant-collapse-ghost > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+      padding: 0;
+    }
+
+    .ant-collapse-icon-position-end > .ant-collapse-item > .ant-collapse-header {
+      padding-left: 0;
+    }
+
+    // 标题下的表单元素行
+    h5+.ant-row {
+      flex-direction: column;
+      margin-left: 7px !important;
+      width: 666px;
+    }
+
+    .ant-form-item-label {
+      flex: 0 0 154px !important;
+    }
+
+    h5 {
+      margin: 16px 18px 18px 18px;
+    }
+  }
+
+  // 排序方式
+  .sdk-channel-bidding {
+    :global {
+      .ant-col.ant-form-item-control, .ant-form-item-control-input, .ant-form-item-control-input-content {
+        width: 450px;
+        .ant-radio-button-wrapper {
+          width: 137px;
+          text-align: center;
+        }
+      }
+
+      .ant-radio-group, .ant-radio-group>label,
+      .ant-form-item-control-input-content,
+      .ant-form-item-control-input,
+      .ant-col.ant-form-item-control,
+      .ant-col.ant-form-item-label, .ant-col.ant-form-item-label>label
+      {
+        height: 30px;
+        min-height: 30px;
+      }
+    }
+  }
+  // 实时竞价
+  .sdk-rtb-image {
+    width: 16px;
+    height: auto;
+    margin-top: -5px;
+    margin-right: 10px;
+  }
+  // 定向设置
+  .targeting-picker {
+    :global {
+      h5 {
+        display: inline-block;
+      }
+
+      .ant-row:not(.ant-row:nth-child(1)) {
+        margin-left: 18px;
+      }
+    }
+
+    .add-targeting-button-row {
+      display: inline-block;
+      width: 400px;
+    }
+  }
+  // 频次设置
+  .frequency-setting-container {
+    :global {
+      .ant-typography {
+        display: flex;
+        margin: 18px;
+        &>.ant-form-item {
+          margin: -4px 0px 0px 5px;
+        }
+      }
+
+      .ant-typography+.ant-row {
+        &>.ant-row {
+          margin-left: 36px;
+          flex-flow: nowrap;
+          .ant-col.ant-col-8 {
+            width: 60%;
+            float: left;
+            .ant-form-item-label {
+              flex: 0 0 126px !important;
+            }
+          }
+
+          .ant-col.ant-col-4 {
+            float: left;
+            margin-left: 50px;
+          }
+
+          .ant-input-affix-wrapper {
+            width: 132px;
+          }
+        }
+      }
+    }
+  }
+
+  // 左侧滚动区域
+  .left-container {
+    width: 198px;
+    border-right: 1px solid #d9d9d9;
+    overflow: hidden auto;
+    .scroll-ul {
+      width: 198px;
+      padding: 0px;
+      margin-top: 60px;
+      li {
+        list-style: none;
+        line-height: 45px;
+        border-bottom: 1px solid #d9d9d9;
+        padding-left: 20px;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .li-active {
+        background-color: #edf3fe;
+      }
+
+      .li-active::before {
+        content: '';
+        width: 3px;
+        height: 45px;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        background-color: #2364FB;
+      }
+    }
+
+    :global {
+      .ant-form-item {
+        width: 198px;
+        border-bottom: 1px solid #d9d9d9;
+        border-right: 1px solid #d9d9d9;
+        margin-bottom: 0px;
+        padding: 13.5px 18px;
+        position: absolute;
+        background-color: #fff;
+        z-index: 2;
+      }
+    }
+  }
+  // 右侧表单区域
+  .right-container {
+    width: calc(100% - 198px);
+    :global {
+      h5.ant-typography, div.ant-typography-h5, div.ant-typography-h5 > textarea, .ant-typography h5 {
+        font-size: 14.5px;
+      }
+
+      .ant-form-item {
+        margin-bottom: 21px;
+      }
+
+      .ant-pro-card .ant-pro-card-body {
+        padding: 0px;
+      }
+    }
+  }
+
+  .help-link {
+    position: absolute;
+    top: 6px;
+    left: 200px;
+  }
+}
+
+.sdk-channel-warp-container {
+  :global {
+    .ant-modal-body {
+      padding: 0px;
+    }
+
+    .ant-btn-loading {
+      width: 83px;
+      padding: 4px 10px;
+      display: inline-flex;
+      justify-content: space-between;
+    }
+    
+    form {
+      font-size: 12.6px;
+    }
+  }
+}
+
+.editing-warp-coniner {
+  .sdk-adspot-channel-form {
+    display: block;
+    .right-container, .left-container {
+      width: 100%;
+    }
+
+    .left-container {
+      padding-top: 10px;
+      padding-left: 20px;
+      border-right-width: 0px;
+    }
+  }
+}
+
+.percentage-group-copy-column-disable {
+  padding-left: 16px;
+  line-height: 32px;
+}
+
+.channel-configs {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  flex-direction: column;
+  
+  .channel-configs-label {
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :global {
+    .ant-input-disabled, .ant-input-disabled:hover, .ant-input-disabled:focus {
+      border-color: transparent !important;
+      cursor: default;
+      background-color: #fff;
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+}
+
+.targeting-item {
+  :global {
+    .ant-form-item-label > label {
+      width: 110px;
+      display: block;
+      line-height: 32px;
+    }
+  }
+}
+
+.targeting-group-dropdown {
+  :global {
+    .ant-dropdown-menu {
+      padding: 0;
+    }
+  }
+}
+
+.stop-ad-form-btn {
+  :global {
+    .ant-radio-button-wrapper-checked span{
+      color: #fff;
+    }
+  }
+}
+
+.distribution-input-display-none {
+  display: none;
+}
+
+.ab-test-modal {
+  position: relative;
+  :global {
+    .ant-modal-body {
+      padding: 0px 0px 21px 0px;
+      max-height: 60vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .ab-group-link {
+      position: absolute;
+      left: 15px;
+      bottom: 15px;
+      font-weight: 450;
+      font-size: 13px;
+    }
+
+    .ant-form-item-explain {
+      margin-bottom: 15px;
+    }
+  }
+
+  .column-title-row {
+    width: 100%;
+    line-height: 34px;
+    margin-left: 0px;
+    padding-left: 24px;
+    margin-bottom: 15px;
+    background-color: #f7f7f9;
+    :global {
+      .ant-col:nth-child(2), .ant-col:nth-child(4) {
+        margin-left: 10px;
+      }
+    }
+  }
+
+  .percentage-column-row {
+    padding-left: 24px;
+    :global {
+      .ant-col:nth-child(2), .ant-col:nth-child(4) {
+        margin-left: 10px;
+      }
+
+      .ant-col:nth-child(5) {
+        .anticon.anticon-close-circle {
+          color: #c8bebe;
+        }
+      }
+
+      .ant-col .ant-form-item {
+        margin-bottom: 21px;
+      }
+    }
+  }
+}
+
+.header-scroll {
+  flex-wrap: nowrap;
+}
+
+// ---- 指标弹窗
+.data-target-container {
+  :global {
+    .ant-modal-content {
+      height: 510px;
+      .ant-modal-body {
+        height: 412px;
+        padding: 0px 0px 0px 17px;
+        font-size: 12.6px;
+      }
+
+      .ant-modal-body::after {
+        content: "";
+        display: block;
+        height: 0;
+        visibility: hidden;
+        clear: both;
+        zoom: 1;
+      }
+    }
+  }
+
+  .data-target-left {
+    float: left;
+    height: 100%;
+    width: calc(100% - 234px);
+    overflow: hidden auto;
+    :global {
+      .ant-collapse.ant-collapse-ghost {
+        width: 100%;
+        .ant-collapse-header, .ant-collapse-content .ant-collapse-content-box {
+          padding: 12px 0px 0px;
+        }
+        .ant-collapse-content .ant-collapse-content-box {
+          width: 100%;
+          display: flex;
+        }
+        .ant-collapse-header {
+          padding-bottom: 0px;
+          font-weight: 460;
+        }
+        
+      }
+      .ant-collapse.ant-collapse-ghost:last-child {
+        margin-bottom: 20px;
+        .ant-collapse-content-box {
+          display: block;
+          &>div {
+            width: 100%;
+            &>label {
+              display: none;
+            }
+            &>label+.ant-checkbox-group {
+              flex-direction: row;
+              flex-wrap: wrap;
+              .ant-space.ant-space-horizontal {
+                width: 196px;
+                margin-right: 8px;
+              }
+            }
+          }
+        }
+      }
+    }
+    .left-item {
+      width: 196px;
+      margin: 0px 14px 0px 0px;
+      :global {
+        .ant-checkbox-group {
+          display: flex;
+          flex-direction: column;
+          .ant-space.ant-space-horizontal {
+            line-height: 30px;
+            padding-left: 11px;
+            width: 100%;
+            position: relative;
+            .ant-space-item .ant-checkbox-wrapper {
+              span:not(.ant-checkbox) {
+                display: flex;
+                flex-direction: row-reverse;
+                justify-content: space-between;
+              }
+            } 
+            .anticon {
+              align-items: center;
+              position: absolute;
+              right: 1px;
+              top: 9px;
+              color: #a2a2a2;
+              width: 14px;
+              height: 14px;
+              svg {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+      }
+      .left-header {
+        line-height: 31px;
+        width: 100%;
+        background-color: #f2f2f2;
+        padding-left: 11px;
+        margin-bottom: 7px;
+      }
+    }
+  }
+
+  .data-target-right {
+    float: right;
+    height: 100%;
+    width: 234px;
+    border-left: 1px solid #ececec;
+    padding: 13px 14px 14px 14px;
+    .drag-header {
+      line-height: 35px;
+      display: flex;
+      justify-content: space-between;
+      span:last-child {
+        color: #2364FB;
+      }
+      .clear-all {
+        cursor: pointer;
+      }
+    }
+
+    .droppable-container {
+      height: calc(100% - 35px);
+      overflow: auto;
+      .draggable-item {
+        background-color: #f7f7f7;
+        margin-bottom: 5px;
+        line-height: 33px;
+        padding: 0px 9px 0px 9px;
+      }
+
+      .draggable-item:last-child {
+        margin-bottom: 0px;
+      }
+    }
+
+    .drag-clear {
+      height: 30px;
+      color: #d7d7d7;
+      font-size: 15px;
+      float: right;
+    }
+
+    .draggable-item-title {
+      display: inline-block;
+      margin-left: 10px;
+    }
+  }
+}
+
+.setting-check-container {
+  margin-right: 10px;
+  :global {
+    button.ant-btn {
+      height: 30px;
+      margin-right: 0px;
+    }
+    button.ant-btn:focus {
+      color: #000000d9;
+      border-color: #d9d9d9;
+    }
+    .anticon {
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+
+.missing-disbriton-img {
+  color: #f8b601;
+  display: inline-block;
+  margin-bottom: 20px;
+}

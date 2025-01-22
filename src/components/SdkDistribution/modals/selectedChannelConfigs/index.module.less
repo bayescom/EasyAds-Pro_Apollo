@@ -1,0 +1,116 @@
+.meta-app-item-container {
+  :global {
+    .meta-app-id-edit {
+      display: flex;
+      .meta-app-id-edit-operation {
+        height: 30px;
+        line-height: 30px;
+        float: left;
+        .meta-app-id-edit-text-item {
+          color: #2364FB;
+          cursor: pointer;
+        }
+      }
+    
+      .meta-app-id-info-text {
+        margin-left: 81px;
+        margin-right: 20px;
+        margin-top: 2px;
+        height: 30px;
+        margin-bottom: 21px;
+        padding-top: 3px;
+        .meta-app-id-info-label {
+          margin-right: 10px;
+          display: block;
+          float: left;
+          .meta-app-id-info-tooltip {
+            color: #8c8c8c;
+            width: 16px;
+            height: 15px;
+            margin-left: 3px;
+          }
+        }
+    
+        .meta-app-id-info-label::before {
+          height: 4px;
+          width: 4px;
+          display: inline-block;
+          margin-right: 4px;
+          margin-bottom: 1px;
+          font-size: 13px;
+          font-family: SimSun, sans-serif;
+          line-height: 1;
+          background: #f65656;
+          border-radius: 50%;
+          color: #f65656;
+          content: '' !important;
+        }
+    
+        .meta-app-id-info-content {
+          max-width: 213px;
+          display:block;
+          float: left;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          word-break: break-all;
+        }
+      }
+    
+      .meta-app-id-disable-tooltip {
+        margin-left: 98px;
+      }
+    
+      .meta-app-key-info-text {
+        margin-left: 88px;
+        .meta-app-id-info-label {
+          margin-right: 15px;
+        }
+      }
+    }
+    
+    .meta-app-id-operation {
+      :global {
+        .ant-form-item {
+          flex: 1 1 auto;
+          .ant-input {
+            width: 213px;
+          }
+        }
+      }
+    
+      .meta-app-id-edit-operation {
+        line-height: 38px;
+        .meta-app-id-operation-text-item {
+          margin-left: 18px;
+          :global {
+            .anticon {
+              width: 17px;
+              height: 17px;
+              svg {
+                width: 100%;
+                height: 100%;
+              }
+            }
+    
+            .anticon-check-circle {
+              color: #26c530;
+              margin-right: 15px;
+            }
+    
+            .anticon-close-circle {
+              color: #aaaaaa;
+            }
+          }
+        }
+      }
+    }
+    
+    .channel-configs-label {
+      max-width: 95px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

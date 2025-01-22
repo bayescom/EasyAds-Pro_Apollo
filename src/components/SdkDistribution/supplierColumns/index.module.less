@@ -1,0 +1,158 @@
+.limit-tag,
+.targeting-tag {
+  margin-right: 0;
+  cursor: pointer;
+}
+
+.sdk-channel-logo {
+  max-width: 39px;
+  max-height: 29px;
+  height: auto;
+}
+
+div:has(>span>.blank-key) {
+  position: absolute;
+  border-bottom-color: transparent !important;
+}
+
+.statistic-style {
+  min-height: 100%;
+  :global {
+    .ant-statistic-content {
+      font-size: 11.5px;
+    }
+  }
+}
+
+.adspot-channel-meta {
+  line-height: 25px;
+  margin-bottom: 0px;
+}
+
+.distribution-disabled {
+  :global {
+    a:not(.ant-menu-title-content a, .ant-breadcrumb-link a, .ant-pagination-item a), .ant-btn-link, .ant-radio-button-wrapper:hover, .ant-pagination-item-active a, .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: #999999 !important;
+      cursor: not-allowed;
+    }
+  }
+}
+
+span:has(>.no-block) {
+  display: inline !important;
+}
+
+.font {
+  :global {
+    .ant-space-item span, .ant-space-item {
+      font-weight: 450;
+    }
+  }
+}
+
+.font, .ad-info, .name-container {
+  font-size: 11.5px;
+}
+
+.meta-params {
+  font-size: 11px;
+}
+
+.meta-params, .font, .ad-info, .name-container {
+  letter-spacing: -0.7px;
+}
+
+.popover-container {
+  max-width: 260px;
+  min-width: 180px;
+  :global {
+    .ant-popover-inner {
+      border-radius: 10px;
+      .ant-popover-inner-content {
+        padding: 10px 0px 0px 0px;
+      }
+    }
+  }
+}
+
+.meta-params {
+  :global {
+    .ant-space-item {
+      width: 100%;
+      padding: 5px 11px;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .ant-space-item:last-child {
+      border-bottom-color: transparent;
+    }
+    .ant-space-item>span {
+      display: inline-block;
+      width: 100%;
+      display: flex;
+      span:first-child {
+        flex-shrink: 0;
+      }
+      span+span {
+        display: inline-block;
+        width: 100%;
+        word-break: break-all;
+        margin-right: 10px;
+      }
+      span:last-child {
+        width: 25px;
+        flex-shrink: 0;
+        float: right;
+        margin-right: 0px;
+      }
+    }
+  }
+
+  .meta-channel-name {
+    color: black;
+    flex: 1;
+  }
+
+  .meta-channel-name+span {
+    width: 56px !important;
+    margin-left: 10px;
+  }
+}
+
+.name-container {
+  overflow: hidden;
+  :global {
+    .ant-space-item:last-child {
+      overflow: hidden;
+      .ant-typography {
+        margin-bottom: 0px;
+      }
+    }
+  }
+}
+
+.sdk-channel-count {
+  z-index: 2;
+  :global {
+    .ant-space-item {
+      width: 100%;
+      .ant-statistic, .ant-statistic .ant-statistic-content, .ant-statistic .ant-statistic-content .ant-statistic-content-value:not(.ant-statistic-content-prefix+.ant-statistic-content-value) {
+        width: 100%;
+      }
+
+      .ant-statistic .ant-statistic-content {
+        height: 20px;
+        display: flex;
+        .ant-statistic-content-value {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+
+  .sdk-channel-count-tooltip {
+    width: auto;
+  }
+}

@@ -1,0 +1,33 @@
+.not-found-container {
+  width: 100%;
+  height: 100%;
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  :global {
+    .ant-image {
+      width: 400px;
+      height: 400px;
+    }
+  }
+
+  .not-found-info {
+    text-align: center;
+    margin-left: 20px;
+    margin-top: 10px;
+    .not-found-operate {
+      .operate-reload, .operate-go-home {
+        margin-right: 20px;
+        color: #2364FB;
+        cursor: pointer;
+        z-index: 100000;
+        :global {
+          .anticon {
+            margin-right: 8px; 
+          }
+        }
+      }
+    }
+  }
+}

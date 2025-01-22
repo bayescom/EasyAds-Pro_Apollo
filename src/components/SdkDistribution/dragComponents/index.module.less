@@ -1,0 +1,84 @@
+// channelHeader
+.header-scroll-col {
+  background-color: #f0f2f5;
+  height: 26px;
+  font-weight: 500;
+  font-size: 12.6px;
+  letter-spacing: -0.7px;
+  padding-left: 7px;
+  :global {
+    .ant-col-8, .ant-col-16 {
+      display: flex;
+      .ant-col {
+        background-color: #f0f2f5;
+      }
+    }
+
+    .ant-col-16 {
+      margin-left: -1px;
+      .ant-col:first-child {
+        padding-left: 5px;
+      }
+    }
+
+    .ant-col-8 {
+      .ant-col:first-child {
+        padding-left: 16px;
+      }
+    }
+  }
+
+  .header-anticon {
+    :global {
+      .anticon {
+        color: #c8bebe;
+        width: 12px;
+        height: 12px;
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
+// channelRow
+.channel-row-container {
+  display: flex;
+  .scroll-col, .fixed-col {
+    :global {
+      .ant-col {
+        background-color: #fff;
+        height: 100%;
+        padding: 9px 0px;
+        border: 1px solid #ebebeb;
+        border-left-color: transparent;
+        border-left-width: 0px;
+        border-right-color: transparent;
+        border-right-width: 0px;
+      }
+    }
+  }
+
+  .fixed-col {
+    :global {
+      .ant-col:first-child {
+        padding-left: 10px;
+      }
+      .ant-col:nth-child(2) {
+        margin-left: -8px;
+        padding-right: 8px;
+      }
+    }
+  } 
+
+  .scroll-col {
+    border-left: 1px solid #ebebeb;
+    :global {
+      .ant-col:first-child {
+        padding-left: 10px;
+      }
+    }
+  }
+}

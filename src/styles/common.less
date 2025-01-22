@@ -1,0 +1,29 @@
+// 文件中引入：@import '/src/styles/common.less';  使用时直接.common-ant-form-item()；即可
+
+.common-ant-form-item() {
+  .ant-form-item,
+  .ant-form-item-control-input-content,
+  .ant-form-item-label > label,
+  .ant-form-item-control-input,
+  .ant-picker,
+  .ant-radio-button-wrapper, .ant-radio-group
+  {
+    min-height: 30px;
+    height: 30px;
+  }
+
+  .ant-picker {
+    background-color: transparent;
+  }
+
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    background-color: transparent;
+  }
+}
+
+.common-ant-btn-focus() {
+  .ant-btn:focus {
+    color: #3c3c3c;
+    border-color: #d9d9d9;
+  }
+}

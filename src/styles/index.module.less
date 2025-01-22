@@ -1,0 +1,43 @@
+
+.common-inline-form {
+  :global {
+    .ant-form-item {
+      border: 1px solid #d9d9d9;
+      border-radius: 3px;
+      margin-right: 10px;
+      margin-bottom: 0;
+  
+      .ant-form-item-label {
+        padding-left: 7px;
+      }
+  
+      .ant-input-affix-wrapper,
+      .ant-picker.ant-picker-range,
+      .ant-select .ant-select-selector.ant-select-selector {
+        border-color: transparent !important;
+        box-shadow: none;
+        background-color: transparent;
+      }
+
+      .ant-picker.ant-picker-range {
+        width: 100%;
+      }
+
+      .ant-select-selector:focus, .ant-select-selector:hover,
+      .ant-picker-focused, .ant-picker:hover,
+      .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+        border-color: transparent !important;
+      }
+    }
+
+    .ant-form-item:hover, .ant-form-item:focus {
+      border-color: #2364FB !important;
+    }
+
+    div.ant-col-6 {
+      flex: 0 0 20%;
+      max-width: 300px;
+      overflow: hidden;
+    }
+  }
+}

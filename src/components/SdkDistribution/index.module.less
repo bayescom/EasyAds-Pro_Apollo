@@ -1,0 +1,366 @@
+.distribution-area {
+  width: 100%;
+}
+
+.level1-group {
+  height: 100%;
+  min-width: 200px;
+}
+
+.targeting-close-icon {
+  position: absolute;
+  top: 11px;
+  right: 30px;
+  font-size: 12px;
+  color: #999;
+}
+
+.left-suppliers-title:global(.ant-typography) {
+  margin: 0;
+  padding: 8px 0 8px 16px;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 32px;
+  color: #717171;
+}
+
+.button-bar-right-col {
+  text-align: right;
+}
+
+.targeting-item-info {
+  padding: 2px 6px;
+  color: #5f5f5f;
+  background-color: #f2f2f2;
+}
+
+.tabs-container :global(.ant-pro-card-body) {
+  padding: 0;
+}
+
+.percentage-group-tab {
+  :global {
+    .ant-tabs-tabpane {
+      // tabpane上有tab-index, 点击后会变成focus状态，显示outline； safari 14.0 (15610.1.28.1.9, 15610) 和 chrome 83 可重现
+      outline: none;
+    }
+
+    .ant-tabs-nav {
+      border-top: 1px solid #dcdcdc;
+      background-color: #f1f4ff;
+      margin-bottom: 0px !important;
+      border-radius: 0px !important;
+    }
+
+    .ant-tabs-content-holder .ant-tabs-content .ant-tabs-tabpane .ant-tabs-nav {
+      .ant-tabs-content-holder .ant-tabs-content .ant-tabs-tabpane .ant-tabs-nav {
+        background: #fff;
+      }
+    }
+
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: rgb(56, 56, 56);
+    }
+  }
+
+  & > :global(.ant-tabs-nav) {
+    margin-bottom: 5px;
+
+    :global {
+      .ant-tabs-tab:not(.ant-tabs-tab-active) {
+        margin: 8px 0;
+        padding: 0 16px;
+        background: transparent;
+        border-width: 0px;
+
+        & + .ant-tabs-tab:not(.ant-tabs-tab-active) {
+          border-left: solid 1px #ccc;
+        }
+      }
+    }
+  }
+
+  .button-bar-right {
+    position: absolute;
+    top: 5px;
+    right: 0;
+  }
+
+  .button-bar-right::after {
+    width: 0 !important;
+  }
+
+  .toolbar-button-container {
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    padding: 11.7px 13.5px;
+    :global {
+      .ant-pro-card-body {
+        padding: 0px;
+      }
+
+      .ant-btn::after {
+        width: 0px;
+      }
+    }
+
+    .setting-right-container {
+      float: right;
+      display: flex;
+      :global {
+        .ant-form .ant-form-item, .ant-row.ant-form-item-row, .ant-col.ant-form-item-control, .ant-form-item-control-input, .ant-form-item-control-input-content, .ant-picker {
+          height: 30px;
+          min-height: 30px;
+        }
+
+        .ant-form {
+          .ant-form-item {
+            margin-bottom: 0px;
+            div.ant-picker {
+              padding: 3px 7px 0px;
+              .ant-picker-input {
+                width: 80px;
+              }
+              div.ant-picker-range-separator {
+                padding: 0 4px;
+              }
+              span.ant-picker-suffix {
+                margin-right: 0px;
+                margin-top: -0.5px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.create-button-dropdown {
+  :global {
+    .ant-dropdown-menu {
+      height: 75px;
+      .ant-dropdown-menu-item {
+        font-size: 13px;
+        font-weight: 450;
+        .anticon {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
+}
+
+.targeting-group-tab {
+  :global(.ant-tabs-nav) {
+    height: 35px;
+    :global {
+      .ant-tabs-ink-bar.ant-tabs-ink-bar-animated:global{
+        width: 90px !important;
+        background-color: #2364FB;
+      }
+
+      .ant-tabs-tab-remove {
+        width: 50px;
+      }
+
+      .ant-tabs-tab-remove::after:global {
+          position: absolute;
+          top: 9px;
+          right: 20px;
+          width: 1px;
+          height: 16px;
+          padding: 1px 0;
+          background-color: rgb(214, 212, 212);
+          content: '';
+      }
+
+      .ant-tabs-tab + .ant-tabs-tab {
+        margin: 0px !important;
+      }
+    }
+  }
+
+  :global {
+    .ant-btn {
+      margin-right: 15px;
+    }
+
+    .ant-btn::after {
+      position: absolute;
+      top: 6px;
+      right: 0px;
+      width: 2px;
+      height: 20px;
+      padding: 1px 0;
+      background-color: rgb(233, 230, 230);
+      content: '';
+    }
+
+    .ant-tabs-tab {
+      min-width: 120px !important;
+    } 
+
+    .ant-pro-card {
+      border-radius: 0px !important;
+    }
+  }
+}
+
+.percentage-group-edit-button {
+  width: 115px;
+  height: 35px;
+  padding: 6px 5px;
+}
+
+.percentage-group-create-button {
+  width: 115px;
+}
+
+.no-supplier-alert:global(.ant-alert) {
+  :global(.ant-alert-message) {
+    color: #f6aa38;
+  }
+}
+
+// 每一组的外框
+.draggable-channels-container {
+  border-radius: 3px;
+  min-height: 48px;
+  :global {
+    .ant-btn::after {
+      height: 0px;
+    }
+
+    .ant-btn {
+      margin-right: 0px;
+    }
+  }
+
+  // 每一组里面的每一项
+  .draggable-channel {
+    border-radius: 3px;
+    border-left-style: solid;
+    border-left-color: #FBAB00;
+    border-left-width: 5px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+    :global {
+      .ant-row {
+        align-items:stretch;
+        .ant-col {
+          display: flex;
+          align-items: center;
+        }
+        .ant-col:first-child {
+          .ant-col:nth-child(3) {
+            padding-left: 5px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.draggable-bidding-container {
+  .draggable-channel {
+    border-left-color: #0076FF;
+  }
+}
+
+// 未分发
+.unused-channels-container {
+  overflow: auto hidden;
+  background-color: #f5f5f5;
+  :global {
+    .ant-row:not(.ant-form.ant-form-horizontal .ant-row) {
+      border-left: 5px solid #bebebe;
+      .ant-col {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        background-color: #f5f5f5;
+      }
+    }
+
+    .ant-row:last-child {
+      border-bottom: 0px;
+    }
+
+    .ant-pro-card, .ant-form .ant-input-affix-wrapper, .ant-form .ant-input-affix-wrapper input {
+      background-color: #f5f5f5 !important;
+    }
+  }
+
+  .unused-channels-item {
+    :global {
+      .ant-row.ant-row-no-wrap.ant-row-middle {
+        height: 48px;
+        .ant-col:first-child .ant-col:first-child {
+          padding-left: 20px;
+        }
+
+        .ant-col:first-child .ant-col:nth-child(3){
+          padding-left: 4px;
+        }
+      }
+
+      .ant-pro-card-body.ant-pro-card-body-direction-column {
+        .ant-row.ant-row-no-wrap.ant-row-middle {
+          height: 48px;
+          border-left-width: 0px;
+          .ant-col:nth-child(1) {
+            padding-left: 0px;
+          }
+        }
+
+        .ant-spin-container > .ant-row.ant-row-no-wrap.ant-row-middle {
+          height: 30px;
+          padding-left: 1px;
+        }
+      }
+    }
+  }
+}
+
+.unused-channels-container>div:first-child {
+  border-left-width: 0px !important;
+}
+
+.header {
+  line-height: 35px;
+  padding-left: 15px;
+  position: sticky;
+  top: 60px;
+  z-index: 10;
+  background-color: #f0f2f5;
+  .channel-header {
+    padding: 0 15px;
+  }
+}
+
+.no-channel-hint:global(.ant-typography) {
+  margin: 25px 0;
+  text-align: center;
+}
+
+.unused-channel-title:global(.ant-typography) {
+  line-height: 28px;
+  margin-bottom: 0px;
+  padding: 8px 0px 8px 15px;
+  background-color: #fff;
+  color: #5a5959;
+}
+
+div:has(>.adspot-channel-collapse) {
+  position: relative;
+}
+
+.unused-collapse {
+  :global {
+    .ant-collapse-header {
+      left: 46px !important;
+    }
+  }
+}

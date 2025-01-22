@@ -1,0 +1,121 @@
+.LoginBlock {
+  width: 100%;
+  height: 100%;
+}
+
+.infoLeft {
+  font-size: 13px;
+}
+
+.desc {
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.active {
+  font-size: 24px;
+}
+
+.line {
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+}
+
+.innerBeforeInput {
+  margin-left: 10px;
+
+  .line {
+    margin-left: 10px;
+  }
+}
+
+.innerAfterInput {
+  margin-right: 10px;
+  height: 40px;
+
+  .line {
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+}
+
+.sendCode {
+  max-width: 65px;
+}
+
+.otherLogin {
+  color: #666;
+  font-size: 13px;
+}
+
+.icon {
+  margin-left: 10px;
+}
+
+.submitBtn {
+  width: 100%;
+  line-height: 20px;
+  height: 31px !important;
+  margin-top: 26px;
+}
+
+.bgPic {
+  img {
+    opacity: 1;
+  }
+}
+
+
+.LoginBlock{
+  position: relative;
+  height: 100%;
+  background-color: white;
+  & > * {
+    height: 100%;
+  }
+  .bgPic {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: calc(100% - 496px);
+
+    & > img {
+      height: 100%;
+      width: 100%;
+      -o-object-fit: cover;
+      object-fit: cover;
+    }
+  }
+  .innerBlock{
+    position: absolute;
+    right: 0;
+    width: 496px;
+    height: 100%;
+
+    .loginContainer {
+      padding: 50px 50px 0;
+      margin: 30px 20px 0;
+      
+      .tips {
+        font-size: 13px;
+        line-height: 20px;
+        display: block;
+        margin-bottom: 10px;
+        white-space: normal;
+        padding-top: 35px;
+        color: #626262;
+      }
+      .webName {
+        margin: 10px 0;
+        font-weight: 300;
+        font-size: 18px;
+        color: #2c2c2c;
+      }
+    }
+
+    .loginForm {
+      padding-top: 15px;
+    }
+  }
+}

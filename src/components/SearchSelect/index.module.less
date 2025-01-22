@@ -1,0 +1,70 @@
+.popup-search-select {
+  min-width: 226px !important;
+  .custom-container {
+    width: 90%;
+    margin: 0 auto;
+    .custom-input {
+      margin: 9px auto;
+      height: 26px;
+    }
+    :global {
+      .ant-form-item {
+        margin-bottom: 0px;
+      }
+    }
+  }
+
+  .text-contianer {
+    :global {
+      .ant-space-item {
+        height: 22px;
+      }
+    }
+  }
+
+  :global {
+    .rc-virtual-list {
+      .ant-select-item.ant-select-item-option {
+        width: 100%;
+        .ant-space, .ant-space-item {
+          width: 100%;
+        }
+        .ant-space .ant-space-item span {
+          width: 100%;
+          display: inline-block;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+}
+
+.search-select {
+  :global {
+    .ant-space.ant-space-horizontal>div:first-child {
+      .ant-image {
+        display: none;
+      }
+    }
+  }
+}
+
+.platform-container {
+  :global {
+    .ant-select-item-option-content {
+      .ant-space.ant-space-horizontal {
+        .ant-space-item:has(>div.ant-image) {
+          width: 40px;
+        }
+        .ant-space-item:has(>div.ant-space) {
+          width: calc(100% - 35px) !important;
+        }
+        .ant-space-item .ant-space .ant-space-item {
+          height: 22px;
+        }
+      }
+    }
+  }
+}

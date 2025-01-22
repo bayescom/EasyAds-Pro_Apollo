@@ -1,0 +1,223 @@
+@import '/src/styles/common.less';
+
+.media-list {
+  :global {
+    .ant-col-6 {
+      display: block;
+    }
+
+    .ant-table-row {
+      height: 68px;
+    }
+
+    .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+    .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused,
+    .ant-select-selector:focus, .ant-select-selector:hover,
+    .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+      border-color: transparent !important;
+    }
+
+    .ant-form-item:hover, .ant-form-item:focus {
+      border-color: #2364FB !important;
+    }
+    
+    .ant-select.ant-select-sm.ant-pagination-options-size-changer.ant-select-single.ant-select-show-arrow.ant-select-focused,
+    .ant-pagination-options-size-changer:hover {
+      .ant-select-selector {
+        border-color: #2364FB !important;
+        box-shadow: none;
+      }
+    }
+
+    .ant-pro-card.ant-pro-table-search.ant-pro-table-search-query-filter {
+      margin-bottom: 0px;
+      padding-bottom: 0px;
+    }
+
+    .ant-pro-table-list-toolbar {
+      width: 80px;
+      position: absolute;
+      top: -52px;
+      left: 24px;
+      padding: 0px;
+      .ant-pro-table-list-toolbar-container {
+        padding: 0px;
+        button {
+          width: 80px;
+          padding: 0px 15px;
+        }
+      }
+    }
+
+    .ant-form.ant-form-horizontal.ant-pro-form-query-filter.list-filter-form {
+      margin-left: 104px;
+    }
+
+    button {
+      font-size: 12.6px;
+    }
+  }
+
+  .chineseName-container {
+    :global {
+      .ant-space-item:last-child {
+        width: calc(100% - 25px);
+        .ant-space {
+          width: calc(100% - 20px);
+          .ant-space-item {
+            width: 100%;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+      
+      a:not(.ant-menu-title-content a, .ant-breadcrumb-link a, .ant-pagination-item a) {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .media-list-option {
+    :global {
+      .ant-space-item:last-child a {
+        color: #adacac !important;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.media-container {
+  :global {
+    .ant-radio-group {
+      .ant-radio-button-wrapper:last-child {
+        width: 82.61px;
+        text-align: center;
+      }
+    }
+
+    .ant-form {
+      position: relative;
+    }
+  }
+}
+
+.media-list, .media-container {
+  :global {
+    .ant-form .ant-form-item,
+    .ant-form-item-label > label,
+    .ant-form-item-control-input,
+    .ant-input-affix-wrapper,
+    .ant-radio-button-wrapper.ant-radio-button-wrapper-in-form-item
+    {
+      height: 30px !important;
+      min-height: 30px !important;
+    }
+  }
+}
+
+.media-list {
+  :global {
+    .ant-pro-table-search .ant-form .ant-row div.ant-col-6 {
+      flex: 0 0 20.5%;
+      max-width: 300px;
+      padding-left: 0px !important;
+      padding-right: 10px !important;
+    }
+  }
+}
+
+.delect-popconfirm-container {
+  min-width: 180px;
+}
+
+.batch-button-dropdown {
+  :global {
+    .ant-dropdown-menu {
+      .ant-dropdown-menu-item {
+        font-size: 13px;
+        font-weight: 450;
+      }
+    }
+  }
+}
+
+.batch-medium-edit-modal {
+  :global {
+    .ant-modal-body {
+      position: relative;
+      .ant-form {
+        margin-top: 25px;
+        .ant-form-item-tooltip {
+          width: 12px;
+          height: 12px;
+        }
+      }
+    }
+  }
+
+  .batch-add-button {
+    position: absolute;
+    top: 11px;
+    right: 21px;
+  }
+
+  .batch-edit-row {
+    :global {
+      .ant-col-4 {
+        padding: 5px 0px 0px 15px;
+      }
+    }
+
+    .batch-edit-status {
+      :global {
+        .ant-typography {
+          color: #2364FB;
+          font-weight: 500;
+          position: absolute;
+          top: 6px;
+          right: 100px;
+          .ant-image {
+            width: 20px;
+            height: auto;
+            vertical-align: text-bottom;
+            margin-right: 2px;
+          }
+        }
+      }
+    
+      .status-warning {
+        color: #f8970d;
+        font-weight: 700;
+        top: 2px;
+        right: -3px;
+      }
+    }
+
+    .batch-medium-edit-status {
+      :global {
+        .ant-form-item {
+          margin-bottom: 55px;
+        }
+      }
+
+      .status-warning {
+        top: 25px;
+        left: 105px;
+        width: 450px;
+      }
+    }
+  }
+}
+
+.batch-options-contianer {
+  position: absolute;
+  top: 22px;
+  right: 21px;
+  :global {
+    .common-ant-btn-focus();
+  }
+}
