@@ -1,8 +1,8 @@
 export default {
   default: {
-    luna: 'http://luna.yourdomain.com/Luna'
+    luna: 'http://${DOMAIN_Luna}/Luna'
   },
   production: {
-    luna: 'http://luna.yourdomain.com/Luna'
+    luna: 'http://${DOMAIN_Luna}/Luna'
   }
 };
