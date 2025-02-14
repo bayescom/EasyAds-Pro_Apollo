@@ -1,6 +1,6 @@
 # 运行环境
 ## 环境说明
-本wiki只针对`ubuntu(24.04 LTS)`进行验证，其他系统请自行测试。
+本wiki只针对`ubuntu(24.04 LTS)`进行验证，其他系统请自行测试。简单测试可以使用Docker进行镜像构建
 ## nodejs
 - node: v16.20.2
 - npm: v8.19.4
@@ -98,6 +98,17 @@ server {
     }
 
 }
+```
+## Docker
+### 1. 配置更新
+根据需要更新`Dockerfile`中的变量，参考上述配置更新
+### 2. 构建镜像
+```bash
+sudo docker build -t Apollo .
+```
+### 3. 运行容器
+```bash
+sudo docker run -dit --name Apollo -p 80:80 Apollo
 ```
 
 ---
