@@ -1,0 +1,27 @@
+name: Sync Remote README Manually
+
+on:
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  sync-readme:
+    runs-on: ubuntu-latest  # 使用最新的 Ubuntu 虚拟机
+
+    steps:
+      # 步骤 1: 检出仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v3  # 使用 GitHub Actions 官方的 Checkout action
+
+      # 步骤 2: 拉取远程 README 文件并保存为 README.md
+      - name: Fetch remote README
+        run: |
+          curl -o README.md http://easyads-pro.bayescom.cn/md/deploy/apollo.md  # 从远程 URL 拉取文件并保存为 README.md
+
+      # 步骤 3: 提交并推送更新后的 README 文件
+      - name: Commit and push updated README
+        run: |
+          git config --global user.name "github-actions"  # 设置用户名
+          git config --global user.email "github-actions@github.com"  # 设置用户邮箱
+          git add README.md  # 将更新的 README.md 添加到 Git 暂存区
+          git commit -m "Update README from remote file"  # 提交更新
+          git push  # 推送更新到仓库
