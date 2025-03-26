@@ -774,7 +774,7 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
     <Modal
       open={batchCreationVisible}
       onCancel={onCancel}
-      width={1000}
+      width={1140}
       className={styles['batch-creation-modal']}
       okText="提交"
       okButtonProps={{disabled: dataSource.length ? false : true}}
