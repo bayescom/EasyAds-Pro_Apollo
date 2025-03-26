@@ -1,7 +1,7 @@
 import { ISdkChannel } from '@/models/types/channel';
 import store from '@/store';
 import { DeleteOutlined } from '@ant-design/icons';
-import { FormListActionType, ModalForm, ProFormInstance, ProFormList, ProFormSwitch, ProFormText } from '@ant-design/pro-form';
+import { FormListActionType, ModalForm, ProFormInstance, ProFormList, ProFormSwitch, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import { Alert, Button, Col, Divider, Popconfirm, Row, Image } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.module.less';
@@ -166,7 +166,7 @@ function ChannelForm({
             }}
             itemRender={(dom, listMeta) => (<>
               {listMeta.index > 0 && <Divider />}
-              <Row className={styles['company-channel-row']}>
+              <Row className={styles['sdk-company-channel-row']}>
                 <Col flex="1 1 auto">
                   {dom.listDom}
                 </Col>
@@ -223,19 +223,23 @@ function ChannelForm({
                     }}
                   /></> : (<></>)
                 }
-                {sdkReportApiStatusMap && sdkReportApiStatusMap[_index] ? (<>{
+                {sdkReportApiStatusMap && sdkReportApiStatusMap[_index] ?
                   channel.reportApiParamsMeta.map(paramMeta => (
-                    <ProFormText
+                    <ProFormTextArea
                       key={paramMeta.metaKey}
                       name={['channelParams', paramMeta.metaKey]}
                       labelCol={{ flex: '0 1 120px' }}
-                      wrapperCol={{ flex: '1 1 auto' }}
                       label={paramMeta.metaName}
+                      fieldProps={{
+                        rows: 1,
+                        allowClear: true,
+                        autoSize: { minRows: 1 }
+                      }}
                       required={!!paramMeta.metaRequired}
                       rules={[{ required: !!paramMeta.metaRequired, message: '请填写${label}' }]}
-                      getValueFromEvent={e => e.target.value.trim()}
-                    />))
-                }</>) : (<></>)              
+                      // 这里去掉的原因是因为加上这个trim 之后不能进行 回车换行
+                      //  getValueFromEvent={e => e.target.value.trim()}
+                    />)) : (<></>)         
                 }
               </>);
             }}
