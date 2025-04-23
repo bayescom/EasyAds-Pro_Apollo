@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Input, message, Form, Button, Image } from 'antd';
+import { Input, message, Form, Button } from 'antd';
 import styles from './index.module.less';
 import store from '@/store';
 import loginBgImg from '@/assets/icons/defaultLogin.jpg';
@@ -29,6 +29,7 @@ const LoginBlock: React.FunctionComponent<LoginProps> = (
 
   const [postData, setValue] = useState(dataSource);
   const dispatchers = store.useModelDispatchers('token');
+  const locationSearch = new URLSearchParams(location.search);
 
   useEffect(() => {
     document.title = '聚合SDK管理平台';
@@ -38,6 +39,14 @@ const LoginBlock: React.FunctionComponent<LoginProps> = (
     link.href = 'data:;';
     document.getElementsByTagName('head')[0].appendChild(link);
   });
+
+  useEffect(() => {
+    const username = locationSearch.get('username');
+    const password = locationSearch.get('password');
+    if (username && password) {
+      handleSubmit({ name: username, password,  autoLogin: true });
+    }
+  }, [locationSearch]);
 
   const formChange = (values: IDataSource) => {
     setValue(values);
