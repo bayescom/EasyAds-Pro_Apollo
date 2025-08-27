@@ -9,14 +9,17 @@ interface ISdkChannel {
   adnParamsMeta: ReportApiParamsMeta[],
   reportApiParamsMeta: ReportApiParamsMeta [],
   reportApiParams: ReportApiParam [],
-  reportApiStatus: number
+  reportApiStatus: number,
+  /** 支持自动创建三方广告位 */
+  supportAutoCreate: number
 }
 
 type ReportApiParam = {
   id: number | null,
   name: string,
   channelParams: ChannelParams,
-  status: number
+  status: number,
+  autoCreateStatus: number
 }
 
 type ChannelParams = {

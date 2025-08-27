@@ -14,7 +14,9 @@ type Iprops = {
   metaAppKeyDisabled: boolean,
   savePervMetaAppKey: string | null,
   setMetaAppKeyDisabled: (value: boolean) => void,
-  setSavePervMetaAppKey: (value) => void
+  setSavePervMetaAppKey: (value) => void,
+  disabledMetaAdspotId: boolean,
+  disabledMetaAppId: boolean
 }
 
 export default function SelectedChannelConfigs ({
@@ -28,7 +30,9 @@ export default function SelectedChannelConfigs ({
   metaAppKeyDisabled,
   savePervMetaAppKey,
   setMetaAppKeyDisabled,
-  setSavePervMetaAppKey
+  setSavePervMetaAppKey,
+  disabledMetaAdspotId,
+  disabledMetaAppId
 }: Iprops) {
 
   const getContnet = (config) => {
@@ -41,6 +45,7 @@ export default function SelectedChannelConfigs ({
         savePervMetaAppId={savePervMetaAppId}
         setMetaAppIdDisabled={(value) => setMetaAppIdDisabled(value)}
         setSavePervMetaAppId={(value) => setSavePervMetaAppId(value)}
+        disabledMetaAppId={disabledMetaAppId}
       />);
     case 'app_key':
       return (<MetaAppKey
@@ -59,11 +64,11 @@ export default function SelectedChannelConfigs ({
           label={
             <span className={styles['channel-configs-label']}>{config.metaName || config.metaKey.toUpperCase()}</span>
           }
-          rules={[{ required: true, type: 'string', message: '请输入' }]}
+          rules={[{ required: disabledMetaAdspotId ? false : true, type: 'string', message: '请输入' }]}
           required={true}
           getValueFromEvent={e => e.target.value.trim()}
         >
-          <Input placeholder="请输入" />
+          <Input placeholder="请输入" disabled={disabledMetaAdspotId}/>
         </Form.Item>
       </Col>);
     }

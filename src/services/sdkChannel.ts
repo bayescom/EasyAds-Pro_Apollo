@@ -118,4 +118,32 @@ export default {
       instanceName: 'luna'
     });
   },
+
+  // 三方创建
+  // 获取
+  async getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, source } : { adspotId: number, sdkAdspotChannelId: number, source: string}) {
+    return await request.get(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannelId}/${source}`, {
+      instanceName: 'galileo'
+    });
+  },
+
+  // 创建
+  async createAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source } : { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
+    return await request.post(`/adspot/sdk/auto_adspot/${adspotId}/${adspotType}/${source}`, {
+      sdkChannel: sdkAdspotChannel,
+      auto_adspot: sdkAutoAdspot
+    }, {
+      instanceName: 'galileo'
+    });
+  },
+
+  // 更新
+  async updateAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source } : { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
+    return await request.put(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannel.id}/${adspotType}/${source}`, {
+      sdkChannel: sdkAdspotChannel,
+      auto_adspot: sdkAutoAdspot
+    }, {
+      instanceName: 'galileo'
+    });
+  },
 };

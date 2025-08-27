@@ -100,4 +100,68 @@ function floatMul(a, b) {
   return Number(d.replace('.', '')) * Number(e.replace('.', '')) / Math.pow(10, c);
 }
 
-export { formatData, formatString2Array, getUrlParams, generateRandomID, sortByOrder, floatAdd };
+const getTimeDifference = (startTime: string, endTime: string) => {
+  // 解析时间字符串为Date对象
+  const startDate = new Date(startTime.replace(' ', 'T') + 'Z');
+  const endDate = new Date(endTime.replace(' ', 'T') + 'Z');
+  
+  // 计算时间差（毫秒） - 使用getTime()获取时间戳
+  const diffMs = endDate.getTime() - startDate.getTime();
+  
+  // 计算天数和小时数
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  
+  // 返回格式化结果
+  return `${diffDays}天${diffHours}小时`;
+};
+
+/**
+ * 32位随机大小写字母和1-9数字 
+ * @returns 
+ */
+const generateRandomString = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789';
+  let result = '';
+  for (let i = 0; i < 32; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
+/**
+ * 将 Number 数组 转换为 String 数组
+ * @param list Number[]
+ * @returns result String[]
+ */
+const convertNumbersToStrings = (list) => list.map(item => String(item));
+
+/**
+ * 将 String 数组 转换为 Number 数组
+ * @param list String[]
+ * @returns result Number[]
+ */
+const convertStringsToNumbers = (list) => list.map(item => +item);
+
+const getCurrentDateTimeFormatted = () => {
+  const now = new Date();
+    
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始，所以要+1
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  
+  return `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+};
+
+
+function areArraysEqual<T>(arr1: T[], arr2: T[]): boolean {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+  return arr1.every((value, index) => value === arr2[index]);
+}
+
+export { formatData, formatString2Array, getUrlParams, generateRandomID, sortByOrder, floatAdd, getTimeDifference, generateRandomString, convertNumbersToStrings, convertStringsToNumbers, getCurrentDateTimeFormatted, areArraysEqual };

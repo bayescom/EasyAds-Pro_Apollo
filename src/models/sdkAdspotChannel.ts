@@ -4,6 +4,7 @@ import { DateType, ICommonState } from './types/common';
 import { ISdkAdspotChannel } from './types/sdkAdspotChannel';
 import moment from 'moment';
 import { getLocalDateType } from '@/components/SdkDistribution/utils';
+import { formatModalDataFromPayload } from '@/components/SdkDistribution/modals/sdkAutoAdspot/utils/formatCsjSdkAutoAdspot';
 
 type DeleteSupplierStatusType = {
   count: number,
@@ -122,6 +123,14 @@ export default {
       return { data: data.sdkChannelList };
     },
 
+    async getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, adspotType, source }: { adspotId: number, sdkAdspotChannelId: number, adspotType: number, source: string }) {
+      const data = await sdkChannelService.getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, source});
+      
+      dispatch.sdkChannel.setSdkAutoAdspot(formatModalDataFromPayload(data.auto_adspot, adspotType));
+      dispatch.sdkChannel.setCpmUpdateTime(data.sdkChannel.cpmUpdateTime);
+      return data.sdkChannel;
+    },
+
     async save({ sdkAdspotChannel, adspotId }: { sdkAdspotChannel: ISdkAdspotChannel, adspotId: number }) {
       const data = sdkAdspotChannel.id
         ? await sdkChannelService.updateSdkAdspotChannel({ model: sdkAdspotChannel, adspotId })
@@ -135,6 +144,18 @@ export default {
       dispatch.sdkAdspotChannel.setOne(newModel);
 
       return newModel;
+    },
+
+    async autoAdspotSave({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source }: { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
+      const data = sdkAdspotChannel.id
+        ? await sdkChannelService.updateAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source })
+        : await sdkChannelService.createAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source });
+
+      if (!data?.sdkChannel) {
+        return;
+      }
+
+      return data.sdkChannel;
     },
 
     async delete({ sdkAdspotChannelId, adspotId }: { sdkAdspotChannelId: number, adspotId: number }) {

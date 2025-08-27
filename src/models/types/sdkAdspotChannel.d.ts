@@ -16,6 +16,7 @@ interface ISdkAdspotChannel extends BaseModel {
 
   direction: DirectionType,
   requestLimit: RequestLimit,
+  isAutoCreate: number
 }
 
 type AdnParamsMetaType = {

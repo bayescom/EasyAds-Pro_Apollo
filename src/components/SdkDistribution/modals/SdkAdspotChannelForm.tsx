@@ -1,20 +1,25 @@
 import { ISdkAdspotChannel } from '@/models/types/sdkAdspotChannel';
-import { ISdkChannel } from '@/models/types/sdkChannel';
+import { ISdkChannel, ReportApiParam } from '@/models/types/sdkChannel';
 import store from '@/store';
-import { Col, Divider, Form, Input, Modal, Row, Select, Typography, Space, Image, Radio, Switch, Button } from 'antd';
+import { Col, Divider, Form, Input, Modal, Row, Select, Typography, Space, Image, Radio, Switch, Button, Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import { isCommonConfig, TargetingItemConfig } from './formItems/TargetingItem';
 import styles from './index.module.less';
 import RTB from '@/assets/icons/RTB.png';
 import TargetingItemsPicker from './TargetingItemsPicker';
 import { formatPayloadDataFromModal } from '@/components/SdkDistribution/utils/formatSdkAdspotChannel';
+import { formatYlhPayloadDataFromModal } from '@/components/SdkDistribution/modals/sdkAutoAdspot/utils/formatYlhSdkAutoAdspot';
 import { PlusOutlined, QuestionCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import SdkChannelModalForm from '@/pages/Channel/sdkForm';
 import ProCard from '@ant-design/pro-card';
 import React from 'react';
 import sdkChannelService from '@/services/sdkChannel';
 import SelectedChannelConfigs from './selectedChannelConfigs';
-import { channelIconMap } from '@/components/Utils/Constant';
+import { channelIconMap, autoCreateStatusTipMap, sdkReportApiChannels } from '@/components/Utils/Constant';
+import auto from '@/assets/icons/distribution/auto.png';
+import SdkAutoAdspot from './sdkAutoAdspot';
+import { channelSource } from './sdkAutoAdspot/utils';
+import TextArea from 'antd/lib/input/TextArea';
 
 type Props = {
   model,
@@ -47,6 +52,8 @@ const targetingItemDefaultValues = targetingItems.reduce((pre, item) => {
   return pre;
 }, {});
 
+const defaultReportApiParam = {name: '', id: 0, channelParams: {}, status: 0, autoCreateStatus: 0};
+
 const sdkAdspotChannelDispatchers = store.getModelDispatchers('sdkAdspotChannel');
 const sdkChannelDispatchers = store.getModelDispatchers('sdkChannel');
 
@@ -59,6 +66,7 @@ function SdkAdspotChannelForm({
   mediaId
 }: Props) {
   const sdkChannelState = store.useModelState('sdkChannel');
+  const adspot = store.useModelState('adspot');
   const distributionState = store.useModelState('distribution');
   const [selectedChannel, setSelectedChannel] = useState<ISdkChannel | null>();
   const [form] = Form.useForm();
@@ -67,7 +75,10 @@ function SdkAdspotChannelForm({
   const bidPrice = Form.useWatch('bidPrice', form);
   const select = Form.useWatch('select', form);
   const switchReportApi = Form.useWatch('switchReportApi', form);
+  const autoCreateStatus = Form.useWatch('autoCreateStatus', form);
   const checkedReportApi = Form.useWatch('checkedReportApi', form);
+  const metaAppId = Form.useWatch(['channelParams', 'meta_app_id'], form);
+  const channelAlias = Form.useWatch('channelAlias', form);
 
   const [showFcrequencySetting, setShowFcrequencySetting] = useState(false);
   // 媒体Adx不显示广告源名称、超时时间、定向设置、频次设置
@@ -76,7 +87,6 @@ function SdkAdspotChannelForm({
   const [scrollChannelList, setScrollChannelList] = useState<ISdkChannel[]>();
   // 选中的adnId
   const [clickChannel, setClickChannel] = useState<number | undefined>();
-  const [showReportApi, setShowReportApi] = useState(true);
   // 当前广告网络是否创建过reportApi
   const [isHasReportApiParams, setIsHasReportApiParams] = useState(false);
   // reportApi参数列表
@@ -101,12 +111,31 @@ function SdkAdspotChannelForm({
   const [changeLeftContianerHeight, setChangeLeftContianerHeight] = useState(false);
   const sdkRightContainer = document.getElementById('sdk-right-container');
 
+  const [drawerFormVisible, setDrawerFormVisible] = useState(false);
+  const [isCreateThird, setIsCreateThird] = useState(false);
+  const [currentReportApiParam, setCurrentReportApiParam] = useState<ReportApiParam>(defaultReportApiParam);
+  const [thirdModalData, setThirdModalData] = useState<Record<string, any> | null>();
+  const [disabledMetaAdspotId, setDisabledMetaAdspotId] = useState(false);
+  // 编辑的时候，如果创建过三方广告位，就禁用编辑应用ID
+  const [disabledMetaAppId, setDisabledMetaAppId] = useState(false);
+
+  /** 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频 */
+  const adspotType = adspot.map[adspotId]?.adspotType || 0;
+  const isBdBanner = adspotType == 1 && clickChannel == 4;
+  /** 是否正在编辑 创建过三方广告位的广告源 */
+  const isEditAutoCreate = !!(isEditing && model && model.isAutoCreate);
+
+  useEffect(() => {
+    if(!mediaId) return;
+  }, [mediaId]);
+
   useEffect(() => {
     const newModel = {...model};
     const itemArray = ['deviceRequestInterval', 'dailyReqLimit', 'dailyImpLimit', 'deviceDailyReqLimit', 'deviceDailyImpLimit'];
     const hasValueIndex = itemArray.findIndex(item => !!newModel[item]);
     newModel.switchFcrequency = hasValueIndex !== -1 ? true : false;
     newModel.switchReportApi = true;
+    newModel.autoCreateStatus = true;
     newModel.adnId == 99 ? setIsMediaAdx(true) : setIsMediaAdx(false);
     form.setFieldsValue(newModel);
   }, [model, form]);
@@ -132,7 +161,7 @@ function SdkAdspotChannelForm({
   }, [visible, closeModal]);
 
   useEffect(() => {
-    if (visible && clickChannel && adspotId && !isEditing) {
+    if (visible && clickChannel && adspotId && !isEditing && !sdkChannelState.sdkAutoAdspot) {
       const currnetChannelConfigs = sdkChannelState.map[clickChannel].adnParamsMeta;
       const hasMetaAppKeyIndex = currnetChannelConfigs.findIndex(item => item.metaKey == 'app_key');
       if (currnetChannelConfigs.length) {
@@ -163,7 +192,7 @@ function SdkAdspotChannelForm({
         });
       }
     }
-  }, [visible, clickChannel, adspotId, isEditing, sdkChannelState]);
+  }, [visible, clickChannel, adspotId, isEditing, sdkChannelState,  sdkChannelState.sdkAutoAdspot]);
 
   useEffect(() => {
     if (visible && isEditing) {
@@ -180,6 +209,18 @@ function SdkAdspotChannelForm({
       }
     }
   }, [visible, model, isEditing]);
+
+  useEffect(() => {
+    if (visible && isEditing) {
+      setIsCreateThird(sdkChannelState.sdkAutoAdspot ? true : false);
+    }
+  }, [visible, isEditing, sdkChannelState.sdkAutoAdspot]);
+
+  useEffect(() => {
+    if (visible && isEditing && selectedChannel?.supportAutoCreate && model.isAutoCreate) {
+      setDisabledMetaAppId(true);
+    }
+  }, [visible, isEditing, sdkChannelState.sdkAutoAdspot, selectedChannel ]);
 
   useEffect(() => {
     if (isEditing) {
@@ -199,12 +240,6 @@ function SdkAdspotChannelForm({
       setSelectedChannel(clickChannel ? sdkChannelState.map[clickChannel] : null);
     }
   }, [isEditing, model, sdkChannelState, clickChannel]);
-
-  useEffect(() => {
-    if(!mediaId) {
-      return;
-    }
-  }, [mediaId]);
 
   useEffect(() => {
     if (switchFcrequency !== undefined) {
@@ -304,17 +339,30 @@ function SdkAdspotChannelForm({
   }, [selectedChannel]);
 
   useEffect(() => {
-    if (switchReportApi !== undefined) {
-      if(switchReportApi) {
-        setShowReportApi(true);
-      } else {
-        selectedChannel?.reportApiParamsMeta.forEach(ele => {
-          form.setFieldValue(['reportApiParam', 'channelParams' , ele.metaKey], undefined);
-        });
-        setShowReportApi(false);
+    if (visible) {
+      const currentChecked = selectedChannel?.reportApiParams.find(item => item.id == checkedReportApi);
+      if (currentChecked) {
+        setCurrentReportApiParam(currentChecked || defaultReportApiParam);
       }
     }
-  }, [switchReportApi]);
+  }, [visible, selectedChannel, checkedReportApi]);
+
+  // 如果用户选择创建三方广告位，那么代码位ID或广告位ID需要清空禁用；反之没有创建，则正常填写
+  useEffect(() => {
+    if (visible) {
+      if (isCreateThird && selectedChannel?.supportAutoCreate) {
+        !isEditing && form.setFieldValue(['channelParams', 'meta_adspot_id'], '');
+        if (isEditing) {
+          setDisabledMetaAdspotId(true);
+        } else {
+          setDisabledMetaAdspotId(!!currentReportApiParam.autoCreateStatus || !checkedReportApi);
+        }
+      } else {
+        isCreateThird && setDisabledMetaAdspotId(false);
+      }
+    }
+  }, [visible, isCreateThird, selectedChannel, isEditing, currentReportApiParam, autoCreateStatus]);
+  
 
   useEffect(() => {
     clickChannel && showFcrequencySetting && setShowFcrequencySetting(false);
@@ -359,19 +407,28 @@ function SdkAdspotChannelForm({
     }
     
     // 如果创建过reportApi参数
-    if (clickChannel && [2, 3, 5].includes(clickChannel)) {
+    if (clickChannel && sdkReportApiChannels.includes(clickChannel)) {
       if (isHasReportApiParams) {
         const currentReportApiParams = selectedChannel?.reportApiParams.filter(ele => ele.id == checkedReportApi);
-        if (currentReportApiParams) {
+        // 非三方广告位的广告源账户必填，这里必有值
+        if (currentReportApiParams?.length) {
           newModel.reportApiParam = currentReportApiParams[0];
+        } else {
+          newModel.reportApiParam = {...defaultReportApiParam};
         }
       } else {
-        // 如果没有创建过reportApi参数,且报表API按钮关闭了
-        if (!newModel.switchReportApi) {
-          newModel.reportApiParam.channelParams = {};
-          newModel.reportApiParam.status = 0;
+        // 如果没有创建过reportApi参数,且报表API按钮 和 自动创建广告源按钮 都关闭了
+        if (!newModel.switchReportApi && !newModel.autoCreateStatus) {
+          if (isEditAutoCreate) {
+            newModel.reportApiParam = {...defaultReportApiParam};
+          } else  {
+            newModel.reportApiParam.channelParams = {};
+            newModel.reportApiParam.status = 0;
+            newModel.reportApiParam.autoCreateStatus = 0;
+          }
         } else {
           newModel.reportApiParam.status = +switchReportApi;
+          newModel.reportApiParam.autoCreateStatus = +autoCreateStatus;
         }
       }
     }
@@ -379,7 +436,33 @@ function SdkAdspotChannelForm({
     if (!isEditing) {
       newModel.adnId = clickChannel;
     }
+    const source = channelSource[selectedChannel?.adnId || 0];
     
+    let sdkAutoAdspot = sdkChannelState.sdkAutoAdspot;
+    if (sdkChannelState.sdkAutoAdspot) {
+      if ([3, 4].includes(selectedChannel?.adnId || 0)) {
+        sdkAutoAdspot = isEditing ? {cpm: sdkChannelState.sdkAutoAdspot?.cpm} : sdkChannelState.sdkAutoAdspot;
+      } else if (selectedChannel?.adnId == 2) {
+        sdkAutoAdspot = formatYlhPayloadDataFromModal(sdkChannelState.sdkAutoAdspot, adspotType);
+      }
+    }
+
+    let result;
+    if (selectedChannel?.supportAutoCreate && isCreateThird) { // 支持三方创建 && 创建了三方广告位 走新接口
+      if (!isEditing) {
+        // 当新建的时候，如果在有账户名称且账户打开了自动创建广告源的情况下，填写了三方广告位的表单，然后再切换成另一个账户，这个账户没有开启自动创建广告源，那这个时候提交还是走老接口
+        if (newModel.reportApiParam.autoCreateStatus) {
+          result = await sdkAdspotChannelDispatchers.autoAdspotSave({ sdkAdspotChannel: formatPayloadDataFromModal(newModel), sdkAutoAdspot, adspotId, adspotType, source });
+        } else {
+          result = await sdkAdspotChannelDispatchers.save({ sdkAdspotChannel: formatPayloadDataFromModal(newModel), adspotId });
+        }
+      } else {
+        result = await sdkAdspotChannelDispatchers.autoAdspotSave({ sdkAdspotChannel: formatPayloadDataFromModal(newModel), sdkAutoAdspot, adspotId, adspotType, source });
+      } 
+    } else { // 未创建三方广告位 或 其它广告源 走老接口
+      result = await sdkAdspotChannelDispatchers.save({ sdkAdspotChannel: formatPayloadDataFromModal(newModel), adspotId });
+    }
+
     setSubmitLoading(true);
     if (await sdkAdspotChannelDispatchers.save({ sdkAdspotChannel: formatPayloadDataFromModal(newModel),  adspotId })) {
       if (!isEditing) {
@@ -395,6 +478,10 @@ function SdkAdspotChannelForm({
     setClickChannel(undefined);
     setCloseModal(true); 
     setChangeLeftContianerHeight(true);
+    isCreateThird && setIsCreateThird(false);
+    sdkChannelDispatchers.setSdkAutoAdspot(null);
+    disabledMetaAdspotId && setDisabledMetaAdspotId(false);
+    disabledMetaAppId && setDisabledMetaAppId(false);
   };
 
   const changeSwitchFcrequency = (status) => {
@@ -404,7 +491,7 @@ function SdkAdspotChannelForm({
   const clickScrollLi = async (adnId) => {
     setClickChannel(adnId);
     await form.setFieldValue(['companyChannelId'], null);
-    const excludedFields = ['checkedReportApi', 'channelAlias', 'switchReportApi', 'params'];
+    const excludedFields = ['checkedReportApi', 'channelAlias', 'switchReportApi', 'autoCreateStatus', 'params'];
     const formValues = form.getFieldsValue();
     const params:any[] = [];
     selectedChannel?.adnParamsMeta.forEach(item => params.push(['params', item.metaKey]));
@@ -417,10 +504,49 @@ function SdkAdspotChannelForm({
     }
 
     setSelectedChannel(sdkChannelState.map[adnId] || null);
+    isCreateThird && setIsCreateThird(false);
+    isCreateThird && sdkChannelDispatchers.setSdkAutoAdspot(null);
+
+    if ((adnId == 4 && adspotType == 1) || showFcrequencySetting) {
+      sdkRightContainer?.clientHeight && setRightContainerHeight(sdkRightContainer?.clientHeight);
+    }
   };
 
-  const changeSwitchReportApi = (status) => {
-    setShowReportApi(status);
+  const changeChannelParams = (reportApiStatus, autoCreateStatus) => {
+    if (!reportApiStatus && !autoCreateStatus) {
+      selectedChannel?.reportApiParamsMeta.forEach(ele => {
+        form.setFieldValue(['reportApiParam', 'channelParams' , ele.metaKey], undefined);
+      });
+    }
+
+    if (!autoCreateStatus) {
+      isCreateThird && setIsCreateThird(false);
+      sdkChannelState.sdkAutoAdspot && sdkChannelDispatchers.setSdkAutoAdspot(null);
+    }
+  };
+
+  const clickThirdAdspotBtn = () => {
+    // 1.有账户名称出现该按钮，默认已经打开了自动创建广告源：(1)验证是否勾选了账户名称 (2)验证是否填写了应用ID
+    if (isHasReportApiParams) {
+      form.validateFields([['channelParams', 'meta_app_id'], 'checkedReportApi']).then(res => {
+        if (isCreateThird) setThirdModalData(sdkChannelState.sdkAutoAdspot);
+        setDrawerFormVisible(true);
+      });
+    } else {
+      // 2.当前无账户名称 验证是否填写了账户名称、params参数、<重要>以及是否勾选了自动创建广告源
+      const validateKeys = [['reportApiParam', 'name'], ['channelParams', 'meta_app_id']];
+      selectedChannel?.reportApiParamsMeta.forEach(item => validateKeys.push(['reportApiParam', 'channelParams', item.metaKey]));
+      form.validateFields(validateKeys).then(() => {
+        setCurrentReportApiParam({...currentReportApiParam, name: form.getFieldValue(['reportApiParam', 'name'])});
+        if (isCreateThird) setThirdModalData(sdkChannelState.sdkAutoAdspot);
+        setDrawerFormVisible(true);
+      });
+    }
+  };
+
+  const handleSdkChannelForm = () => {
+    setModalVisible(true);
+    setModalData(selectedChannel);
   };
 
   return (<>
@@ -456,6 +582,7 @@ function SdkAdspotChannelForm({
                 <Space>
                   <Image src={channelIconMap[channel.adnId]} width={18} height={18} preview={false}/>
                   <Text>{channel.adnName}</Text>
+                  {!!channel.supportAutoCreate && <Image src={auto} preview={false}/>}
                 </Space>
               </li>)) : <></>
             }
@@ -463,25 +590,29 @@ function SdkAdspotChannelForm({
         </div> : <div className={styles['left-container']}>广告网络：{selectedChannel?.adnName}</div>}
         <div className={styles['right-container']}>
           <div id='sdk-right-container'>
+            {
+              isBdBanner && <Alert message='百度平台不支持自动创建横幅广告位，请手动创建。' type="info" showIcon banner style={{margin: 0}} />
+            }
             <ProCard id='sdk-top-pro-card'>
               <Title level={5} className={styles['base-title']}>基础设置</Title>
               <Row gutter={16} wrap={true}>
                 {/* 左侧滚动区域被选择后 与 只有穿山甲，优量汇，快手 才显示reportAPi相关 */}
                 {clickChannel && [2, 3, 5].includes(clickChannel) ? <>
-                  {/* 如果创建过参数就显示select让用户选择，没有的话就需要填写参数 */}
-                  {isHasReportApiParams ? 
+                  {/* 如果创建过参数就显示select让用户选择，没有的话就需要填写参数 || 如果编辑时是创建过第三方广告位的广告源也显示select */}
+                  {(isHasReportApiParams || isEditAutoCreate) ? 
                     <Col span={16}>
                       <Form.Item
                         name='checkedReportApi'
                         label='账户名称'
                         getValueProps={value => ({ value: value || null })}
-                        rules={[{ required: true, message: '请输入' }]}
+                        rules={[{ required: isEditAutoCreate ? false : true, message: '请输入' }]}
                       >
                         <Select
-                          placeholder="请选择"
+                          placeholder={isEditAutoCreate && !currentReportApiParam.autoCreateStatus ? '当前广告源绑定账户已删除' : '请选择'}
                           style={{width: '100%'}}
                           optionFilterProp='label'
                           options={reportApiList?.map((item) => ({ label: item.name, value: item.id }))}
+                          disabled={isEditAutoCreate}
                           dropdownRender={(menu) => (
                             <>
                               {menu}
@@ -490,10 +621,7 @@ function SdkAdspotChannelForm({
                                 <Button 
                                   type="text" 
                                   icon={<PlusOutlined />} 
-                                  onClick={() => {
-                                    setModalVisible(true);
-                                    setModalData(selectedChannel);
-                                  }}
+                                  onClick={() => handleSdkChannelForm()}
                                   style={{width: '100%'}}
                                 >
                                   新增/编辑
@@ -516,8 +644,8 @@ function SdkAdspotChannelForm({
                       </Form.Item>
                     </Col>
                   }
-                  {/* 用户没有创建过reportApi参数才显示 */}
-                  {!isHasReportApiParams &&
+                  {/* 用户没有创建过reportApi参数才显示 && 不是创建过第三方广告位的广告源 */}
+                  {!isHasReportApiParams && !model.isAutoCreate &&
                     <>
                       <Col span={16} style={{position: 'relative'}}>
                         <Form.Item
@@ -526,10 +654,27 @@ function SdkAdspotChannelForm({
                           tooltip='建议开通报表API权限，数据报表依赖于第三方报表数据'
                           valuePropName="checked"
                         >
-                          <Switch onChange={(status) => changeSwitchReportApi(status)} size='small'/>
+                          <Switch onChange={(status) => changeChannelParams(status, autoCreateStatus)} size='small'/>
                         </Form.Item>
                       </Col>
-                      {showReportApi && <div className={styles['channel-configs']}>
+                      {(!isEditing && selectedChannel?.supportAutoCreate && !isBdBanner) ? <Col span={16}>
+                        <Form.Item
+                          name='autoCreateStatus'
+                          label='自动创建广告源'
+                          tooltip={clickChannel && selectedChannel?.supportAutoCreate ? autoCreateStatusTipMap[clickChannel] : ''}
+                          valuePropName="checked"
+                        >
+                          <Switch onChange={(status) => changeChannelParams(switchReportApi, status)} size='small'/>
+                        </Form.Item>
+                        <Button
+                          onClick={clickThirdAdspotBtn}
+                          className={styles['third-btn']}
+                          disabled={!autoCreateStatus}
+                        >
+                          {isCreateThird || isEditing ? '编辑' : <><PlusOutlined style={{marginRight: 10}}/>创建</>}三方广告位
+                        </Button>
+                      </Col> : <></>}
+                      {(switchReportApi || autoCreateStatus) && <div className={styles['channel-configs']}>
                         {selectedChannel?.reportApiParamsMeta.map((paramMeta) => (
                           <Col span={16} key={paramMeta.metaKey}>
                             <Form.Item
@@ -541,7 +686,7 @@ function SdkAdspotChannelForm({
                               rules={[{ required: !!paramMeta.metaRequired, message: '请输入' }]}
                               getValueFromEvent={e => e.target.value.trim()}
                             >
-                              <Input placeholder="请输入" />
+                              <TextArea placeholder="请输入" autoSize={{minRows: 1, maxRows: 1}}/>
                             </Form.Item>
                           </Col>
                         ))}
@@ -612,6 +757,8 @@ function SdkAdspotChannelForm({
                         savePervMetaAppKey={savePervMetaAppKey}
                         setMetaAppKeyDisabled={(value) => setMetaAppKeyDisabled(value)}
                         setSavePervMetaAppKey={(value) => setSavePervMetaAppKey(value)}
+                        disabledMetaAdspotId={disabledMetaAdspotId}
+                        disabledMetaAppId={disabledMetaAppId}
                       />);})
                   }
                 </div>
@@ -624,6 +771,17 @@ function SdkAdspotChannelForm({
                     <Input placeholder="请输入" />
                   </Form.Item>
                 </Col>
+                {(!isEditing && isHasReportApiParams && selectedChannel?.supportAutoCreate && !isBdBanner) || (isEditing && isHasReportApiParams && model && model.isAutoCreate && !isBdBanner) ? <Col span={16}>
+                  <Form.Item
+                    name="autoCreateStatus"
+                    label="自动创建广告源"
+                    tooltip={clickChannel && selectedChannel?.supportAutoCreate ? autoCreateStatusTipMap[clickChannel] : ''}
+                  >
+                    {/* 当账户被删掉的时候，也要展示 功能未开启 */}
+                    {currentReportApiParam.autoCreateStatus && checkedReportApi ? <Button onClick={clickThirdAdspotBtn}>{isCreateThird || isEditing ? '编辑' : <><PlusOutlined style={{marginRight: 10}}/>创建</>}三方广告位</Button> :
+                      <Space className={styles['auto-params-space']}>功能未开启<Button type='link' onClick={() => handleSdkChannelForm()}>前往开启</Button></Space>}
+                  </Form.Item>
+                </Col> : <></>}
                 <Col span={16}>
                   <Form.Item
                     name="timeout"
@@ -765,6 +923,23 @@ function SdkAdspotChannelForm({
       visible={modalVisible}
       onClose={() => setModalVisible(false)}
       onFinish={() => console.log()}
+    />
+
+    <SdkAutoAdspot
+      channelId={clickChannel || 0}
+      drawerFormVisible={drawerFormVisible}
+      adspotType={adspotType}
+      metaAppId={metaAppId || savePervMetaAppId}
+      reportApiName={currentReportApiParam.name}
+      channelAlias={channelAlias}
+      thirdModalData={thirdModalData}
+      isEditThird={isCreateThird}
+      isEditAdspotChannel={isEditing}
+      isHeadBidding={isHeadBidding}
+      onClose={(isSubmit?) => {
+        isSubmit && setIsCreateThird(true);
+        setDrawerFormVisible(false);
+      }}
     />
   </>);
 }

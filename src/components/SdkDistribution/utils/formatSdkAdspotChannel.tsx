@@ -13,7 +13,8 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
     id: sdkAdspotChannelFormData.reportApiParam.id || null,
     name: sdkAdspotChannelFormData.reportApiParam.name,
     channelParams: sdkAdspotChannelFormData.reportApiParam.channelParams,
-    status: sdkAdspotChannelFormData.reportApiParam.status
+    status: sdkAdspotChannelFormData.reportApiParam.status,
+    autoCreateStatus: sdkAdspotChannelFormData.reportApiParam.autoCreateStatus
   } : {};
 
   const sdkAdspotChannelNew = {
@@ -56,6 +57,8 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
     params: sdkAdspotChannelFormData.params,
     adnParamsMeta: sdkAdspotChannelFormData.adnParamsMeta,
     reportApiParam: newReportApiParam,
+    isAutoCreate: sdkAdspotChannelFormData.isAutoCreate || 0,
+    cpmUpdateTime: sdkAdspotChannelFormData.cpmUpdateTime
   };
   return sdkAdspotChannelNew;
 }
@@ -101,7 +104,9 @@ export function formatModalDataFromPayload(sdkAdspotChannelPayloadData) {
     excludeDeviceMaker: direction.deviceMaker.property == 'include' ? '' : direction.deviceMaker.value.join(','),
     osv: direction.osVersion.property == 'include' ? direction.osVersion.value.join(',') : '',
     excludeOsv: direction.osVersion.property == 'include' ? '' : direction.osVersion.value.join(','),
-    appVersion: appVersionProperty + direction.appVersion.value.join(',') || ''
+    appVersion: appVersionProperty + direction.appVersion.value.join(',') || '',
+    isAutoCreate: sdkAdspotChannelPayloadData.isAutoCreate,
+    cpmUpdateTime: sdkAdspotChannelPayloadData.cpmUpdateTime
   };
   return sdkAdspotChannel;
 }

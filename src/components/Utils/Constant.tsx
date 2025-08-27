@@ -78,4 +78,16 @@ const channelIconMap = {
   99: adx
 };
 
-export { dimensionListType, chartDimensionList, adspotTypeAllList, platformIconMap, mediaIconMap, channelIconMap };
+/** 2, 3, 4, 5 穿山甲，优量汇，百度，快手 */
+const sdkReportApiChannels = [2, 3, 4, 5];
+
+const autoCreateStatusTipMap = {
+  2: '请确保您的优量汇账号拥有应用代码位管理API权限。若无此权限，可向优量汇对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在优量汇后台同步创建广告代码位。',
+  3: '请确保您的穿山甲账号拥有应用代码位管理API权限。若无此权限，可向穿山甲对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在穿山甲后台同步创建广告代码位。',
+  4: '请确保您的百度账号拥有应用代码位管理API权限。若无此权限，可向百度对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在百度后台同步创建广告代码位。',
+  5: '请确保您的快手账号拥有应用代码位管理API权限。若无此权限，可向快手对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在快手后台同步创建广告代码位。',
+};
+
+const adspotTypeListMap = { 1: '横幅', 2: '开屏', 3: '插屏', 6: '信息流', 8: '文字链', 9: '视频贴片', 12: '激励视频' };
+
+export { dimensionListType, chartDimensionList, adspotTypeAllList, platformIconMap, mediaIconMap, channelIconMap, sdkReportApiChannels, autoCreateStatusTipMap, adspotTypeListMap };

@@ -17,6 +17,11 @@ type FilterOption = {
   url?: string,
 }
 
+type BasicOption<T> = {
+  name: string,
+  value: T
+}
+
 type Sort<T> = {
   [key in T]: SortOrder
 }
@@ -129,5 +134,6 @@ export {
   FilterForm,
   RangeValue,
   DimensionOption,
-  TargetingsVisibility
+  TargetingsVisibility,
+  BasicOption
 };
