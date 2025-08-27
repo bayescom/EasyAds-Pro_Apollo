@@ -5,9 +5,20 @@ import { dataTargetArray, formatValueList } from '@/components/DataTargetOperati
 import mediumService from '@/services/medium';
 import { IMedium } from './types/medium';
 import adspotService from '@/services/adspot';
+import sdkChannelService from '@/services/sdkChannel';
 import { IAdspot } from '@/models/types/adspotList';
 import { DateType } from './types/common';
 import moment from 'moment';
+
+type DirectionType = {
+  name: string,
+  property: string,
+  value: string []
+}
+
+type SdkStrategyDirectionType = {
+  directionList: DirectionType []
+}
 
 type IState = {
   adspotSelectOptions: adspotSelectOption[];
@@ -24,10 +35,10 @@ type IState = {
   currentAdspot: IAdspot[],
   mediumList: IMedium[],
   adspotList: IAdspot[],
-  adspotListMap: Partial<{
-    [key in number]: IAdspot 
-  }>,
-  time: DateType
+  time: DateType,
+  currentTargetId: number,
+  currentGroupTargetId: number,
+  sdkStrategyDirection: SdkStrategyDirectionType
 }
 
 export const defaultCheckedListMap: checkedListMap = {
@@ -129,7 +140,11 @@ const defaultState:IState = {
   mediumList: [],
   adspotList: [],
   adspotListMap: {},
-  time: defaultTime
+  time: defaultTime,
+  currentTargetId: 0,
+  // currentTrafficId: 0,
+  currentGroupTargetId: 0,
+  sdkStrategyDirection: []
 };
 
 export default {
@@ -197,6 +212,18 @@ export default {
       prevState.adspotId = adspotId;
     },
 
+    setCurrentTargetId(prevState:IState, currentTargetId) {
+      return {
+        ...prevState,          // 复制旧状态
+        currentTargetId,        // 更新目标字段
+      };
+    },
+
+
+    setCurrentGroupTargetId(prevState:IState, currentGroupTargetId) {
+      prevState.currentGroupTargetId = currentGroupTargetId;
+    },
+
     setMediaId(prevState:IState, mediaId) {
       prevState.mediaId = mediaId;
     },
@@ -219,6 +246,10 @@ export default {
     setTime(prevState: IState, time: DateType) {
       prevState.time = time;
     },
+
+    setSdkStrategyDirection(prevState:IState, sdkStrategyDirection) {
+      prevState.sdkStrategyDirection = sdkStrategyDirection;
+    }
   },
 
   effects: (dispatchers: IRootDispatch) => ({
@@ -241,6 +272,14 @@ export default {
         data: data.adspots,
         total: data.meta.total
       };
+    },
+
+    async getSdkStrategyDirection({ targetId }: { targetId: number }) {
+      const data = await sdkChannelService.getSdkStrategyDirection(targetId);
+      if (!data) {
+        return;
+      }
+      dispatchers.distribution.setSdkStrategyDirection(data.strategySummary);
     },
   }),
 };

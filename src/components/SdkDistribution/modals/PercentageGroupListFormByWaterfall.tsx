@@ -21,7 +21,7 @@ type PercentageTagType = {
   copyPercentageTag: string,
 };
 
-type NextGroupInfo = TrafficPercentageType | PercentageTagType;
+type NextGroupInfo = TargetPercentageListType | PercentageTagType;
 
 const distributionDispatcher = store.getModelDispatchers('sdkDistribution');
 
@@ -50,45 +50,50 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
   const distribution = distributionState[adspotId];
   const distributionModel = store.useModelState('distribution');
 
-  useEffect(() => {
-    if (visible) {
-      const currentTrafficGroupList = distribution.percentageList[0];
-
-      form.setFieldValue('expName', currentTrafficGroupList?.expName || '');
-    }
-  }, [distribution, visible, distributionModel.currentTargetId, form]);
-
   const groupStrategy = distribution.percentageList[0].trafficGroupList.map(item => ({
     name: item.groupStrategy.name,
     id: item.groupStrategy.groupTargetId
   }));
 
+  useEffect(() => {
+    if (visible) {
+      const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
+
+      form.setFieldValue('expName', currentTrafficGroupList?.expName || '');
+    }
+  }, [distribution, visible, distributionModel.currentTargetId, form]);
+
   // 表单默认值
-  const initialTrafficPercentageList: TrafficPercentageType[] = useMemo(() => {
-    const groups = distribution.percentageList;
-    if (!groups || !groups.length) {
+  const initialtargetPercentageList: TargetPercentageListType[] = useMemo(() => {
+    if (visible) {
+      const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
+      const groups = currentTrafficGroupList?.targetPercentageStrategyList;
+      if (!groups || !groups.length) {
+        return [];
+      }
+
+      // 如果后端有数据，就循环遍历塞进去
+      const result: TargetPercentageListType[] = [];
+      for (let i = 0; i < groups.length; i++) {
+        result.push({ targetPercentageId: groups[i].targetPercentage.targetPercentageId, tag: groups[i].targetPercentage.tag, percentage: groups[i].targetPercentage.percentage, status: groups[i].targetPercentage.status });
+      }
+
+      // 如果a/b分组只有两组，newGroup塞个B组进去
+      if (groups.length === 1) {
+        result[0].tag = 'A';
+        result[0].percentage = 50;
+        const newGroup: TargetPercentageListType = { targetPercentageId: -1, tag: 'B', percentage: 50, status: 1 };
+        if (!!distribution.percentageList && distribution.percentageList.length <= 1) { // is creating ab
+          newGroup.copyTargetPercentageId = null;
+        }
+        result.push(newGroup);
+      }
+
+      return result;
+    } else {
       return [];
     }
-
-    // 如果后端有数据，就循环遍历塞进去
-    const result: TrafficPercentageType[] = [];
-    for (let i = 0; i < groups.length; i++) {
-      result.push({ percentageId: groups[i].trafficPercentage.percentageId, tag: groups[i].trafficPercentage.tag, percentage: groups[i].trafficPercentage.percentage, status: groups[i].trafficPercentage.status });
-    }
-
-    // 如果a/b分组只有两组，newGroup塞个B组进去
-    if (groups.length === 1) {
-      result[0].tag = 'A';
-      result[0].percentage = 50;
-      const newGroup: TrafficPercentageType = { percentageId: -1, tag: 'B', percentage: 50, status: 1 };
-      if (!!distribution.percentageList && distribution.percentageList.length <= 1) { // is creating ab
-        newGroup.copyPercentageId = null;
-      }
-      result.push(newGroup);
-    }
-
-    return result;
-  }, [distribution]);
+  }, [distribution, visible]);
 
   useEffect(() => {
     if (distributionModel.currentTargetId) {
@@ -98,15 +103,15 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
     }
   });
 
-  const [tagMap, setTagMap] = useState(initialTrafficPercentageList.reduce((pre, cur) => {
-    pre[cur.percentageId] = { 
-      percentageId: cur.percentageId, 
+  const [tagMap, setTagMap] = useState(initialtargetPercentageList.reduce((pre, cur) => {
+    pre[cur.targetPercentageId] = { 
+      targetPercentageId: cur.targetPercentageId, 
       copyPercentageTag: '' 
     };
     return pre;
   }, {}));
 
-  const getNextGroupInfo = (groups: TrafficPercentageType[], isCreatingAb: boolean, currentCopyIndex?: number): NextGroupInfo => {
+  const getNextGroupInfo = (groups: TargetPercentageListType[], isCreatingAb: boolean, currentCopyIndex?: number): NextGroupInfo => {
     const tagCharMap = {};
     let nextId = -1;
     let leftPercentage = 100;
@@ -119,7 +124,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
         }
       }
   
-      const id = groups[i]?.percentageId;
+      const id = groups[i]?.targetPercentageId;
       if (id && id <= nextId) {
         nextId = id - 1;
       }
@@ -127,16 +132,16 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       if (groups[i].percentage) {
         if (isCreatingAb) {
           // 如果是新建的，那么需要更新 平均分比例
-          const currentGroups = form.getFieldValue('trafficPercentageList') || [];
+          const currentGroups = form.getFieldValue('targetPercentageList') || [];
           const newCount = currentGroups.length + 1;
           const newPercentagesList = calculateEqualPercentages(newCount); // 直接获取均分后的值
-          const trafficPercentageList = form.getFieldValue('trafficPercentageList');
-          const _trafficPercentageList = trafficPercentageList.map((item, index) => ({
+          const targetPercentageList = form.getFieldValue('targetPercentageList');
+          const _targetPercentageList = targetPercentageList.map((item, index) => ({
             ...item,
             percentage: newPercentagesList[index]
           }));
           
-          form.setFieldValue('trafficPercentageList', _trafficPercentageList);
+          form.setFieldValue('targetPercentageList', _targetPercentageList);
           leftPercentage = newPercentagesList[newPercentagesList.length-1];
         } else {
           leftPercentage -= groups[i].percentage;
@@ -153,15 +158,16 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
     }
   
     setTagMap({...tagMap, [nextId]: {
-      percentageId: nextId,
+      targetPercentageId: nextId,
       copyPercentageTag: isCreatingAb ? '' : (currentCopyIndex != undefined ? groups[currentCopyIndex].tag : '')
     }});
+
     return {
-      percentageId: nextId,
+      targetPercentageId: nextId,
       tag: String.fromCharCode(nextGroupTagCharCode),
       percentage: isCreatingAb ? (leftPercentage < 0 ? 0 : leftPercentage) : (currentCopyIndex != undefined ? groups[currentCopyIndex].percentage : 0),
       status: 1,
-      copyPercentageId: isCreatingAb ? null : (currentCopyIndex != undefined ? groups[currentCopyIndex].percentageId : null),
+      copyTargetPercentageId: isCreatingAb ? null : (currentCopyIndex != undefined ? groups[currentCopyIndex].targetPercentageId : null),
       // 编辑的时候copy功能，需要显示是copy哪个组的
       copyPercentageTag: isCreatingAb ? '' : (currentCopyIndex != undefined ? groups[currentCopyIndex].tag : ''),
     };
@@ -169,8 +175,8 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
 
   useEffect(() => {
     // reset form initial value when initialPercentageGroups changes
-    form.setFieldValue('trafficPercentageList', initialTrafficPercentageList);
-  }, [form, initialTrafficPercentageList]);
+    form.setFieldValue('targetPercentageList', initialtargetPercentageList);
+  }, [form, initialtargetPercentageList]);
 
   let isCreatingAb = false;
   if (distribution.percentageList.length <= 1) {
@@ -179,15 +185,16 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
     } 
   }
 
-  // 在新建A/B实验的时候，允许复制现有的WaterFall功能，是复制第一条数据的 percentageId, 如果打开了，就默认进行 copyPercentageId = group[0].percentageId
-  const changeIsCopy = (value, currentChangeIndex) => {
-    const trafficPercentageList = form.getFieldsValue().trafficPercentageList;
 
-    form.setFieldValue('trafficPercentageList', trafficPercentageList.map((item, index) => {
+  // 在新建A/B实验的时候，允许复制现有的WaterFall功能，是复制第一条数据的 targetPercentageId, 如果打开了，就默认进行 copyTargetPercentageId = group[0].targetPercentageId
+  const changeIsCopy = (value, currentChangeIndex) => {
+    const targetPercentageList = form.getFieldsValue().targetPercentageList;
+
+    form.setFieldValue('targetPercentageList', targetPercentageList.map((item, index) => {
       if (index == currentChangeIndex) {
         return {
           ...item,
-          copyPercentageId: value ? trafficPercentageList[0].percentageId : null
+          copyTargetPercentageId: value ? targetPercentageList[0].targetPercentageId : null
         };
       } else {
         return item;
@@ -196,10 +203,10 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
   };
 
   const onSubmit = async () => {
-    const values: { trafficPercentageList: TrafficPercentageType[], expName: string } = await form.validateFields();
-    values.trafficPercentageList.forEach(item => {
-      if (item.percentageId && item.percentageId < 0) {
-        delete item.percentageId;
+    const values: { targetPercentageList: TargetPercentageListType[], expName: string } = await form.validateFields();
+    values.targetPercentageList.forEach(item => {
+      if (item.targetPercentageId && item.targetPercentageId < 0) {
+        delete item.targetPercentageId;
       }
       if (item.copyPercentageTag) {
         delete item.copyPercentageTag;
@@ -207,22 +214,31 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       item.percentage = Number(item.percentage);
       delete item.copy;
     });
-
-    const currentTrafficGroupList = distribution.percentageList[0];
+    
+    const targetPercentageList = values.targetPercentageList.map(item => ({
+      percentage: item.percentage,
+      status: item.status ? 1 : 0,
+      tag: item.tag,
+      targetPercentageId: item.targetPercentageId || null,
+      copyTargetPercentageId: item.copyTargetPercentageId,
+    }));
+    const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
     const targetPercentageObj = {
-      trafficPercentageList: values.trafficPercentageList,
+      targetPercentageList,
       experiment: {
-        expId: currentTrafficGroupList.expId,
+        expId: currentTrafficGroupList?.expId || 0,
         expName: values.expName
       }
     };
-    
-    const result = await distributionDispatcher.updatePercentageGroups({
+    const result = await distributionDispatcher.updatePercentageGroupsByWaterfall({
       adspotId,
-      targetPercentageObj
+      targetPercentageObj: targetPercentageObj,
+      percentageGroupId: distributionModel.currentGroupTargetId,
+      targetId: distributionModel.currentTargetId
     });
     onFinish && onFinish();
     result && onCancel();
+    
     return;
   };
 
@@ -259,10 +275,10 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       }
       <Form
         form={form}
-        initialValues={{ trafficPercentageList: initialTrafficPercentageList }}
+        initialValues={{ targetPercentageList: initialtargetPercentageList }}
         onValuesChange={(changedValues) => {
-          if (changedValues.trafficPercentageList && changedValues.trafficPercentageList.some(item => item && item.percentage !== undefined)) {
-            form.validateFields(['trafficPercentageList']);
+          if (changedValues.targetPercentageList && changedValues.targetPercentageList.some(item => item && item.percentage !== undefined)) {
+            form.validateFields(['targetPercentageList']);
           }
         }}
       >
@@ -276,6 +292,26 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
         >
           <Input placeholder='请输入' disabled={isFromDataReportDetail} />
         </Form.Item>
+
+        <Form.Item 
+          name='groupId' 
+          label='测试流量分组'
+          labelCol={{ flex: '0 0 100px' }}
+          wrapperCol={{ span: 12 }}
+          rules={[{ required: true, message: '请选择分组' }]}
+        >
+          <Select
+            showArrow
+            placeholder="请选择分组"
+            className={styles['customer-dimension']}
+            style={{width: '100%'}}
+            optionFilterProp='label'
+            showSearch
+            disabled={!isCreatingAb}
+            options={groupStrategy.map((item) => ({ label: item.name , value: item.id }))}
+          >
+          </Select>
+        </Form.Item>
         <Form.Item 
           label="分组设置" 
           labelCol={{ flex: '0 0 100px' }}
@@ -283,7 +319,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
         >
           <div className={styles['traffic-percentage-list']}>
             <Form.List
-              name="trafficPercentageList"
+              name="targetPercentageList"
               rules={[
                 { validator: (_, value) => {
                   let totalPercentage = 0;
@@ -374,13 +410,14 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
                       }
                     </Col>}
                     <Col flex="0 0 20px" style={{ padding: '0px' }}>
-                      {field.name === 0 || form.getFieldValue('trafficPercentageList').length <= 2 ? <></> :
+                      {field.name === 0 || form.getFieldValue('targetPercentageList').length <= 2 ? <></> :
                         <Tooltip title="提交后，此分组下的所有流量分组都会被删除">
                           <Button
                             type="text"
                             icon={<CloseCircleFilled />}
                             onClick={() => {onRemove(remove, index);}}
-                            disabled={isCreatingAb ? field.name === 0 || form.getFieldValue('trafficPercentageList').length <= 2 : (form.getFieldValue('trafficPercentageList').length <= 2 || !form.getFieldValue('trafficPercentageList')[field.name].status)}
+                            disabled={isCreatingAb ? (field.name === 0 || form.getFieldValue('targetPercentageList').length <= 2) : (form.getFieldValue('targetPercentageList').length <= 2 || !form.getFieldValue('targetPercentageList')[field.name].status)}
+                            style={isCreatingAb ? (field.name === 0 || form.getFieldValue('targetPercentageList').length <= 2 ? {display: 'none'} : {}) : (form.getFieldValue('targetPercentageList').length <= 2 || !form.getFieldValue('targetPercentageList')[field.name].status ? {display: 'none'} : {})}
                           />
                         </Tooltip>}
                     </Col>
@@ -398,30 +435,32 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
                       >
                         {/* 新增的不允许操作关闭按钮 */}
                         <Switch
-                          checked={form.getFieldValue('trafficPercentageList')[field.name]?.status}
+                          checked={form.getFieldValue('targetPercentageList')[field.name]?.status}
                           onChange={(checked) => {
                             // 手动更新表单值
-                            const list = form.getFieldValue('trafficPercentageList');
+                            const list = form.getFieldValue('targetPercentageList');
                             list[field.name].status = checked;
-                            form.setFieldsValue({ trafficPercentageList: list });
+                            form.setFieldsValue({ targetPercentageList: list });
                             form.validateFields();
                           }}
                           disabled={
-                            form.getFieldValue('trafficPercentageList')[field.name]?.percentageId < 0 ||
-                            form.getFieldValue('trafficPercentageList').length <= 2
+                            form.getFieldValue('targetPercentageList')[field.name]?.targetPercentageId < 0 ||
+                            form.getFieldValue('targetPercentageList').length <= 2
                           }
                         />
                       </Form.Item>
                       <Button
                         type="text"
-                        style={{ padding: '4px 8px' }}
-                        icon={<CopyOutlined />}
+                        // 已关闭状态的分组不支持删除和复制
+                        // 本次新增分组只有“删除”操作
+                        style={!form.getFieldValue('targetPercentageList')[field.name].status || (form.getFieldValue('targetPercentageList')[field.name].targetPercentageId < 0) ? {padding: '4px 8px', opacity: '0'} : {padding: '4px 8px'}}
                         disabled={
-                          !form.getFieldValue('trafficPercentageList')[field.name].status
+                          !form.getFieldValue('targetPercentageList')[field.name].status
                         }
+                        icon={<CopyOutlined />}
                         onClick={() => add(
                           getNextGroupInfo(
-                            form.getFieldValue('trafficPercentageList'),
+                            form.getFieldValue('targetPercentageList'),
                             !!isCreatingAb,
                             index
                           )
@@ -430,7 +469,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
                     </Col>}
                     { !isCreatingAb && <Col style={{marginTop: '4px'}}>
                       {
-                        !!tagMap[form.getFieldValue('trafficPercentageList')[field.name].percentageId] && !!tagMap[form.getFieldValue('trafficPercentageList')[field.name].percentageId].copyPercentageTag && <span>（从{tagMap[form.getFieldValue('trafficPercentageList')[field.name].percentageId].copyPercentageTag}组复制）</span>
+                        !!tagMap[form.getFieldValue('targetPercentageList')[field.name].targetPercentageId] && !!tagMap[form.getFieldValue('targetPercentageList')[field.name].targetPercentageId].copyPercentageTag && <span>（从{tagMap[form.getFieldValue('targetPercentageList')[field.name].targetPercentageId].copyPercentageTag}组复制）</span>
                       }
                     </Col>}
                   </Row>
@@ -449,7 +488,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
                       size="small"
                       onClick={() => {add(
                         getNextGroupInfo(
-                          form.getFieldValue('trafficPercentageList'),
+                          form.getFieldValue('targetPercentageList'),
                           !!isCreatingAb
                         )
                       );}}

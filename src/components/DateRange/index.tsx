@@ -20,6 +20,7 @@ interface IProps {
   hideToday?: boolean,
   hideLastHour?: boolean,
   hideSevenDays?: boolean,
+  hideLastMonth?: boolean,
   /**
    * 是否可以选择今天，场景：报表时间选择的时候，按天或者周汇总，时间不能选择今天
    */
@@ -28,7 +29,7 @@ interface IProps {
   disabled?: boolean,
 }
 
-const DateRange: React.FC<IProps> = ({ canSelectRangeDay, canSelectToday, value, onChange, changeTime, hideMonth, hideToday, hideLastHour, disabled, hideSevenDays }: IProps) => {
+const DateRange: React.FC<IProps> = ({ canSelectRangeDay, canSelectToday, value, onChange, changeTime, hideMonth, hideToday, hideLastHour, disabled, hideSevenDays, hideLastMonth }: IProps) => {
   const [dates, setDates] = useState<RangeValue>(null);
   const [hackValue, setHackValue] = useState<RangeValue>(null);
   const [timeValue, setTimeValue] = useState<RangeValue>(null);
@@ -56,7 +57,7 @@ const DateRange: React.FC<IProps> = ({ canSelectRangeDay, canSelectToday, value,
   if (hideSevenDays) {
     delete rangeTime['最近7天'];
   }
-  if (canSelectRangeDay < 30) {
+  if (canSelectRangeDay < 30 || hideLastMonth) {
     delete rangeTime['上月'];
   }
 

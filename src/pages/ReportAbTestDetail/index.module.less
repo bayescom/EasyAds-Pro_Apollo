@@ -1,0 +1,173 @@
+// 这个是 基本信息 模块 start
+.ab-test-basic-info-container {
+  font-size: 12px;
+  .ab-test-basic-info-title {
+    display: flex;
+    justify-content: space-between;
+  
+    .to-edit-form {
+      font-size: 12px;
+      font-weight: normal;
+    }
+  }
+
+  .ab-test-basic-info-wrap {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .chineseName-container {
+    :global {
+      .ant-space-item:last-child {
+        width: calc(100% - 25px);
+        .ant-space {
+          width: calc(100% - 20px);
+          .ant-space-item {
+            width: 100%;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+
+  .basic-info-block {
+    display: flex;
+
+    :global {
+      .ant-divider {
+        height: 38px !important;
+      }
+    }
+  }
+
+  .setting-container {
+    background-color: #fff;
+    display: flex;
+
+    :global {
+      .ant-form-item-control-input, .ant-picker {
+        height: 30px;
+        min-height: 30px;
+      }
+
+      .ant-form {
+        .ant-form-item {
+          margin-bottom: 0px;
+          div.ant-picker {
+            padding: 3px 7px 0px;
+            .ant-picker-input {
+              width: 80px;
+            }
+            div.ant-picker-range-separator {
+              padding: 0 4px;
+            }
+            span.ant-picker-suffix {
+              margin-right: 0px;
+              margin-top: -2px;
+            }
+          }
+        }
+      }
+    }
+
+    .data-source {
+      margin-left: 10px;
+      padding-top: 3px;
+    }
+
+  }
+}
+// 这个是 基本信息 模块 end
+
+
+// 这个是 提示 模块 start
+.alert-top-container {
+  margin-top: 5px;
+  :global {
+    .ant-alert-message {
+      color: #000000 !important;
+    }
+    .ant-alert.ant-alert-info {
+      margin-top: 0px;
+      margin-bottom: 5px;
+    }
+  }
+}
+// 这个是 提示 模块 end
+
+// 这个是 数据概览 模块 start
+.data-detail-container {
+  .resport-download-container {
+    display: flex;
+    justify-content: space-between;
+
+    .resport-download-wrap {
+      display: flex;
+
+      .download-button {
+        display: block;
+        width: 110px;
+        border: 1px solid #d9d9d9;
+        border-radius: 5px;
+        margin-right: 10px;
+        font-size: 13px;
+        text-align: center;
+        :global {
+          .anticon {
+            width: 18px;
+            height: 18px;
+            vertical-align: text-top;
+            svg{
+              width: 100% !important;
+              height: 100% !important;
+              color: #bdbdbd;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+// 这个是 数据概览 模块 end
+
+
+// 这个是 数据图表 模块 start
+.chart-detail-container {
+  margin-top: 10px;
+
+  .chart-detail-select-container {
+    width: 450px;
+
+    :global {
+      .ant-row {
+        width: 100%;
+      }
+      .ant-select.ant-select-in-form-item.ant-select-single.ant-select-show-arrow {
+        width: 170px !important;
+      }
+    }
+
+    .inline-form {
+      display: flex;
+      :global {
+        .ant-form-item {
+          .ant-form-item-label {
+            & > label {
+              color: #c1c1c1;
+            }
+          }
+        }
+    
+        .ant-form-item:not(:has(.ant-select-disabled)):hover, 
+        .ant-form-item:not(:has(.ant-select-disabled)):focus {
+          border-color: #2364FB !important;
+        }
+      }
+    }
+  }
+}
+// 这个是 数据图表 模块 end

@@ -1,6 +1,6 @@
 import store, { IRootDispatch } from '@/store';
 import sdkChannelService from '@/services/sdkChannel';
-import { ISdkDistribution, GroupStrategyType, TrafficPercentageType } from './types/sdkDistribution';
+import { IPercentage, ISdkDistribution, GroupStrategyType, TargetPercentageListType, TrafficPercentageType, TargetPercentageObjByWaterfall, TargetPercentageObj } from './types/sdkDistribution';
 import moment from 'moment';
 import { getLocalDateType } from '@/components/SdkDistribution/utils';
 import { DateType } from './types/common';
@@ -36,7 +36,7 @@ export default {
       distribution.percentageList?.forEach(percentageGroup => {
         percentageGroup.trafficGroupList.forEach(targetingGroup => {
           let rowIndex: number | undefined, cellIndex: number | undefined;
-          targetingGroup.suppliers.forEach((row, i) => {
+          targetingGroup.targetPercentageStrategyList[0].suppliers.forEach((row, i) => {
             row.forEach((cell, j) => {
               if (cell === sdkAdspotChannelId) {
                 rowIndex = i;
@@ -49,10 +49,10 @@ export default {
             return;
           }
 
-          if (targetingGroup.suppliers[rowIndex].length === 1) {
-            targetingGroup.suppliers.splice(rowIndex, 1);
+          if (targetingGroup.targetPercentageStrategyList[0].suppliers[rowIndex].length === 1) {
+            targetingGroup.targetPercentageStrategyList[0].suppliers.splice(rowIndex, 1);
           } else {
-            targetingGroup.suppliers[rowIndex].splice(cellIndex, 1);
+            targetingGroup.targetPercentageStrategyList[0].suppliers[rowIndex].splice(cellIndex, 1);
           }
         });
       });
@@ -97,7 +97,7 @@ export default {
       if (!percentageGroup) {
         return;
       }
-      const groupStrategyList = percentageGroup.trafficGroupList.filter(item => item.trafficId !== targetingGroupId).map(item => item.groupStrategy);
+      const groupStrategyList = percentageGroup.trafficGroupList.filter(item => item.targetPercentageStrategyList[0].trafficId !== targetingGroupId).map(item => item.groupStrategy);
 
       await this.updateTargetingGroups({
         adspotId,
@@ -106,13 +106,33 @@ export default {
       });
     },
 
-    async updatePercentageGroups({ adspotId, trafficPercentageList }: {
+    // 这里是创建 流量分组的ab测试
+    async updatePercentageGroups({ adspotId, targetPercentageObj }: {
       adspotId: number,
-      trafficPercentageList: TrafficPercentageType[],
+      targetPercentageObj: TargetPercentageObj
     }) {
       const result = await sdkChannelService.updatePercentageGroups(
         adspotId,
-        trafficPercentageList,
+        targetPercentageObj
+      );
+      const localDateType = getLocalDateType();
+      const dateType = localDateType ? localDateType : defaultTime;
+      await dispatch.sdkDistribution.queryAdspotSdkDistribution({ adspotId, dateType });
+      return result;
+    },
+
+    // 这里是创建 瀑布流的ab测试
+    async updatePercentageGroupsByWaterfall({ adspotId, targetPercentageObj, percentageGroupId, targetId }: {
+      adspotId: number,
+      targetPercentageObj: TargetPercentageObjByWaterfall,
+      percentageGroupId: number,
+      targetId: number
+    }) {
+      const result = await sdkChannelService.updatePercentageGroupsByWaterfall(
+        adspotId,
+        targetPercentageObj,
+        percentageGroupId,
+        targetId
       );
       const localDateType = getLocalDateType();
       const dateType = localDateType ? localDateType : defaultTime;
