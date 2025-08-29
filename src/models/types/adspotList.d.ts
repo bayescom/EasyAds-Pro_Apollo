@@ -5,7 +5,7 @@ interface IAdspot {
   mediaId: number,
   adspotName: string,
   mediaName: string,
-  adspotType: string,
+  adspotType: number,
   adspotTypeName: string,
   status: number,
   bundleName: string,

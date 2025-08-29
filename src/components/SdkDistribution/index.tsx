@@ -62,6 +62,13 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
     sdkDistributionDispatcher.deleteTargetingGroup({ adspotId: distributionState.adspotId, percentageGroupId, targetingGroupId });
   };
 
+  const submitForm = () => {
+    setLoading(true);
+    const localDateType = getLocalDateType();
+    const dateType = localDateType ? localDateType : distributionState.time;
+    sdkAdspotChannelDispatcher.getList({ adspotId: distributionState.adspotId, dateType}).then(() => setLoading(false));
+  };
+
   return (<>
     {sdkDistributionState[distributionState.adspotId] ? <Spin spinning={loading}><ProCard split="horizontal" ghost>
       <Tabs
@@ -135,7 +142,10 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
       mediaId={distributionState.mediaId}
       visible={visible} 
       isEditing={false}
-      cancel={() => setVisible(false)}
+      cancel={(isSubmit?) => {
+        setVisible(false);
+        isSubmit && submitForm();
+      }}
     />
 
     <BatchCreationSdkChannelFormMoadl
@@ -146,12 +156,7 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
       mediaId={distributionState.mediaId}
       onFinish={(isSubmit?) => {
         setBatchCreationVisible(false); 
-        if (isSubmit) {
-          setLoading(true);
-          const localDateType = getLocalDateType();
-          const dateType = localDateType ? localDateType : distributionState.time;
-          sdkAdspotChannelDispatcher.getList({ adspotId: distributionState.adspotId, dateType}).then(() => setLoading(false));
-        }
+        isSubmit && submitForm();
       }}
     />
 

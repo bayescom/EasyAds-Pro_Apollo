@@ -24,6 +24,9 @@ type IState = {
   currentAdspot: IAdspot[],
   mediumList: IMedium[],
   adspotList: IAdspot[],
+  adspotListMap: Partial<{
+    [key in number]: IAdspot 
+  }>,
   time: DateType
 }
 
@@ -125,6 +128,7 @@ const defaultState:IState = {
   currentAdspot: [],
   mediumList: [],
   adspotList: [],
+  adspotListMap: {},
   time: defaultTime
 };
 
@@ -207,6 +211,9 @@ export default {
 
     setAdspotList(prevState:IState, adspotList) {
       prevState.adspotList = adspotList;
+      adspotList.forEach(item => {
+        prevState.adspotListMap[item.id] = item;
+      });
     },
 
     setTime(prevState: IState, time: DateType) {

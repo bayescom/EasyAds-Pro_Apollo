@@ -152,7 +152,7 @@ export default function List() {
                 await userDispatcher.updateStatus({ user, status: +newStatus });
                 setLoading(false);
               }}
-              disabled={!contrastLevel(current, index)}
+              disabled={!contrastLevel(current, index) || tokenState.user.id == user.id}
             />
           )}
         </SpinOperation>

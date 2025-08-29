@@ -77,7 +77,7 @@ function SdkAdspotChannelForm({
   const switchReportApi = Form.useWatch('switchReportApi', form);
   const autoCreateStatus = Form.useWatch('autoCreateStatus', form);
   const checkedReportApi = Form.useWatch('checkedReportApi', form);
-  const metaAppId = Form.useWatch(['channelParams', 'meta_app_id'], form);
+  const metaAppId = Form.useWatch(['params', 'app_id'], form);
   const channelAlias = Form.useWatch('channelAlias', form);
 
   const [showFcrequencySetting, setShowFcrequencySetting] = useState(false);
@@ -120,7 +120,7 @@ function SdkAdspotChannelForm({
   const [disabledMetaAppId, setDisabledMetaAppId] = useState(false);
 
   /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
-  const adspotType = adspot.map[adspotId]?.adspotType || 0;
+  const adspotType = distributionState.adspotListMap[adspotId]?.adspotType || 0;
   const isBdBanner = adspotType == 3 && clickChannel == 4;
   /** 是否正在编辑 创建过三方广告位的广告源 */
   const isEditAutoCreate = !!(isEditing && model && model.isAutoCreate);
@@ -336,7 +336,7 @@ function SdkAdspotChannelForm({
     } else {
       setIsHasReportApiParams(false);
     }
-  }, [selectedChannel]);
+  }, [selectedChannel, visible]);
 
   useEffect(() => {
     if (visible) {
@@ -351,7 +351,7 @@ function SdkAdspotChannelForm({
   useEffect(() => {
     if (visible) {
       if (isCreateThird && selectedChannel?.supportAutoCreate) {
-        !isEditing && form.setFieldValue(['channelParams', 'meta_adspot_id'], '');
+        !isEditing && form.setFieldValue(['params', 'adspot_id'], '');
         if (isEditing) {
           setDisabledMetaAdspotId(true);
         } else {
@@ -446,6 +446,7 @@ function SdkAdspotChannelForm({
         sdkAutoAdspot = formatYlhPayloadDataFromModal(sdkChannelState.sdkAutoAdspot, adspotType);
       }
     }
+    setSubmitLoading(true);
 
     let result;
     if (selectedChannel?.supportAutoCreate && isCreateThird) { // 支持三方创建 && 创建了三方广告位 走新接口
@@ -463,13 +464,11 @@ function SdkAdspotChannelForm({
       result = await sdkAdspotChannelDispatchers.save({ sdkAdspotChannel: formatPayloadDataFromModal(newModel), adspotId });
     }
 
-    setSubmitLoading(true);
-    if (await sdkAdspotChannelDispatchers.save({ sdkAdspotChannel: formatPayloadDataFromModal(newModel),  adspotId })) {
-      if (!isEditing) {
-        sdkChannelDispatchers.queryAll();
-      }
+    if (result) {
+      sdkChannelDispatchers.queryAll();
       setSubmitLoading(false);
       cancel(true);
+      afterClose();
     }
   };
 
@@ -528,13 +527,13 @@ function SdkAdspotChannelForm({
   const clickThirdAdspotBtn = () => {
     // 1.有账户名称出现该按钮，默认已经打开了自动创建广告源：(1)验证是否勾选了账户名称 (2)验证是否填写了应用ID
     if (isHasReportApiParams) {
-      form.validateFields([['channelParams', 'meta_app_id'], 'checkedReportApi']).then(res => {
+      form.validateFields([['params', 'app_id'], 'checkedReportApi']).then(res => {
         if (isCreateThird) setThirdModalData(sdkChannelState.sdkAutoAdspot);
         setDrawerFormVisible(true);
       });
     } else {
       // 2.当前无账户名称 验证是否填写了账户名称、params参数、<重要>以及是否勾选了自动创建广告源
-      const validateKeys = [['reportApiParam', 'name'], ['channelParams', 'meta_app_id']];
+      const validateKeys = [['reportApiParam', 'name'], ['params', 'app_id']];
       selectedChannel?.reportApiParamsMeta.forEach(item => validateKeys.push(['reportApiParam', 'channelParams', item.metaKey]));
       form.validateFields(validateKeys).then(() => {
         setCurrentReportApiParam({...currentReportApiParam, name: form.getFieldValue(['reportApiParam', 'name'])});
@@ -596,8 +595,8 @@ function SdkAdspotChannelForm({
             <ProCard id='sdk-top-pro-card'>
               <Title level={5} className={styles['base-title']}>基础设置</Title>
               <Row gutter={16} wrap={true}>
-                {/* 左侧滚动区域被选择后 与 只有穿山甲，优量汇，快手 才显示reportAPi相关 */}
-                {clickChannel && [2, 3, 5].includes(clickChannel) ? <>
+                {/* 左侧滚动区域被选择后 与 只有穿山甲，优量汇，百度，快手 才显示reportAPi相关 */}
+                {clickChannel && sdkReportApiChannels.includes(clickChannel) ? <>
                   {/* 如果创建过参数就显示select让用户选择，没有的话就需要填写参数 || 如果编辑时是创建过第三方广告位的广告源也显示select */}
                   {(isHasReportApiParams || isEditAutoCreate) ? 
                     <Col span={16}>
@@ -771,6 +770,7 @@ function SdkAdspotChannelForm({
                     <Input placeholder="请输入" />
                   </Form.Item>
                 </Col>
+                {console.log(isHasReportApiParams, 'isHasReportApiParams')}
                 {(!isEditing && isHasReportApiParams && selectedChannel?.supportAutoCreate && !isBdBanner) || (isEditing && isHasReportApiParams && model && model.isAutoCreate && !isBdBanner) ? <Col span={16}>
                   <Form.Item
                     name="autoCreateStatus"

@@ -35,12 +35,11 @@ function Operation({
 }) {
   // const sdkAdspotChannelState = store.useModelState('sdkAdspotChannel');
   const distributionState = store.useModelState('distribution');
-  const adspot = store.useModelState('adspot');
 
   const [visible, setVisible] = useState(false);
   const [modalData, setModalData] = useState<ISdkAdspotChannel>();
-
-  const adspotType = adspot.map[adspotId]?.adspotType || 0;
+ 
+  const adspotType = distributionState.adspotListMap[adspotId]?.adspotType || 0;
 
   const filterDistributionGroup = () => {
     // 如果为false

@@ -121,29 +121,29 @@ export default {
 
   // 三方创建
   // 获取
-  async getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, source } : { adspotId: number, sdkAdspotChannelId: number, source: string}) {
-    return await request.get(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannelId}/${source}`, {
-      instanceName: 'galileo'
+  async getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, source, adspotType } : { adspotId: number, sdkAdspotChannelId: number, source: string, adspotType: number}) {
+    return await request.get(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannelId}/${adspotType}/${source}`, {
+      instanceName: 'luna'
     });
   },
 
   // 创建
   async createAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source } : { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
     return await request.post(`/adspot/sdk/auto_adspot/${adspotId}/${adspotType}/${source}`, {
-      sdkChannel: sdkAdspotChannel,
+      sdk_channel: sdkAdspotChannel,
       auto_adspot: sdkAutoAdspot
     }, {
-      instanceName: 'galileo'
+      instanceName: 'luna'
     });
   },
 
   // 更新
   async updateAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source } : { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
     return await request.put(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannel.id}/${adspotType}/${source}`, {
-      sdkChannel: sdkAdspotChannel,
+      sdk_channel: sdkAdspotChannel,
       auto_adspot: sdkAutoAdspot
     }, {
-      instanceName: 'galileo'
+      instanceName: 'luna'
     });
   },
 };

@@ -15,7 +15,7 @@ function Name({ model }: { model: ISdkAdspotChannel }) {
     <Popover content={<SdkChannelMetaParam model={model}/>} trigger='hover' placement='bottom' overlayClassName={styles['popover-container']}>
       <Typography.Paragraph ellipsis={{rows: 1}}>{model.channelName}</Typography.Paragraph>
     </Popover>
-    {!!model.isAutoCreate && model.channelId == 3 && <Image src={auto} preview={false} className={styles['auto-image']}/>}
+    {model.isAutoCreate ? <Image src={auto} preview={false} className={styles['auto-image']}/> : <></>}
   </Space>);
 }
 
