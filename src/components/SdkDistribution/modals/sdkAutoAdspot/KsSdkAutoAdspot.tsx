@@ -54,8 +54,8 @@ export default function KsSdkAutoAdspot({
   const getMaterialTypeDefaultValue = (adspotType, renderType) => {
     let materialType = 1;
     switch(adspotType){
-    case 1:
-    case 6:
+    case 3:
+    case 2:
       if (renderType == 2) {
         materialType = 1;
       } else if(renderType == 1) {
@@ -63,11 +63,11 @@ export default function KsSdkAutoAdspot({
       }
       
       break;
-    case 2:
-    case 12:
+    case 1:
+    case 5:
       materialType = 1;
       break;
-    case 3:
+    case 4:
       materialType = ksMaterialTypeList.filter((_, index) => index < 4).map(item => item.value);
       break;
     default:
@@ -78,7 +78,7 @@ export default function KsSdkAutoAdspot({
   };
   const initialValues = {
     adspotTypeName: adspotTypeListMap[adspotType],
-    renderType: adspotType == 12 ? 1 : 2,
+    renderType: adspotType == 5 ? 1 : 2,
     // 广告位类型 （插屏的时候用到，默认为新插屏）
     adStyle: 23,
     // 图片+视频 1， 仅视频2，仅图片3
@@ -95,7 +95,7 @@ export default function KsSdkAutoAdspot({
     // 新插屏出现 广告铺开大小
     adRolloutSize: 1,
     // 信息流 + 模板渲染的时候出现模板样式
-    multiTemplateParams: adspotType == 6 ? ksMultiTemplateParamsMap[getMaterialTypeDefaultValue(adspotType, renderType)] ? ksMultiTemplateParamsMap[getMaterialTypeDefaultValue(adspotType, renderType)].map(item => item.value) : [] : null,
+    multiTemplateParams: adspotType == 2 ? ksMultiTemplateParamsMap[getMaterialTypeDefaultValue(adspotType, renderType)] ? ksMultiTemplateParamsMap[getMaterialTypeDefaultValue(adspotType, renderType)].map(item => item.value) : [] : null,
     
     // 激励视频 奖励名称
     rewardedType: 1,
@@ -130,11 +130,11 @@ export default function KsSdkAutoAdspot({
       if (isEditThird && !isEditAdspotChannel) {
         const supplementData = {};
         for(const key in modalData) {
-          if (key == 'materialTypeList' && ((adspotType == 1 || (adspotType == 6 && modalData['renderType'] != 1)))) {
+          if (key == 'materialTypeList' && ((adspotType == 3 || (adspotType == 2 && modalData['renderType'] != 1)))) {
             supplementData[key] = formatmaterialTypeListFormBackend(modalData[key]);
-          } else if (key == 'materialTypeList' && adspotType == 2) {
+          } else if (key == 'materialTypeList' && adspotType == 1) {
             supplementData[key] = formatSplashMaterialTypeListFormBackend(modalData[key]);
-          } else if (key == 'multiTemplateParams' && (adspotType == 6 && modalData['renderType'] != 1)) {
+          } else if (key == 'multiTemplateParams' && (adspotType == 2 && modalData['renderType'] != 1)) {
             supplementData[key] = modalData[key].map(item => (item.templateId));
           }
         }
@@ -182,7 +182,7 @@ export default function KsSdkAutoAdspot({
   };
 
   const changeMaterialTypeList = (e) => {
-    if (adspotType == 6) {
+    if (adspotType == 2) {
       form.setFieldValue('multiTemplateParams', ksMultiTemplateParamsMap[e.target.value].map(item => item.value));
     }
   };
@@ -192,7 +192,7 @@ export default function KsSdkAutoAdspot({
     onClose(true);
   };
   
-  // 系统内常用类型：1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+  // 系统内常用类型： /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
   // 穿山甲三方创建支持广告位类型：开屏、横幅、激励视频、信息流、插屏
   // 编辑广告源-编辑三方广告位-只能编辑期待cpm，其它字段禁用
   return (<DrawerForm
@@ -281,7 +281,7 @@ export default function KsSdkAutoAdspot({
         </Form.Item>
       </Col>
       {
-        [1,2,6,12].includes(adspotType) ? <><Col span={21}>
+        [3,1,2,5].includes(adspotType) ? <><Col span={21}>
           <Form.Item
             name='adspotTypeName'
             label='广告位类型'
@@ -311,9 +311,9 @@ export default function KsSdkAutoAdspot({
             required
           >
             <Radio.Group disabled={isEditAdspotChannel} defaultValue={1} onChange={changeRenderType}>
-              <Radio.Button value={adspotType == 12 ? 1 : 2}>模板渲染</Radio.Button>
+              <Radio.Button value={adspotType == 5 ? 1 : 2}>模板渲染</Radio.Button>
               {
-                adspotType == 6 ? <Radio.Button value={1}>自渲染</Radio.Button> : <></>
+                adspotType == 2 ? <Radio.Button value={1}>自渲染</Radio.Button> : <></>
               }
             </Radio.Group>
           </Form.Item>
@@ -326,7 +326,7 @@ export default function KsSdkAutoAdspot({
       {/* 信息流 + 模板渲染（2）出现 素材类型， */}
       {/* 注意：传给后端的时候，视频+图片传【1，2，5，6】，仅图片传【5，6】，仅视频传【1，2】 */}
       {
-        adspotType == 1 || (adspotType == 6 && renderType == 2) ? <Col span={21}>
+        adspotType == 3 || (adspotType == 2 && renderType == 2) ? <Col span={21}>
           <Form.Item
             name='materialTypeList'
             label='素材类型'
@@ -342,7 +342,7 @@ export default function KsSdkAutoAdspot({
       }
 
       {/* banner + 模板渲染（2）显示 广告样式  */}
-      {[1].includes(adspotType) ? <Col span={21}>
+      {[3].includes(adspotType) ? <Col span={21}>
         <Form.Item
           label="广告样式"
           name="templateId"
@@ -361,7 +361,7 @@ export default function KsSdkAutoAdspot({
       {/* 激励视频 + 模板渲染（1）出现屏幕方向 */}
       {/* 竖屏：[1,3] 横屏： 必填[2,6] */}
       {
-        adspotType == 2 ? <Col span={21}>
+        adspotType == 1 ? <Col span={21}>
           <Form.Item
             name='materialTypeList'
             label='屏幕方向'
@@ -375,7 +375,7 @@ export default function KsSdkAutoAdspot({
         </Col> : <></>
       }
       {
-        adspotType == 12 ? <Col span={21}>
+        adspotType == 5 ? <Col span={21}>
           <Form.Item
             name='materialTypeList'
             label='屏幕方向'
@@ -391,7 +391,7 @@ export default function KsSdkAutoAdspot({
 
       {/* 开屏 跳过按钮 和 跳过按钮是否显示倒计时 */}
       {   
-        (adspotType == 2) ? <>
+        (adspotType == 1) ? <>
           <Col span={21}>
             <Form.Item
               name='skipAdMode'
@@ -419,9 +419,9 @@ export default function KsSdkAutoAdspot({
       }
 
       {/* 插屏 + 新插屏出现 素材类型 */}
-      {adspotType == 3 || (adspotType == 6 && renderType == 1) ? <Col span={21}>
+      {adspotType == 4 || (adspotType == 2 && renderType == 1) ? <Col span={21}>
         <MultipleSelect 
-          options={adspotType == 3 ? ksMaterialTypeList.filter((_, index) => index < 4) : ksMaterialTypeList}
+          options={adspotType == 4 ? ksMaterialTypeList.filter((_, index) => index < 4) : ksMaterialTypeList}
           label='素材类型'
           name='materialTypeList'
           keyType='value'
@@ -433,7 +433,7 @@ export default function KsSdkAutoAdspot({
       </Col>: <></>}
       {/* 广告铺开大小 1-全屏， 2-半屏， 3-优选 插屏的时候没有这个字段 */}
       {
-        adspotType == 3 && adStyle == 23 ? <Col span={21}>
+        adspotType == 4 && adStyle == 23 ? <Col span={21}>
           <Form.Item
             name='adRolloutSize'
             label='广告铺开大小'
@@ -451,7 +451,7 @@ export default function KsSdkAutoAdspot({
       {/* 信息流 + 模板渲染的时候出现模板样式 */}
       {/* 素材类型为视频+图片、仅图片时，以下11项都可选，并默认全选 */}
       {/* 仅视频：只能选择上文下图（横版），上图下文（横版），大图（横版）、上文下图（竖版），上图下文（竖版），大图（竖版）  */}
-      {adspotType == 6 && renderType == 2 ? <Col span={21}>
+      {adspotType == 2 && renderType == 2 ? <Col span={21}>
         <MultipleSelect 
           options={ksMultiTemplateParamsMap[materialTypeList] || []}
           label='模板样式'
@@ -466,7 +466,7 @@ export default function KsSdkAutoAdspot({
       </Col>: <></>}
 
       {/* 激励视频 显示奖励发放设置和服务器判断*/}
-      {adspotType == 12 && <><Col span={21}>
+      {adspotType == 5 && <><Col span={21}>
         <Form.Item
           name='rewardedType'
           label='奖励名称'

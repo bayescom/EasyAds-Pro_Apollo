@@ -88,6 +88,6 @@ const autoCreateStatusTipMap = {
   5: '请确保您的快手账号拥有应用代码位管理API权限。若无此权限，可向快手对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在快手后台同步创建广告代码位。',
 };
 
-const adspotTypeListMap = { 1: '横幅', 2: '开屏', 3: '插屏', 6: '信息流', 8: '文字链', 9: '视频贴片', 12: '激励视频' };
+const adspotTypeListMap = { 1: '开屏', 2: '信息流', 3: '横幅', 4: '插屏', 5: '激励视频' };
 
 export { dimensionListType, chartDimensionList, adspotTypeAllList, platformIconMap, mediaIconMap, channelIconMap, sdkReportApiChannels, autoCreateStatusTipMap, adspotTypeListMap };

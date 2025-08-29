@@ -1,6 +1,6 @@
 import { csjAdspotSize } from './index';
 
-// 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+/** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
 export function formatPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   const commonParams = {
     // 代码位名称
@@ -10,19 +10,19 @@ export function formatPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   };
 
   const optionalParamsMap = {
-    1: {
+    3: {
       // 是否轮播
       slideBanner: thirdAdspotFormData.slideBanner,
       // 广告位尺寸
       adSlotSizeType: csjAdspotSize.findIndex(item => item.value == thirdAdspotFormData.adSlotSizeType) + 1
     },
-    2: {
+    1: {
       // 屏幕方向
       orientation: thirdAdspotFormData.orientation,
       // 创意交互方式
       splashShake: thirdAdspotFormData.splashShake
     },
-    3: {
+    4: {
       // 广告铺开大小
       adRolloutSize: thirdAdspotFormData.adRolloutSize,
       // 素材类型
@@ -36,7 +36,7 @@ export function formatPayloadDataFromModal(thirdAdspotFormData, adspotType) {
       // n秒后显示跳过按钮
       skipDuration: thirdAdspotFormData.skipDuration
     },
-    6: {
+    2: {
       // 素材类型
       acceptMaterialType: thirdAdspotFormData.acceptMaterialType,
       // 优选模版
@@ -46,7 +46,7 @@ export function formatPayloadDataFromModal(thirdAdspotFormData, adspotType) {
       // 视频自动播放
       videoAutoPlay: thirdAdspotFormData.videoAutoPlay
     },
-    12: {
+    5: {
       // 屏幕方向
       orientation: thirdAdspotFormData.orientation,
       // 奖励发放设置
@@ -74,19 +74,19 @@ export function formatModalDataFromPayload(thirdAdspotPayloadData: Record<string
   };
 
   const optionalParamsMap = {
-    1: {
+    3: {
       // 是否轮播
       slideBanner: thirdAdspotPayloadData.slide_banner,
       // 广告位尺寸
       adSlotSizeType: thirdAdspotPayloadData.adSlotSizeType
     },
-    2: {
+    1: {
       // 屏幕方向
       orientation: thirdAdspotPayloadData.orientation,
       // 创意交互方式
       splashShake: thirdAdspotPayloadData.splash_shake
     },
-    3: {
+    4: {
       // 广告铺开大小
       adRolloutSize: thirdAdspotPayloadData.ad_rollout_size,
       // 素材类型
@@ -100,7 +100,7 @@ export function formatModalDataFromPayload(thirdAdspotPayloadData: Record<string
       // n秒后显示跳过按钮
       skipDuration: thirdAdspotPayloadData.skip_duration
     },
-    6: {
+    2: {
       // 素材类型
       acceptMaterialType: thirdAdspotPayloadData.accept_material_type,
       // 优选模版
@@ -110,7 +110,7 @@ export function formatModalDataFromPayload(thirdAdspotPayloadData: Record<string
       // 视频自动播放
       videoAutoPlay: thirdAdspotPayloadData.video_auto_play
     },
-    12: {
+    5: {
       // 屏幕方向
       orientation: thirdAdspotPayloadData.orientation,
       // 奖励发放设置

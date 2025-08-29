@@ -1,4 +1,4 @@
-// 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+// /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
 export function formatYlhPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   const commonParams = {
     // 代码位名称
@@ -10,7 +10,7 @@ export function formatYlhPayloadDataFromModal(thirdAdspotFormData, adspotType) {
 
   const optionalParamsMap = {
     // 横幅
-    1: {
+    3: {
       // 渲染方式： 模板渲染 or 自渲染
       renderType: thirdAdspotFormData.renderType || null,
 
@@ -21,12 +21,12 @@ export function formatYlhPayloadDataFromModal(thirdAdspotFormData, adspotType) {
       adCrtNormalTypes: thirdAdspotFormData.adCrtNormalTypes || null
     },
     // 开屏
-    2: {
+    1: {
       // 广告素材类型
       adCrtTypeList: thirdAdspotFormData.adCrtTypeList
     },
     // // 插屏
-    3: {
+    4: {
       // 广告素材类型
       adCrtTypeList: thirdAdspotFormData.adCrtTypeList,
 
@@ -34,7 +34,7 @@ export function formatYlhPayloadDataFromModal(thirdAdspotFormData, adspotType) {
       adCrtTemplateType:  thirdAdspotFormData.adCrtTypeList && typeof thirdAdspotFormData.adCrtTemplateType === 'string' ? thirdAdspotFormData.adCrtTemplateType.split(',') : null,
     },
     // // 信息流
-    6: {
+    2: {
       // 渲染方式： 模板渲染 or 自渲染
       renderType: thirdAdspotFormData.renderType || null,
 
@@ -52,7 +52,7 @@ export function formatYlhPayloadDataFromModal(thirdAdspotFormData, adspotType) {
       adCrtNormalTypes: thirdAdspotFormData.adCrtNormalTypes ? thirdAdspotFormData.adCrtNormalTypes : null
     },
     // // 激励视频
-    12: {
+    5: {
       // 渲染样式,当两者都选中的时候，值是 ALL_DIRECTION
       rewardedVideoCrtType: thirdAdspotFormData.rewardedVideoCrtType ? (thirdAdspotFormData.rewardedVideoCrtType.length == 2 ? 'ALL_DIRECTION' : thirdAdspotFormData.rewardedVideoCrtType.join(',')) : null,
 
@@ -90,7 +90,7 @@ export function formatYlhModalDataFromPayload(thirdAdspotPayloadData: Record<str
   };
 
   const optionalParamsMap = {
-    1: {
+    3: {
       // 是否轮播
       renderType: thirdAdspotPayloadData.render_type,
       // 模版样式
@@ -98,17 +98,17 @@ export function formatYlhModalDataFromPayload(thirdAdspotPayloadData: Record<str
       // 广告样式
       adCrtNormalTypes: thirdAdspotPayloadData.ad_crt_normal_types
     },
-    2: {
+    1: {
       // 广告素材类型 
       adCrtTypeList: thirdAdspotPayloadData.ad_crt_type_list
     },
-    3: {
+    4: {
       // 广告素材类型
       adCrtTypeList: thirdAdspotPayloadData.ad_crt_type_list,
       // 渲染样式：弹窗、全屏
       adCrtTemplateType: thirdAdspotPayloadData.ad_crt_template_type ? thirdAdspotPayloadData.ad_crt_template_type.join(',') : null
     },
-    6: {
+    2: {
       // 渲染方式： 模板渲染 or 自渲染
       renderType: thirdAdspotPayloadData.render_type,
       // 广告素材类型
@@ -120,7 +120,7 @@ export function formatYlhModalDataFromPayload(thirdAdspotPayloadData: Record<str
       // 广告样式
       adCrtNormalTypes: thirdAdspotPayloadData.ad_crt_normal_types
     },
-    12: {
+    5: {
       // 渲染样式
       rewardedVideoCrtType: thirdAdspotPayloadData.rewarded_video_crt_type ? (thirdAdspotPayloadData.rewarded_video_crt_type == 'ALL_DIRECTION' ? ['VIDEO', 'IMAGE'] : thirdAdspotPayloadData.rewarded_video_crt_type.split(',')) : null,
       // 服务器判断

@@ -45,23 +45,23 @@ export function formatSplashMaterialTypeListFormBackend(materialTypeList) {
   }
 }
 
-const BayesAdspotTypeToKsAdStyleMap = {
-  1: { ks: 5 },
-  2: { ks: 4 },
-  6: { ks: 1 },
-  12: { ks: 2 },
+const adspotTypeToKsAdStyleMap = {
+  3: { ks: 5 },
+  1: { ks: 4 },
+  2: { ks: 1 },
+  5: { ks: 2 },
 };
 
-const ksAdStyleToBayesAdspotTypeMap = {
-  1: { bayes: 6 },
-  2: { bayes: 12 },
-  4: { bayes: 2 },
-  5: { bayes: 1 },
+const ksAdStyleToAdspotTypeMap = {
+  1: { easyads: 2 },
+  2: { easyads: 5 },
+  4: { easyads: 1 },
+  5: { easyads: 3 },
 };
 
 const formatAdStyleFormFrontend = (adspotType, adStyle) => {
-  if ([1,2,6,12].includes(adspotType)) {
-    return BayesAdspotTypeToKsAdStyleMap[adspotType].ks;
+  if ([3,1,2,5].includes(adspotType)) {
+    return adspotTypeToKsAdStyleMap[adspotType].ks;
   } else {
     // 这种情况下，就是插屏，他表单会让选择是新插屏还是插屏
     return adStyle;
@@ -70,14 +70,14 @@ const formatAdStyleFormFrontend = (adspotType, adStyle) => {
 
 const formatAdStyleFormBackend = (adspotType, adStyle) => {
   if ([1,2,4,5].includes(adStyle)) {
-    return ksAdStyleToBayesAdspotTypeMap[adStyle].bayes;
+    return ksAdStyleToAdspotTypeMap[adStyle].easyads;
   } else {
     // 这种情况下，就是插屏，他表单会让选择是新插屏还是插屏
     return adStyle;
   }
 };
 
-// 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+// /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
 // 快手对应的是： // banner - 5, 信息流 - 1，激励视频 - 2， 插屏 - 13，新插屏 - 23， 开屏 - 4
 export function formatKsPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   const commonParams = {
@@ -90,7 +90,7 @@ export function formatKsPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   };
 
   let adInfo;
-  if (adspotType == 1) {
+  if (adspotType == 3) {
     adInfo = {
       renderType: 2,
       templateId: thirdAdspotFormData.templateId,
@@ -98,7 +98,7 @@ export function formatKsPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 2) {
+  if (adspotType == 1) {
     adInfo = {
       renderType: 2,
       materialTypeList: formatSplashMaterialTypeListFormFrontend(thirdAdspotFormData.materialTypeList),
@@ -107,7 +107,7 @@ export function formatKsPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 3) {
+  if (adspotType == 4) {
     adInfo = {
       renderType: 2,
       templateId: 9,
@@ -116,7 +116,7 @@ export function formatKsPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 6) {
+  if (adspotType == 2) {
     adInfo = {
       renderType: thirdAdspotFormData.renderType,
       // 素材类型
@@ -126,7 +126,7 @@ export function formatKsPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 12) {
+  if (adspotType == 5) {
     adInfo = {
       renderType: 1,
       materialTypeList: thirdAdspotFormData.materialTypeList,
@@ -153,7 +153,7 @@ export function formatKsModalDataFromPayload(thirdAdspotPayloadData: Record<stri
   };
   
   let adInfo;
-  if (adspotType == 1) {
+  if (adspotType == 3) {
     adInfo = {
       renderType: 2,
       templateId: thirdAdspotPayloadData.template_id,
@@ -161,7 +161,7 @@ export function formatKsModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 2) {
+  if (adspotType == 1) {
     adInfo = {
       renderType: 2,
       materialTypeList: formatSplashMaterialTypeListFormBackend(thirdAdspotPayloadData.creative_material_type),
@@ -171,7 +171,7 @@ export function formatKsModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 3) {
+  if (adspotType == 4) {
     adInfo = {
       renderType: 2,
       templateId: 9,
@@ -180,7 +180,7 @@ export function formatKsModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 6) {
+  if (adspotType == 2) {
     adInfo = {
       renderType: thirdAdspotPayloadData.render_type,
       // 素材类型
@@ -190,7 +190,7 @@ export function formatKsModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 12) {
+  if (adspotType == 5) {
     adInfo = {
       renderType: 1,
       materialTypeList: +thirdAdspotPayloadData.creative_material_type.join(''),

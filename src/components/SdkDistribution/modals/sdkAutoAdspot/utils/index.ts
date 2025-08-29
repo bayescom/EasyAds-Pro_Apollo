@@ -59,17 +59,17 @@ const ylhIncentiveRewardedVideoCrtType = [
 // 广告素材类型
 const ylhAdCrtTypeMap = {
   // 开屏
-  2: [
+  1: [
     {  value: 'FLASH_IMAGE_V', name: '图片', defaultDisabled: true },
     {  value: 'FLASH_VIDEO_V', name: '5s视频', defaultDisabled: false }
   ],
   // 插屏
-  3: [
+  4: [
     {  value: 'IMAGE', name: '图片', defaultDisabled: false },
     {  value: 'VIDEO', name: '视频', defaultDisabled: false }
   ],
   // 信息流
-  6: [
+  2: [
     {  value: 'IMAGE', name: '图片', defaultDisabled: true },
     {  value: 'VIDEO', name: '视频', defaultDisabled: false }
   ],
@@ -77,12 +77,12 @@ const ylhAdCrtTypeMap = {
 
 // 自渲染广告样式
 const ylhAdCrtNormalTypesMap = {
-  1: [
+  3: [
     { value: '16_9_image', name: '16:9 图片', isDefaultSelected: true },
     { value: '16_9_video', name: '16:9 视频', isDefaultSelected: true },
     { value: '3_2_image', name: '3:2 图片（3张）', isDefaultSelected: true },
   ],
-  6: [
+  2: [
     { value: '16_9_image', name: '16:9 图片', isDefaultSelected: true },
     { value: '16_9_video', name: '16:9 视频', isDefaultSelected: true },
     { value: '9_16_image', name: '9:16 图片', isDefaultSelected: true },
@@ -93,10 +93,10 @@ const ylhAdCrtNormalTypesMap = {
 };
 
 const ylhAdCrtTypeListMap = {
-  1: [
+  3: [
     { value: 'IMAGE', name: '图文组合', backendValue: 'IMAGE' }
   ],
-  6: [
+  2: [
     { value: 'LP_RT', name: '左图右文' },
     { value: 'RP_LT', name: '左文右图' },
     { value: 'TP_BT', name: '上图下文' },
@@ -112,9 +112,9 @@ const ylhAdCrtTypeListMap = {
 };
 
 // 百度
-const bdMaterialTypesNameMap = {2: 'splashMaterialTypes', 3: 'interstitialMaterialTypes', 6: 'infoFlowMaterialTypes'};
+const bdMaterialTypesNameMap = {1: 'splashMaterialTypes', 4: 'interstitialMaterialTypes', 2: 'infoFlowMaterialTypes'};
 
-const bdAdStyleNameMap = {3: 'interstitialStyleTypes', 6: 'infoFlowElement'};
+const bdAdStyleNameMap = {4: 'interstitialStyleTypes', 2: 'infoFlowElement'};
 
 // 广告样式
 const bdAdStyleMap = {

@@ -126,11 +126,11 @@ export default function BdSdkAutoAdspot({
   useEffect(() => {
     if (drawerFormVisible){
       // 插屏 依赖interstitialAdScene的值, 信息流 依赖infoFlowStyleControlType的值
-      if (adspotType == 3 && interstitialAdScene) {
+      if (adspotType == 4 && interstitialAdScene) {
         setAdStyleOption(bdAdStyleMap[interstitialAdScene]);
       }
 
-      if (adspotType == 6 && infoFlowStyleControlType) {
+      if (adspotType == 2 && infoFlowStyleControlType) {
         setAdStyleOption(bdAdStyleMap[infoFlowStyleControlType]);
       }
     }
@@ -138,7 +138,7 @@ export default function BdSdkAutoAdspot({
 
   // 模版样式
   useEffect(() => {
-    if (drawerFormVisible && adspotType == 6 && infoFlowStyleControlType == 1) {
+    if (drawerFormVisible && adspotType == 2 && infoFlowStyleControlType == 1) {
       if (infoFlowMaterialTypes && infoFlowMaterialTypes.length) {
         const key = infoFlowMaterialTypes.length == 2 ? 'checkAll' : infoFlowMaterialTypes.toString();
         const list = infoFlowTemplateKeys[key].map(item => infoFlowTemplateItems[item]);
@@ -191,7 +191,7 @@ export default function BdSdkAutoAdspot({
   };
 
   const handleInfoFlowMaterialTypes = (checked) => {
-    if (adspotType == 6) {
+    if (adspotType == 2) {
       if (checked.toString() == '7') {
         form.setFieldValue('infoFlowTemplates', infoFlowTemplateKeys['7']);
       }
@@ -206,7 +206,7 @@ export default function BdSdkAutoAdspot({
     }
   };
   
-  // 系统内常用类型：1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+  // 系统内常用类型： /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
   // 百度三方创建支持广告位类型：开屏、插屏、信息流、激励视频
   // 编辑广告源-编辑三方广告位-只能编辑期待ecpm，其它字段禁用
   return (<DrawerForm
@@ -298,7 +298,7 @@ export default function BdSdkAutoAdspot({
       </Col>
 
       {/* 信息流 显示渲染样式 */}
-      {adspotType == 6 && <Col span={21}>
+      {adspotType == 2 && <Col span={21}>
         <Form.Item
           name='infoFlowStyleControlType'
           label='渲染样式'
@@ -312,7 +312,7 @@ export default function BdSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 开屏、插屏、（信息流 && 渲染样式是优选模版）才有物料类型 */}
-      {(adspotType == 2 || adspotType == 3 || adspotType == 6 &&  infoFlowStyleControlType == 1) && <Col span={21}>
+      {(adspotType == 1 || adspotType == 4 || adspotType == 2 &&  infoFlowStyleControlType == 1) && <Col span={21}>
         <Form.Item
           label="物料类型"
           // 信息流：infoFlowMaterialTypes  开屏：splashMaterialTypes  插屏：interstitialMaterialTypes
@@ -326,7 +326,7 @@ export default function BdSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 开屏 显示展示控制 */}
-      {adspotType == 2 && <Col span={21}>
+      {adspotType == 1 && <Col span={21}>
         <Form.Item
           label='展示控制'
           name='splashShowControl'
@@ -338,7 +338,7 @@ export default function BdSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 插屏 显示广告场景 */}
-      {adspotType == 3 && <Col span={21}>
+      {adspotType == 4 && <Col span={21}>
         <Form.Item
           name='interstitialAdScene'
           label='广告场景'
@@ -351,10 +351,10 @@ export default function BdSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 插屏、（信息流 && 渲染样式是返回元素）显示广告样式 */}
-      {(adspotType == 3 || adspotType == 6 && infoFlowStyleControlType == 3) &&  <Col span={21}>
+      {(adspotType == 4 || adspotType == 2 && infoFlowStyleControlType == 3) &&  <Col span={21}>
         <MultipleSelect 
           options={adStyleOption}
-          label={adspotType == 6 ? '组成元素' : '广告样式'}
+          label={adspotType == 2 ? '组成元素' : '广告样式'}
           // 插屏：interstitialStyleTypes  信息流：infoFlowElement
           name={bdAdStyleNameMap[adspotType]}
           keyType='value'
@@ -365,7 +365,7 @@ export default function BdSdkAutoAdspot({
         />
       </Col>}
       {/* 信息流 && 渲染样式是优选模版 显示模版样式 */}
-      {adspotType == 6 && infoFlowStyleControlType == 1 && <Col span={21}>
+      {adspotType == 2 && infoFlowStyleControlType == 1 && <Col span={21}>
         <MultipleSelect 
           options={infoFlowTemplateOption}
           label='模版样式'
@@ -378,7 +378,7 @@ export default function BdSdkAutoAdspot({
         />
       </Col>}
       {/* 激励视频 显示回调控制 */}
-      {adspotType == 12 && <><Col span={21}>
+      {adspotType == 5 && <><Col span={21}>
         <Form.Item
           name='rewardVideoReturnControl'
           label='回调控制'

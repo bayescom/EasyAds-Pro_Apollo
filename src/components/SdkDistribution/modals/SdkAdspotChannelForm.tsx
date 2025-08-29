@@ -119,9 +119,9 @@ function SdkAdspotChannelForm({
   // 编辑的时候，如果创建过三方广告位，就禁用编辑应用ID
   const [disabledMetaAppId, setDisabledMetaAppId] = useState(false);
 
-  /** 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频 */
+  /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
   const adspotType = adspot.map[adspotId]?.adspotType || 0;
-  const isBdBanner = adspotType == 1 && clickChannel == 4;
+  const isBdBanner = adspotType == 3 && clickChannel == 4;
   /** 是否正在编辑 创建过三方广告位的广告源 */
   const isEditAutoCreate = !!(isEditing && model && model.isAutoCreate);
 
@@ -507,7 +507,7 @@ function SdkAdspotChannelForm({
     isCreateThird && setIsCreateThird(false);
     isCreateThird && sdkChannelDispatchers.setSdkAutoAdspot(null);
 
-    if ((adnId == 4 && adspotType == 1) || showFcrequencySetting) {
+    if ((adnId == 4 && adspotType == 3) || showFcrequencySetting) {
       sdkRightContainer?.clientHeight && setRightContainerHeight(sdkRightContainer?.clientHeight);
     }
   };

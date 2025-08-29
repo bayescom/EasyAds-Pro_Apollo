@@ -52,7 +52,7 @@ export default function CsjSdkAutoAdspot({
     adspotTypeName: adspotTypeListMap[adspotType],
     expectationCpm: 0,
     // 开屏 自渲染，其它 模版渲染
-    renderType: adspotType == 2 ? 3 : 1,
+    renderType: adspotType == 1 ? 3 : 1,
     orientation: 1,
     splashShake: 1,
     slideBanner: 2,
@@ -147,7 +147,7 @@ export default function CsjSdkAutoAdspot({
     onClose(true);
   };
   
-  // 系统内常用类型：1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+  // 系统内常用类型： /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
   // 穿山甲三方创建支持广告位类型：开屏、横幅、激励视频、信息流、插屏
   // 编辑广告源-编辑三方广告位-只能编辑期待cpm，其它字段禁用
   return (<DrawerForm
@@ -254,13 +254,13 @@ export default function CsjSdkAutoAdspot({
         >
           <Radio.Group disabled={isEditAdspotChannel}>
             {/* 渲染方式 开屏仅自渲染 其它模版渲染 */}
-            {adspotType == 2 ? <Radio.Button value={3}>自渲染</Radio.Button> :
+            {adspotType == 1 ? <Radio.Button value={3}>自渲染</Radio.Button> :
               <Radio.Button value={1}>模版渲染</Radio.Button>}
           </Radio.Group>
         </Form.Item>
       </Col>
       {/* 插屏显示广告铺开大小 */}
-      {adspotType == 3 && <Col span={21}>
+      {adspotType == 4 && <Col span={21}>
         <Form.Item
           name='adRolloutSize'
           label='广告铺开大小'
@@ -275,7 +275,7 @@ export default function CsjSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 信息流、插屏 显示素材类型 */}
-      {[6, 3].includes(adspotType) && <Col span={21}>
+      {[2, 4].includes(adspotType) && <Col span={21}>
         <Form.Item
           name='acceptMaterialType'
           label='素材类型'
@@ -289,7 +289,7 @@ export default function CsjSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 开屏、激励视频、插屏 显示屏幕方向 */}
-      {[2, 12, 3].includes(adspotType) &&<Col span={21}>
+      {[1, 5, 4].includes(adspotType) &&<Col span={21}>
         <Form.Item
           name='orientation'
           label='屏幕方向'
@@ -302,7 +302,7 @@ export default function CsjSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 信息流 显示优选模版 */}
-      {adspotType == 6 && <Col span={21}>
+      {adspotType == 2 && <Col span={21}>
         <MultipleSelect 
           options={csjTemplateLayouts}
           label='优选模版'
@@ -314,7 +314,7 @@ export default function CsjSdkAutoAdspot({
         />
       </Col>}
       {/* 信息流、插屏 显示视频声音*/}
-      {[6, 3].includes(adspotType) && <Col span={21}>
+      {[2, 4].includes(adspotType) && <Col span={21}>
         <Form.Item
           name='videoVoiceControl'
           label='视频声音'
@@ -327,7 +327,7 @@ export default function CsjSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 信息流、插屏 显示视频自动播放 */}
-      {[6, 3].includes(adspotType) && <Col span={21}>
+      {[2, 4].includes(adspotType) && <Col span={21}>
         <Form.Item
           name='videoAutoPlay'
           label='视频自动播放'
@@ -341,7 +341,7 @@ export default function CsjSdkAutoAdspot({
         </Form.Item>
       </Col>}
       {/* 横幅 显示是否轮播、广告位尺寸 */}
-      {adspotType == 1 && <><Col span={21}>
+      {adspotType == 3 && <><Col span={21}>
         <Form.Item
           name='slideBanner'
           label='是否轮播'
@@ -363,7 +363,7 @@ export default function CsjSdkAutoAdspot({
         </Form.Item>
       </Col></>}
       {/* 激励视频 显示奖励发放设置和服务器判断*/}
-      {adspotType == 12 && <><Col span={21}>
+      {adspotType == 5 && <><Col span={21}>
         <Form.Item
           name='isRewardRetainPop'
           label='奖励发放设置'
@@ -419,7 +419,7 @@ export default function CsjSdkAutoAdspot({
       </Row>}</>}
       
       {/* 开屏 显示创意交互形式 */}
-      {adspotType == 2 && <Col span={21}>
+      {adspotType == 1 && <Col span={21}>
         <Form.Item
           name='splashShake'
           label='创意交互形式'
@@ -433,7 +433,7 @@ export default function CsjSdkAutoAdspot({
       </Col>}
       {/* 插屏 显示n秒后显示跳过按钮 */}
       {/* 全屏数值范围为5-15s；插屏数值范围为0-15s */}
-      {adspotType == 3 && <Col span={12}>
+      {adspotType == 4 && <Col span={12}>
         <Form.Item
           name='skipDuration'
           label='n秒后显示跳过按钮'

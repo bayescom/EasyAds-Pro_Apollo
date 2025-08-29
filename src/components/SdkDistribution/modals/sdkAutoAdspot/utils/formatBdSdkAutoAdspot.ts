@@ -1,6 +1,6 @@
 import { convertNumbersToStrings, convertStringsToNumbers } from '@/services/utils/utils';
 
-// 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+/** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
 export function formatBdPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   const commonParams = {
     // 代码位名称
@@ -9,7 +9,7 @@ export function formatBdPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   };
 
   let adInfo;
-  if (adspotType == 2) {
+  if (adspotType == 1) {
     adInfo = {
       // 物料类型
       splashMaterialTypes: thirdAdspotFormData.splashMaterialTypes,
@@ -18,7 +18,7 @@ export function formatBdPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 3) {
+  if (adspotType == 4) {
     adInfo = {
       // 物料类型
       interstitialMaterialTypes: thirdAdspotFormData.interstitialMaterialTypes,
@@ -29,7 +29,7 @@ export function formatBdPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 6) {
+  if (adspotType == 2) {
     let infoFlowElement;
 
     // 说明：
@@ -83,7 +83,7 @@ export function formatBdPayloadDataFromModal(thirdAdspotFormData, adspotType) {
     };
   }
 
-  if (adspotType == 12) {
+  if (adspotType == 5) {
     adInfo = {
       // 回调控制
       rewardVideoReturnControl: thirdAdspotFormData.rewardVideoReturnControl,
@@ -105,7 +105,7 @@ export function formatBdModalDataFromPayload(thirdAdspotPayloadData: Record<stri
   };
 
   let adInfo;
-  if (adspotType == 2) {
+  if (adspotType == 1) {
     adInfo = {
       // 物料类型
       splashMaterialTypes: thirdAdspotPayloadData.ad_info.splash_material_types,
@@ -114,7 +114,7 @@ export function formatBdModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 3) {
+  if (adspotType == 4) {
     adInfo = {
       // 物料类型
       interstitialMaterialTypes: thirdAdspotPayloadData.ad_info.interstitial_material_types,
@@ -125,7 +125,7 @@ export function formatBdModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 6) {
+  if (adspotType == 2) {
     adInfo = {
       // 渲染样式
       infoFlowStyleControlType: thirdAdspotPayloadData.ad_info.info_flow_style_control_type,
@@ -137,7 +137,7 @@ export function formatBdModalDataFromPayload(thirdAdspotPayloadData: Record<stri
     };
   }
 
-  if (adspotType == 12) {
+  if (adspotType == 5) {
     adInfo = {
       // 回调控制
       rewardVideoReturnControl: thirdAdspotPayloadData.ad_info.reward_video_return_control,

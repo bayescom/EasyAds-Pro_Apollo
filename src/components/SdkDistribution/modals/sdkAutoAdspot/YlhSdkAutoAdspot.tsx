@@ -62,12 +62,12 @@ export default function YlhSdkAutoAdspot({
     // 插屏： 广告样式多样性探索
     enableExperiment: 'Open',
     // 广告素材类型
-    adCrtTypeList: [2, 3, 6].includes(adspotType) ? ylhAdCrtTypeMap[adspotType].map(item => item.value) : [],
+    adCrtTypeList: [1, 4, 2].includes(adspotType) ? ylhAdCrtTypeMap[adspotType].map(item => item.value) : [],
     // 横幅 、信息流：模板渲染时,出现模板样式
     // 插屏这个字段叫 渲染样式
-    adCrtTemplateType: adspotType == 1 ? 'BANNER_DP' : adspotType == 6 ? ylhAdCrtTypeListMap[adspotType].map(item => item.value) : adspotType == 3 ? 'INLINE_VHS' : '',
+    adCrtTemplateType: adspotType == 3 ? 'BANNER_DP' : adspotType == 2 ? ylhAdCrtTypeListMap[adspotType].map(item => item.value) : adspotType == 4 ? 'INLINE_VHS' : '',
     // 横幅、信息流： 自渲染时，出现自渲染广告样式
-    adCrtNormalTypes: adspotType == 1 ?  ylhAdCrtNormalTypesMap[adspotType].map(item => item.value) : adspotType == 6 ? ylhAdCrtNormalTypesMap[adspotType].filter(item => item.isDefaultSelected).map(item => item.value) : '',
+    adCrtNormalTypes: adspotType == 3 ?  ylhAdCrtNormalTypesMap[adspotType].map(item => item.value) : adspotType == 3 ? ylhAdCrtNormalTypesMap[adspotType].filter(item => item.isDefaultSelected).map(item => item.value) : '',
     secret: '',
     priceType: isHeadBidding ? '1' : '3'
   };
@@ -100,9 +100,9 @@ export default function YlhSdkAutoAdspot({
           if (!['metaAppId', 'reportApiName'].includes(key)) {
             // 这里是序列化一下
             // 如果是 1 - 横幅，那么 adCrtTemplateType 这个字段是 图文组合：["BANNER_DP"] 是数组的形式，要转为字符串，因为前端展示的是 radio
-            if (key == 'adCrtTemplateType' && [1, 3].includes(adspotType)) {
+            if (key == 'adCrtTemplateType' && [3, 4].includes(adspotType)) {
               editModalData['adCrtTemplateType'] = thirdModalData['adCrtTemplateType'] ? thirdModalData['adCrtTemplateType'] : null;
-            } else if (key == 'rewardedVideoCrtType' && adspotType == 12 && thirdModalData['rewardedVideoCrtType'] == 'ALL_DIRECTION') {
+            } else if (key == 'rewardedVideoCrtType' && adspotType == 5 && thirdModalData['rewardedVideoCrtType'] == 'ALL_DIRECTION') {
               editModalData['rewardedVideoCrtType'] = ['VIDEO', 'IMAGE'];
             } else if (key == 'secret' && !isEditAdspotChannel) {
               editModalData['secret'] = null;
@@ -149,30 +149,28 @@ export default function YlhSdkAutoAdspot({
   }, [isHeadBidding]);
 
   const changeRenderType = (e) => {
-    if (adspotType == 1) {
+    if (adspotType == 3) {
       if (e.target.value == 'NORMAL') {
         form.setFieldValue('adCrtNormalTypes', ylhAdCrtNormalTypesMap[adspotType].map(item => item.value));
       } else {
         form.setFieldValue('adCrtTemplateType', 'BANNER_DP');
       }
     }
-    if (adspotType == 6) {
+    if (adspotType == 2) {
       form.setFieldValue('adCrtNormalTypes', ylhAdCrtNormalTypesMap[adspotType].filter(item => item.isDefaultSelected).map(item => item.value));
     }
   };
 
   const handleSubmit = (values) => {
     // 激励视屏新建的时候，如果选择的是需要服务器判断给前端传入一个 32位随机大小写字母和1-9数字组成
-    if (adspotType == 12 && needServerVerify == 'NeedServerVerify' && !isEditAdspotChannel) {
+    if (adspotType == 5 && needServerVerify == 'NeedServerVerify' && !isEditAdspotChannel) {
       values.secret = generateRandomString();
     }
-    // console.log(values, 'values');
-    // console.log(formatYlhPayloadDataFromModal(values, adspotType), 'formatPayloadDataFromModal');
     sdkChannelDispatcher.setSdkAutoAdspot(values, adspotType);
     onClose(true);
   };
   
-  // 系统内常用类型：1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
+  // 系统内常用类型： /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
   // 穿山甲三方创建支持广告位类型：开屏、横幅、激励视频、信息流、插屏
   // 编辑广告源-编辑三方广告位-只能编辑期待cpm，其它字段禁用
   return (<DrawerForm
@@ -294,7 +292,7 @@ export default function YlhSdkAutoAdspot({
       {/* 只有插屏显示渲染样式 */}
       {/* 弹窗、全屏 */}
       {
-        adspotType == 3 ? <Col span={21}>
+        adspotType == 4 ? <Col span={21}>
           <Form.Item
             name='adCrtTemplateType'
             label='渲染样式'
@@ -312,7 +310,7 @@ export default function YlhSdkAutoAdspot({
       {/* 插屏： 图片、视频 */}
       {/* 信息流 && 模板渲染：图片（默认选中且不能取消）、视频 */}
       {/* 开屏：图片（默认选中且不能取消）、5S视频 */}
-      {[2, 3].includes(adspotType) || (adspotType == 6 && renderType == 'TEMPLATE') ? <Col span={21}>
+      {[1, 4].includes(adspotType) || (adspotType == 2 && renderType == 'TEMPLATE') ? <Col span={21}>
         <Form.Item
           label="广告素材类型"
           name="adCrtTypeList"
@@ -337,7 +335,7 @@ export default function YlhSdkAutoAdspot({
       {/* 或 */}
       {/* 信息流 是模板渲染的时候，也有广告样式多样性探索 */}
       {   
-        (adspotType == 6 && renderType == 'TEMPLATE') ? <Col span={21}>
+        (adspotType == 2 && renderType == 'TEMPLATE') ? <Col span={21}>
           <Form.Item
             name='enableExperiment'
             label='广告样式多样性探索'
@@ -353,7 +351,7 @@ export default function YlhSdkAutoAdspot({
 
 
       {/* 横幅、信息流显示渲染方式 */}
-      {[1, 6].includes(adspotType) ? <Col span={21}>
+      {[3, 2].includes(adspotType) ? <Col span={21}>
         <Form.Item
           name='renderType'
           label='渲染方式'
@@ -368,7 +366,7 @@ export default function YlhSdkAutoAdspot({
       </Col> : <></>}
       
       {/* 横幅 模板渲染时显示：模板样式 */}
-      {adspotType == 1 && renderType == 'TEMPLATE' ? <Col span={21}>
+      {adspotType == 3 && renderType == 'TEMPLATE' ? <Col span={21}>
         <Form.Item
           name='adCrtTemplateType'
           label='模板样式'
@@ -381,7 +379,7 @@ export default function YlhSdkAutoAdspot({
       </Col>: <></>}
 
       {/* 信息流 模板渲染的时候，显示模板样式，他和横幅 模板渲染时显示：模板样式 的显示样式不一样，所以不妨在一起展示了 */}
-      {adspotType == 6 && renderType == 'TEMPLATE' ? <Col span={21}>
+      {adspotType == 2 && renderType == 'TEMPLATE' ? <Col span={21}>
         <MultipleSelect 
           options={ylhAdCrtTypeListMap[adspotType]}
           label='模板样式'
@@ -396,7 +394,7 @@ export default function YlhSdkAutoAdspot({
 
       {/* 横幅 自渲染时显示：广告样式 */}
       {/* 信息流自渲染：广告样式 */}
-      {([1, 6].includes(adspotType)) && renderType == 'NORMAL' ? <Col span={21}>
+      {([3, 2].includes(adspotType)) && renderType == 'NORMAL' ? <Col span={21}>
         <MultipleSelect 
           options={ylhAdCrtNormalTypesMap[adspotType]}
           label='广告样式'
@@ -410,7 +408,7 @@ export default function YlhSdkAutoAdspot({
       </Col>: <></>}
 
       {/* 激励视频 显示奖励发放设置和服务器判断*/}
-      {adspotType == 12 && <><Col span={21}>
+      {adspotType == 5 && <><Col span={21}>
         <Form.Item
           name='rewardedVideoCrtType'
           label='渲染样式'
