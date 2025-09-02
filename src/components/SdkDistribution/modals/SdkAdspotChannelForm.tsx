@@ -772,7 +772,6 @@ function SdkAdspotChannelForm({
                     <Input placeholder="请输入" />
                   </Form.Item>
                 </Col>
-                {console.log(isHasReportApiParams, 'isHasReportApiParams')}
                 {(!isEditing && isHasReportApiParams && selectedChannel?.supportAutoCreate && !isBdBanner) || (isEditing && isHasReportApiParams && model && model.isAutoCreate && !isBdBanner) ? <Col span={16}>
                   <Form.Item
                     name="autoCreateStatus"
