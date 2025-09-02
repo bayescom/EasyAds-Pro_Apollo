@@ -469,6 +469,8 @@ function SdkAdspotChannelForm({
       setSubmitLoading(false);
       cancel(true);
       afterClose();
+    } else {
+      setSubmitLoading(false);
     }
   };
 

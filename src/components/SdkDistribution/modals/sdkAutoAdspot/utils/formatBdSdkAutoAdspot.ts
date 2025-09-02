@@ -5,7 +5,8 @@ export function formatBdPayloadDataFromModal(thirdAdspotFormData, adspotType) {
   const commonParams = {
     // 代码位名称
     adName: thirdAdspotFormData.adName,
-    cpm: thirdAdspotFormData.cpm ? +thirdAdspotFormData.cpm : 0
+    cpm: thirdAdspotFormData.cpm ? +thirdAdspotFormData.cpm : null,
+    priceType: thirdAdspotFormData.cpm ? 1 : 2,
   };
 
   let adInfo;

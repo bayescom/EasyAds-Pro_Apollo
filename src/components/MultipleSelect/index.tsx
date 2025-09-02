@@ -97,7 +97,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
       const dataList = isValueTypeArray ? watchFormItem : watchFormItem.split(',');
       const newRightSelectList = dataList.map(item => {
         const result = options.filter(listItem => {
-          return optionValueType ? listItem[keyType] == item : listItem[keyType] == +item;
+          return optionValueType ? listItem[keyType] == item : listItem[keyType] == item;
         });
         return result;
       });

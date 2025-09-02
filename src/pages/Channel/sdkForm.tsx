@@ -156,7 +156,7 @@ function ChannelForm({
                 return [
                   <Popconfirm
                     key="delete"
-                    title={(<>各广告网络需要通过Reporting API将数据给回传，删除后<br />将无法再统计到您在此广告网络中产生的真实数据。</>)}
+                    title={(<>各广告网络需要通过Reporting API将数据回传给Blink，<br />删除后Blink将无法再统计到您在此广告网络中产生的真实数据，<br />并将会影响到该账户下自动创建的三方广告源的管理与设置，<br />请谨慎操作！</>)}
                     okText="删除"
                     onConfirm={() => {
                       action.remove(field.name);
