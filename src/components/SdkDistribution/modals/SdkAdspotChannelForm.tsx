@@ -613,7 +613,7 @@ function SdkAdspotChannelForm({
                           style={{width: '100%'}}
                           optionFilterProp='label'
                           options={reportApiList?.map((item) => ({ label: item.name, value: item.id }))}
-                          disabled={isEditAutoCreate}
+                          disabled={isEditAutoCreate || isEditing}
                           dropdownRender={(menu) => (
                             <>
                               {menu}
