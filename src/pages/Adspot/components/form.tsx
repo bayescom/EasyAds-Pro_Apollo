@@ -113,9 +113,7 @@ export default function AdspotForm({
       return pre;
     }, {}));
   });
-
-  // 1 - 横幅， 2 开屏， 3 插屏， 6 信息流， 8 文字链 ， 9 视频贴片， 12 激励视频
-
+  
   const mediaOnChange = (value: string | number) => {
     if (value) {
       const currentMedia = mediumMap[value];

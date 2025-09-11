@@ -14,6 +14,7 @@ import rollActiveIcon from '@/assets/icons/adspot/rollActive.png';
 import incentiveActiveIcon from '@/assets/icons/adspot/incentiveActive.png';
 import { Rule } from 'antd/lib/form';
 import { platformIconMap, mediaIconMap, channelIconMap } from '../Utils/Constant';
+import { areArraysEqual } from '@/services/utils/utils';
 
 type IProps = {
   options: any[],
@@ -37,7 +38,7 @@ type IProps = {
   isMedia?: boolean,
   isChannel?: boolean,
   urlKey?: string
-  onChange?: () => void,
+  onChange?: (value) => void,
   /**
    * 父组件用来捕获该子组件change事件的函数
    */
@@ -59,6 +60,10 @@ type IProps = {
   isDimension?: boolean,
   // 是否隐藏全选和反选
   hideSelectAllAndInvert?: boolean,
+  disabled?: boolean,
+  // label 下面是显示除了 keyType 值以外的其他值，而且这个值是什么字段，
+  isValueSectionShown?: boolean,
+  valueSectionKey?: string,
 }
 
 const adspotTypeImageMap = {
@@ -75,7 +80,7 @@ const adspotTypeImageMap = {
 const { Option } = Select;
 const { Text } = Typography;
 
-const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRight, changeFormValue, isMedia, onChange, isChannel, onChangeCurrentSelect, isNoShowIdOrValue, placeholder, urlKey, hasPlatform, platformKey, notShowSearchInput, isValueTypeArray, rules, optionValueType, noStyle, isDimension, hideSelectAllAndInvert} : IProps) => {
+const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRight, changeFormValue, isMedia, onChange, isChannel, onChangeCurrentSelect, isNoShowIdOrValue, placeholder, urlKey, hasPlatform, platformKey, notShowSearchInput, isValueTypeArray, rules, optionValueType, noStyle, isDimension, hideSelectAllAndInvert, disabled, isValueSectionShown, valueSectionKey} : IProps) => {
   const form = Form.useFormInstance();
   const watchFormItem = Form.useWatch(name, form);
 
@@ -92,7 +97,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
       const dataList = isValueTypeArray ? watchFormItem : watchFormItem.split(',');
       const newRightSelectList = dataList.map(item => {
         const result = options.filter(listItem => {
-          return optionValueType ? listItem[keyType] == item : listItem[keyType] == +item;
+          return optionValueType ? listItem[keyType] == item : listItem[keyType] == item;
         });
         return result;
       });
@@ -107,7 +112,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
 
   useEffect(() => {
     if (watchFormItem != undefined) {      
-      onChange && onChange();
+      onChange && onChange(watchFormItem);
     }
   }, [watchFormItem]);
 
@@ -154,9 +159,11 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
   const handleCustomAll = () => {
     const contrastList = customInputValue ? filterOptions : options;
     // 节流
-    if (rightSelectList.length !== contrastList.length) {
-      setRightSelectList(contrastList);
-      const currentFormItemData = contrastList.map(item => item[keyType]);
+    // 不能直接对比长度 因为有时候筛选的时候 刚好前后筛选结果都只有2个 那么点击全选此时就没用
+    if (!areArraysEqual(rightSelectList, contrastList)) {
+      const currentList = new Set([...rightSelectList, ...contrastList]);
+      setRightSelectList(Array.from(currentList));
+      const currentFormItemData = Array.from(currentList).map(item => item[keyType]);
       if (isValueTypeArray) {
         currentFormItemData.length ? form.setFieldValue(name, currentFormItemData) : form.setFieldValue(name, []);
       } else {
@@ -207,6 +214,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
         allowClear
         onChange={() => onChangeCurrentSelect && onChangeCurrentSelect(name, watchFormItem)}
         mode="multiple"
+        disabled={disabled}
         showArrow={true}
         placeholder={placeholder ? placeholder : '请选择'}
         maxTagCount={isDimension ? 'responsive' : rightSelectList.length > 1 ? 0 : 1}
@@ -273,7 +281,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
                     style={{ width: '16px', height: '15px', marginTop: -17 }} 
                     preview={false}
                   />}
-                  <Text type="secondary">{item[keyType]}</Text>
+                  <Text type="secondary">{isValueSectionShown && valueSectionKey ? item[valueSectionKey] : item[keyType]}</Text>
                 </div>}
               </Space>
             </Space>

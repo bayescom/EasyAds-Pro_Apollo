@@ -4,6 +4,10 @@ import { DateType, ICommonState } from './types/common';
 import { ISdkAdspotChannel } from './types/sdkAdspotChannel';
 import moment from 'moment';
 import { getLocalDateType } from '@/components/SdkDistribution/utils';
+import { formatModalDataFromPayload } from '@/components/SdkDistribution/modals/sdkAutoAdspot/utils/formatCsjSdkAutoAdspot';
+import { formatYlhModalDataFromPayload } from '@/components/SdkDistribution/modals/sdkAutoAdspot/utils/formatYlhSdkAutoAdspot';
+import { formatBdModalDataFromPayload } from '@/components/SdkDistribution/modals/sdkAutoAdspot/utils/formatBdSdkAutoAdspot';
+import { formatKsModalDataFromPayload } from '@/components/SdkDistribution/modals/sdkAutoAdspot/utils/formatKsSdkAutoAdspot';
 
 type DeleteSupplierStatusType = {
   count: number,
@@ -122,6 +126,25 @@ export default {
       return { data: data.sdkChannelList };
     },
 
+    async getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, adspotType, source }: { adspotId: number, sdkAdspotChannelId: number, adspotType: number, source: string }) {
+      const data = await sdkChannelService.getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, source, adspotType});
+
+      let autoAdspot;
+      if (source == 'csj') {
+        autoAdspot = formatModalDataFromPayload(data.auto_adspot, adspotType);
+      } else if (source == 'ylh') {
+        autoAdspot = formatYlhModalDataFromPayload(data.auto_adspot, adspotType);
+      } else if (source == 'bd') {
+        autoAdspot = formatBdModalDataFromPayload(data.auto_adspot, adspotType);
+      } else if (source == 'ks') {
+        autoAdspot = formatKsModalDataFromPayload(data.auto_adspot, adspotType);
+      }
+      
+      dispatch.sdkChannel.setSdkAutoAdspot(autoAdspot);
+      dispatch.sdkChannel.setCpmUpdateTime(data.sdkChannel.cpmUpdateTime);
+      return data.sdkChannel;
+    },
+
     async save({ sdkAdspotChannel, adspotId }: { sdkAdspotChannel: ISdkAdspotChannel, adspotId: number }) {
       const data = sdkAdspotChannel.id
         ? await sdkChannelService.updateSdkAdspotChannel({ model: sdkAdspotChannel, adspotId })
@@ -131,10 +154,19 @@ export default {
         return;
       }
 
-      const newModel: ISdkAdspotChannel = data.sdkChannel;
-      dispatch.sdkAdspotChannel.setOne(newModel);
+      return data.sdkChannel;
+    },
 
-      return newModel;
+    async autoAdspotSave({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source }: { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
+      const data = sdkAdspotChannel.id
+        ? await sdkChannelService.updateAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source })
+        : await sdkChannelService.createAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source });
+
+      if (!data?.sdkChannel) {
+        return;
+      }
+
+      return data.sdkChannel;
     },
 
     async delete({ sdkAdspotChannelId, adspotId }: { sdkAdspotChannelId: number, adspotId: number }) {

@@ -12,7 +12,8 @@ interface ISdkChannel {
   reportApiParamsMeta: IParam[],
   isDsp: boolean,
   data: ChannelData,
-  reportApiStatus: number
+  reportApiStatus: number,
+  supportAutoCreate: number
 }
 
 interface ReportApiParams {
@@ -23,6 +24,7 @@ interface ReportApiParams {
    * paramsMeta里面每一组参数的key对应的值
    */
   channelParams: IChannelParams[],
+  autoCreateStatus: number
 }
 
 interface IParam {

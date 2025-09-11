@@ -121,12 +121,16 @@ span:has(>.no-block) {
 .name-container {
   overflow: hidden;
   :global {
-    .ant-space-item:last-child {
+    .ant-space-item:has(.ant-typography) {
       overflow: hidden;
       .ant-typography {
         margin-bottom: 0px;
       }
     }
+  }
+  .auto-image {
+    width: 26px;
+    vertical-align: text-top;
   }
 }
 

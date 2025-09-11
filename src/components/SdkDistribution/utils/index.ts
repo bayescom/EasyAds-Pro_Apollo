@@ -1,7 +1,7 @@
 // income ecpm ecpc req bid bidRate imp impRate click clickRate
 export const columnWidth = {
   priority: '1 0 89px',
-  name: '1 0 122px',
+  name: '1 0 145px',
   price: '1 0 63px',
   operation: '1 0 117px',
   income: '1 0 9.3%',  // 收益

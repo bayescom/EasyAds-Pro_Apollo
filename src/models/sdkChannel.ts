@@ -14,7 +14,10 @@ type IState = {
   currentEditReportApiChannelId: number,
   currentEditReportApiChannel: batchCreationAdspotChannelItem,
   currentEditReportApiId: string,
-  batchTargetingModelMap: IBatchTargetingModelMapType
+  batchTargetingModelMap: IBatchTargetingModelMapType,
+  // 三方广告位
+  sdkAutoAdspot: Record<string, any> | null,
+  cpmUpdateTime: number | null
 };
 
 export const defaultBatchCrearionTableData = {
@@ -55,7 +58,9 @@ const defaultState: IState = {
   currentEditReportApiChannelId: 0,
   currentEditReportApiChannel: defaultBatchCrearionTableData,
   currentEditReportApiId: '',
-  batchTargetingModelMap: {}
+  batchTargetingModelMap: {},
+  sdkAutoAdspot: null,
+  cpmUpdateTime: null
 };
 
 export default {
@@ -90,6 +95,14 @@ export default {
         prevState.batchTargetingModelMap[key] = data;
       }
     },
+
+    setSdkAutoAdspot(prevState, sdkAutoAdspot) {
+      prevState.sdkAutoAdspot = sdkAutoAdspot;
+    },
+
+    setCpmUpdateTime(prevState, cpmUpdateTime) {
+      prevState.cpmUpdateTime = cpmUpdateTime;
+    }
   },
 
   effects: (dispatch: IRootDispatch) => ({
