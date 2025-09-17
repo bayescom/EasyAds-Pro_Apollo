@@ -462,10 +462,6 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
           </div>
         </Form.Item>
       </Form>
-
-      <a href='https://www.bayescom.com/docsify/docs/#/advance/Blink3/distribution/abtest' target="_blank" rel="noreferrer" className={'ab-group-link'}>
-        A/B测试说明 &gt;
-      </a>
     </Modal>
   );
 }

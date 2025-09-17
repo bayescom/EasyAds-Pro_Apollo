@@ -30,7 +30,7 @@ const chartDimensionList = {
   'click': { key: 'click', name: '点击', color: '#FF0087', topGradient: 'rgba(255, 0, 135, 0.1)', tailGradient: 'rgba(255, 0, 135, 0)'},
   'ctr': { key: 'ctr', name: '点击率', format: 'percent', color: '#76c911', topGradient: 'rgba(118, 201, 17, 0.1)', tailGradient: 'rgba(118, 201, 17, 0)'},
   'clickRate': { key: 'clickRate', name: '点击率', format: 'percent', color: '#76c911' },
-  'income': { key: 'income', name: '收入(¥)', format: 'rmbYuan', color: '#ff00ff', topGradient: 'rgba(255, 0, 255, 0.1)', tailGradient: 'rgba(255, 0, 255, 0)'},
+  'income': { key: 'income', name: '预估收益(¥)', format: 'rmbYuan', color: '#ff00ff', topGradient: 'rgba(255, 0, 255, 0.1)', tailGradient: 'rgba(255, 0, 255, 0)'},
   'ecpm': { key: 'ecpm', name: 'eCPM(¥)', format: 'rmbYuan', color: '#80FFA5', topGradient: 'rgba(128, 255, 165, 0.1)', tailGradient: 'rgba(128, 255, 165, 0)'},
   'ecpc': { key: 'ecpc', name: 'eCPC(¥)', format: 'rmbYuan', color: '#FFBF00', topGradient: 'rgba(255, 191, 0, 0.1)', tailGradient: 'rgba(255, 191, 0, 0)'},
   'cpa': { key: 'cpa', name: 'CPA(¥)', format: 'rmbYuan', color: '#0099cc' },

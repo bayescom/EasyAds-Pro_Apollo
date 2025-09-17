@@ -27,7 +27,7 @@ function ReportAbTestDetail() {
     <div className={styles['alert-top-container']}>
       <Alert
         className={styles['realtime-alert']}
-        message={<>API 数据均在次日更新，若参考即时数据，建议选择 Blink 统计数据。当前API数据不完整时，请前往【资源管理】-【广告网络】配置报表API以获取完整数据。</>}
+        message={<>API 数据均在次日更新，若参考即时数据，建议选择 平台 统计数据。当前API数据不完整时，请前往【资源管理】-【广告网络】配置报表API以获取完整数据。</>}
         type="info"
         showIcon
         banner
