@@ -114,6 +114,23 @@ function AppVersionPicker({ mediumId, type, value, onChange, appVersion }: Input
     changeValue(operator, newVersion);
   };
 
+  const [manualVersions, setManualVersions] = useState<string[]>([]); // Add this line
+
+  useEffect(() => {
+    if (value) {
+      const operatorRegex = Object.values(firstLetterToOperatorMap).map(item => `(${item})`).join('|');
+      const versionStr = value.replace(new RegExp(operatorRegex), '');
+      const versions = isMultiSelect ? versionStr.split(',') : [versionStr];
+      setManualVersions(prev => {
+        const newManualVersions = versions.filter(v => 
+          !versionState[type][mediumId]?.some(vs => vs.version === v) &&
+          !prev.includes(v)
+        );
+        return [...prev, ...newManualVersions];
+      });
+    }
+  }, [value, mediumId, type, versionState]);
+
   const versions: { label: string, value: string }[] = useMemo(() => {
     if (!mediumId) {
       return [];
@@ -124,20 +141,33 @@ function AppVersionPicker({ mediumId, type, value, onChange, appVersion }: Input
       versions = [...versionState[type][mediumId]];
     }
 
-    const result = versions.map((item) => ({
-      label: `${item.name} `,
-      value: item.value
+    const result = versions.map(({ version, percent }) => ({
+      label: `${version} (${percent})`,
+      value: version
     }));
 
-    if (manualVersion && result.every(item => !item.value.includes(manualVersion))) {
-      return [{
-        label: `${manualVersion}`,
-        value: manualVersion
-      }, ...result];
-    }
+    // Add manual versions that aren't in the API results
+    const manualOptions = manualVersions
+      .filter(manual => !result.some(r => r.value === manual))
+      .map(manual => ({
+        label: `${manual} (0%)`,
+        value: manual
+      }));
 
-    return result;
-  }, [mediumId, type, versionState, manualVersion]);
+    return [...manualOptions, ...result];
+  }, [mediumId, type, versionState, manualVersions]);
+
+  const handleManualVersionSearch = (value: string) => {
+    if (value && !manualVersions.includes(value)) {
+      setManualVersions(prev => [...prev, value]);
+    }
+  };
+
+  const handleDropdownVisibleChange = (open: boolean) => {
+    if (open) {
+      setManualVersion(''); // Clear the temporary manual version state
+    }
+  };
 
   return (<Row gutter={8} wrap={false}>
     <Col flex="0 0 108px">
@@ -154,10 +184,8 @@ function AppVersionPicker({ mediumId, type, value, onChange, appVersion }: Input
         mode={isMultiSelect ? 'multiple' : undefined}
         options={versions}
         onChange={(value) => onVersionChange(value)}
-        onSearch={(value) => {
-          setManualVersion(value);
-        }}
-        onDropdownVisibleChange={(open) => open && setManualVersion('')}
+        onSearch={handleManualVersionSearch}
+        onDropdownVisibleChange={handleDropdownVisibleChange}
       />
     </Col>
   </Row>);

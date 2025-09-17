@@ -1,8 +1,9 @@
 import { IPercentage, TrafficGroupType } from '@/models/types/sdkDistribution';
-import { CloseOutlined, EditOutlined, ExclamationCircleFilled } from '@ant-design/icons';
-import { Button, Popconfirm, Tabs } from 'antd';
+import { CloseOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Popconfirm, Tabs, Image } from 'antd';
 import { useEffect, useState, useCallback } from 'react';
 import TargetingGroupListForm from './modals/TargetingGroupListForm';
+import AbTestIcon from '@/assets/icons/distribution/abTest.png';
 import styles from './index.module.less';
 import store from '@/store';
 
@@ -49,41 +50,44 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
     <>
       <Tabs
         type="editable-card"
-        className={styles['targeting-group-tab']}
+        className={styles['targeting-group-tab-by-waterfall']}
         tabBarExtraContent={{ left: EditTargetingGroupsButton }}
-        destroyInactiveTabPane
+        // destroyInactiveTabPane
         tabBarStyle={showTargetingGroups ? {} : { display: 'none' }}
         onTabClick={(key, e) => {
           // 从key中解析出需要的信息
-          const [currentTargetId, currentPercentageId] = key.split('_')[0].split('-');
-          handleClick(Number(currentTargetId), Number(currentPercentageId));
+          const [currentId, currentPercentageId] = key.split('_')[0].split('-');
+          handleClick(Number(currentId), Number(currentPercentageId));
         }}
-        items={group.trafficGroupList.map(trafficGroup => ({
-          key: trafficGroup.groupStrategy.groupTargetId + '-' + group.trafficPercentage.percentageId,
-          label: (<>
-            {
-              trafficGroup.targetPercentageStrategyList[0].suppliers.some(innerSuppliers => !innerSuppliers.length) || !trafficGroup.targetPercentageStrategyList[0].suppliers.length
-                ? <ExclamationCircleFilled style={{ color: '#f8b601' }} />
-                : <></>
-            }
-            {`${trafficGroup.groupStrategy.priority}: ${trafficGroup.groupStrategy.name}`}
-          </>),
-          closeIcon: (
-            <Popconfirm
-              title="确定要删除这个流量分组吗"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => deleteTargetingGroup(trafficGroup.targetPercentageStrategyList[0].trafficId)}
-            >
-              <CloseOutlined
-                className={styles['targeting-close-icon']}
-                onClick={(e) => {e.stopPropagation();}}
-              />
-            </Popconfirm>
-          ),
-          children: children(trafficGroup),
-          closable: group.trafficGroupList.length > 1
-        }))}
+        items={group.trafficGroupList.map((trafficGroup, trafficGroupIndex) => {
+          return {
+            key: `${trafficGroup.groupStrategy.groupTargetId}-${group.trafficPercentage.percentageId}_${trafficGroupIndex}`,
+            label: (<>
+              {
+                trafficGroup.targetPercentageStrategyList.length > 1
+                  ? <Image src={AbTestIcon} preview={false} width={17} style={{marginLeft: '-4px', marginRight: '7px', verticalAlign: 'top'}} />
+                  : <></>
+              }
+              {`${trafficGroup.groupStrategy.priority}: ${trafficGroup.groupStrategy.name}`}
+            </>),
+            closeIcon: (
+              <Popconfirm
+                title="确定要删除这个流量分组吗"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => deleteTargetingGroup(trafficGroup.targetPercentageStrategyList[0].trafficId)}
+              >
+                <CloseOutlined
+                  className={styles['targeting-close-icon']}
+                  onClick={(e) => {e.stopPropagation();}}
+                  style={{}}
+                />
+              </Popconfirm>
+            ),
+            children: children(trafficGroup),
+            closable: group.trafficGroupList.length > 1
+          };
+        })}
         hideAdd
       />
       <TargetingGroupListForm

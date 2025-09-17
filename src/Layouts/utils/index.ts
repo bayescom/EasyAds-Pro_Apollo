@@ -1,9 +1,22 @@
 const routerPermissions = [
   {
-    'name': '媒体收益报表',
-    'key': 'media_report',
-    'path': '/',
-    'children': []
+    'name': '数据报表',
+    'key': 'data_report',
+    'path': '',
+    'children': [
+      {
+        'name': '媒体收益报表',
+        'key': 'media_report',
+        'path': '/data_report/media_report',
+        'children': []
+      },
+      {
+        'name': 'A/B测试报表',
+        'key': 'ab_report',
+        'path': '/data_report/ab_report',
+        'children': []
+      },
+    ]
   },
   {
     'name': '资源管理',
@@ -55,7 +68,8 @@ const routerPermissionsPathList = [
   '/traffic/distribution',
   '/company/user',
   '/version_app',
-  '/version_sdk'
+  '/version_sdk',
+  '/data_report/ab_report'
 ];
 
 export { routerPermissions, routerPermissionsPathList };

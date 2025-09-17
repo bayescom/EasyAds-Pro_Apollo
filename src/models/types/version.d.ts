@@ -1,8 +1,8 @@
 type VersionType = 'app' | 'sdk';
 
 interface IVersion {
-  name: string,
-  value: string
+  version: string,
+  percent: string
 }
 
 type IAppVersion = {

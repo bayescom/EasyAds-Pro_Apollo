@@ -20,11 +20,14 @@ type GroupType = {
 const targetingItems: TargetingItemConfig[] = [
   { key: 'appVersion', name: 'APP版本定向', keys: ['appVersion'] },
   { key: 'sdkVersion', name: 'SDK版本定向', keys: ['sdkVersion'] },
+  { key: 'location', name: '地域', includeKey: 'location', excludeKey: 'excludeLocation' },
+  { key: 'maker', name: '制造商', includeKey: 'deviceMaker', excludeKey: 'excludeDeviceMaker' },
+  { key: 'osv', name: '操作系统版本', includeKey: 'osv', excludeKey: 'excludeOsv' },
 ];
 
 const getVisibility = (model: GroupType) => targetingItems.reduce((pre, cur) => {
   if (isCommonConfig(cur)) {
-    pre[cur.key] = !!(model[cur.includeKey] || model[cur.excludeKey]);
+    pre[cur.key] = !!(model[`${cur.key}`]);
   } else {
     pre[cur.key] = cur.keys.some(key => model[key]);
   }
@@ -47,7 +50,6 @@ const adspotDispatchers = store.getModelDispatchers('adspot');
 
 function TargetingGroupRow({ fieldName, adspotId, disableRemoveGroup, onRemove, children, model, form, index }: InputProps) {
   const [targetingItemsVisibility, setTargetingItemsVisibility] = useState(getVisibility(model));
-
   const [isCollapseOpen, setIsCollapseOpen] = useState(
     () => targetingItems.some(item => model[item.key])
   );
@@ -137,6 +139,7 @@ function TargetingGroupRow({ fieldName, adspotId, disableRemoveGroup, onRemove, 
                   model={model}
                   fieldName={[fieldName, item.key]}
                   mediumId={mediumId}
+                  isSdkGroup={true}
                   onRemove={(key) => removeTargeting(key)}
                 />
               </Form.Item>)

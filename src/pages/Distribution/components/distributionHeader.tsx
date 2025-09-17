@@ -29,6 +29,7 @@ function DistributionHeader() {
   const [adspotTypeList, setAdspotTypeList] = useState<string[]>([]);
   // 广告位类型筛选的值
   const [adspotTypeFilter, setAdspotTypeFilter] = useState('');
+  const [isCreateAbTesting, setIsCreateAbTesting] = useState(false);
 
   const location = useLocation();
 
@@ -91,6 +92,18 @@ function DistributionHeader() {
       form.setFieldValue('adspot', undefined);
     }
   }, [distributionState.adspotList]);
+
+  useEffect(() => {
+    if (sdkDistributionState[distributionState.adspotId] && sdkDistributionState[distributionState.adspotId].percentageList.length <= 1) {
+      if (sdkDistributionState[distributionState.adspotId].percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.currentTargetId)?.targetPercentageStrategyList.length == 1) {
+        setIsCreateAbTesting(true);
+      } else {
+        setIsCreateAbTesting(false);
+      }
+    } else {
+      setIsCreateAbTesting(false);
+    }
+  }, [sdkDistributionState, distributionState.adspotId, distributionState.currentTargetId]);
 
   /** 设置广告位初始相关信息 */
   const baseChangeDistributionStateAdspotCorrelation = (currentAdspot) => {
@@ -269,7 +282,7 @@ function DistributionHeader() {
     <div className={styles['right-button-container']}>
       {sdkDistributionState[distributionState.adspotId] ? 
         <AbTestButton
-          abTesting={!!sdkDistributionState[distributionState.adspotId].percentageList && sdkDistributionState[distributionState.adspotId].percentageList.length > 1}
+          abTesting={!isCreateAbTesting}
           adspotId={distributionState.adspotId}
           percentageList={sdkDistributionState[distributionState.adspotId].percentageList}
         /> : <></>}
