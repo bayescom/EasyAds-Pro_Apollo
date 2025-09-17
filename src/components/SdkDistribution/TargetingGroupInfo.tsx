@@ -17,7 +17,7 @@ function TargetingGroup() {
 
   return (<>
     {
-      distributionState.sdkStrategyDirection.directionList && distributionState.sdkStrategyDirection.directionList.length ? <>
+      distributionState.sdkStrategyDirection && distributionState.sdkStrategyDirection.directionList && distributionState.sdkStrategyDirection.directionList.length ? <>
         <ProCard bodyStyle={{ padding: '8px 14px 6px', height: '34px', minWidth: '1100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
           <Space style={{color: '#4d4b4b'}}>
             规则：

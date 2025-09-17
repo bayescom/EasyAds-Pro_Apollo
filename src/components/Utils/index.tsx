@@ -29,7 +29,7 @@ export const maxTagPlaceholderWithMaker = (omittedValues) => {
   if (omittedValues.length && omittedValues[0].label.props) {
     omittedValues.map(item => {
       if (item.label.props) {
-        newOmittedValues.push(item.label.props.children[3].props.children[0].props.children);
+        newOmittedValues.push(item.label.props.children[2].props.children[0].props.children);
       } else {
         newOmittedValues.push(item.label);
       }

@@ -8,12 +8,12 @@ import { maxTagPlaceholder } from '@/components/Utils';
 import { locationFastSelectOption, firstTierCity, newFirstTierCity, secondTierCity, thirdTierCity, FourthTierCity, FifthTierCity } from '../Utils/CityLevelTable';
 import { CheckCard } from '@ant-design/pro-card';
 import CityLevelPartition from './cityLevelPartition';
-import { FilterOptionOfValueString } from '@/models/types/common';
+import { BasicOption } from '@/models/types/common';
 
 type optionList = {
   name: string,
   value: string,
-  children: FilterOptionOfValueString[]
+  children: BasicOption<string>[]
 }
 
 type Props = {
@@ -22,7 +22,8 @@ type Props = {
   errorMessage: string
   notRequired?: boolean,
   className?: string,
-  isLocation?: boolean
+  isLocation?: boolean,
+  isSdkGroup?: boolean
 };
 
 const fastKeyMap = {
@@ -34,14 +35,16 @@ const fastKeyMap = {
   'five': FifthTierCity
 };
 
-function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, className, isLocation }: Props) {
-  const [locationList, setLocationList] = useState<FilterOptionOfValueString[]>([]);
+function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, className, isLocation, isSdkGroup }: Props) {
+  const [locationList, setLocationList] = useState<BasicOption<string>[]>([]);
   const [noChildrenFatherList, setNoChildrenFatherListFatherList] = useState<string[]>([]);
   const [hasChildrenFatherList, setHasChildrenFatherListFatherList] = useState<string[]>([]);
-  const [showRightList, setShowRightList] = useState<FilterOptionOfValueString[]>([]);
+  const [showRightList, setShowRightList] = useState<BasicOption<string>[]>([]);
   const [treeExpandedKeys, setTreeExpandedKeys] = useState<React.Key[]>([]);
   const [filterOption, setFilterOption] = useState<optionList[]>([]);
   const [checkCardValue, setCheckCardValue] = useState<string[]>([]);
+  const [customInputValue, setCustomInputValue] = useState<string| undefined>();
+  const [invertDisable, setInvertDisable] = useState(true);
 
   useEffect(() => {
     if (optionList) {
@@ -50,10 +53,11 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
   }, [optionList]);
 
   const form = Form.useFormInstance();
-  const watchFormItem = Form.useWatch(formName, form);
+  const newName = isSdkGroup ? ['groupStrategyList', formName[0], formName[1]] : formName;
+  const watchFormItem = Form.useWatch(newName, form);
 
   useEffect(() => {
-    const locationList: FilterOptionOfValueString[] = [];
+    const locationList: BasicOption<string>[] = [];
     const noChildrenFatherList: string[] = [];
     const hasChildrenFatherList: string[] = [];
     optionList.forEach(item => {
@@ -75,12 +79,15 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       const testList = watchFormItem.split(',');  // 字符串includes并非严格匹配，所以需要切数组
       const showRightList = locationList.filter(item => testList.includes(item.value));
       setShowRightList(showRightList);
+      setInvertDisable(false);
     } else {
       setShowRightList([]);
+      setInvertDisable(true);
     }
   }, [watchFormItem, locationList]);
 
   const handleSearch = (e) => {
+    setCustomInputValue(e.target.value);
     if (e.target.value) {
       const text: string = e.target.value.trim();
       const data = {};
@@ -115,11 +122,11 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
   };
 
   const handleCustomAll = () => {
-    const checkAll: FilterOptionOfValueString[] = [];
-    optionList.forEach(item => checkAll.push({name: item.name, value: item.value}));
+    const checkAll: BasicOption<string>[] = [];
+    filterOption.forEach(item => checkAll.push({name: item.name, value: item.value}));
     setShowRightList(checkAll);
     const checkAllFormValue = checkAll.map(item => item.value);
-    form.setFieldValue(formName, checkAllFormValue.toString());
+    form.setFieldValue(newName, checkAllFormValue.toString());
   };
 
   const handleCustomInvert = () => {
@@ -131,7 +138,7 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       // 这里获得了有子元素且没被勾选的父key； 注：应该在过滤完子元素后，清除掉里面的重复项
       const hasChildrenFatherListKey = hasChildrenFatherList.filter(item => !checkedList.includes(item));
       // 得到所有有children的数组列表
-      const fatherAndChildrenList = optionList.filter(item => item.children.length);
+      const fatherAndChildrenList = filterOption.filter(item => item.children.length);
       // 获得当前勾选的子项位置，获取子项被勾选但是没有被勾选齐的fatherKey（但凡全选form value就直接变fatherKey了，所以这里只可能是没被勾选齐）
       const isNotCheckAllFatherKeySet = new Set();
       fatherAndChildrenList.forEach(item => {
@@ -144,8 +151,8 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       });
 
       // 将没被勾选齐的信息提取出来
-      const notCheckAllList = optionList.filter(item => isNotCheckAllFatherKeySet.has(item.value));
-      const notCheckAllChildrenList: FilterOptionOfValueString[] = [];  // 这里是未被勾选齐的fatherkey下的未被勾选的child
+      const notCheckAllList = filterOption.filter(item => isNotCheckAllFatherKeySet.has(item.value));
+      const notCheckAllChildrenList: BasicOption<string>[] = [];  // 这里是未被勾选齐的fatherkey下的未被勾选的child
       notCheckAllList.forEach(item => item.children.forEach(child => {
         if (!checkedList.includes(child.value)) {
           notCheckAllChildrenList.push(child);
@@ -156,8 +163,8 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       // 有孩子，但孩子没被勾选，自己也没被勾选
       const hasChildrenButUncheckedFatherKey = hasChildrenFatherListKey.filter(item => !isNotCheckAllFatherKeySet.has(item));
       const uncheckedFatherListKey = [...noChildrenFatherListKey, ...hasChildrenButUncheckedFatherKey];  // 最终需要获得信息的父系key
-      const uncheckedFatherList: FilterOptionOfValueString[] = [];
-      optionList.forEach(item => {
+      const uncheckedFatherList: BasicOption<string>[] = [];
+      filterOption.forEach(item => {
         if (uncheckedFatherListKey.includes(item.value)) {
           uncheckedFatherList.push({name: item.name, value: item.value});
         }
@@ -166,28 +173,28 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       const resultShowRightList = [...uncheckedFatherList, ...notCheckAllChildrenList];
       const resultFormValue = resultShowRightList.map(item => item.value);
       setShowRightList(resultShowRightList);
-      form.setFieldValue(formName, resultFormValue.length ? resultFormValue.toString() : undefined);
+      form.setFieldValue(newName, resultFormValue.length ? resultFormValue.toString() : undefined);
     } else {
-      const checkAllRightList = optionList.map(item => {return {value: item.value, name: item.name};});
+      const checkAllRightList = filterOption.map(item => {return {value: item.value, name: item.name};});
       const checkAllFormValue = checkAllRightList.map(item => item.value).toString();
       setShowRightList(checkAllRightList);
-      form.setFieldValue(formName, checkAllFormValue);
+      form.setFieldValue(newName, checkAllFormValue);
     }
   };
 
   const clearAll = () => {
-    form.setFieldValue(formName, undefined);
+    form.setFieldValue(newName, undefined);
     setCheckCardValue([]);
   };
 
   const clearOption = (value) => {
     const result = watchFormItem.split(',').filter(item => item !== value).toString();
-    form.setFieldValue(formName, result ? result : undefined);
+    form.setFieldValue(newName, result ? result : undefined);
   };
 
   const handleFastLocation = (value) => {
     setCheckCardValue(value);
-    const list: FilterOptionOfValueString[][] = [];
+    const list: BasicOption<string>[][] = [];
     if (value.length) {
       value.forEach(item => {
         if (item == 'five') {
@@ -206,7 +213,7 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
     const result = list.flat(2);
     const formValue = result.map(item => item.value);
     setShowRightList(result);
-    form.setFieldValue(formName, formValue.toString());
+    form.setFieldValue(newName, formValue.toString());
   };
  
   return (<Form.Item
@@ -221,7 +228,7 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       className={[styles['location-list'], className ? className : ''].join(' ')}
       treeData={filterOption}
       fieldNames={{ label: 'name' }}
-      showCheckedStrategy={TreeSelect.SHOW_PARENT}
+      showCheckedStrategy={customInputValue ? TreeSelect.SHOW_CHILD : TreeSelect.SHOW_PARENT}
       placeholder="请选择"
       treeCheckable
       multiple
@@ -236,7 +243,8 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
       dropdownRender={(menu) => (<>
         {optionList.length ? <div className={[styles['select-container'], isLocation ? styles['location-contianer'] : ''].join(' ')}>
           <div className={styles['left-container']}>
-            <Input onChange={(e) => handleSearch(e)}
+            <Input
+              onChange={(e) => handleSearch(e)}
               className={styles['custom-input']}
               allowClear 
               prefix={<SearchOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }}/>}
@@ -245,11 +253,12 @@ function TargetIngTreeSelect({ formName, optionList, errorMessage, notRequired, 
                   input?.focus();
                 },100);
               }}
+              autoComplete='off'
               onKeyDown={(e) => e.stopPropagation()}
             />
             <p className={styles['custom-btn']}>
               <span className={styles['custom-btn-all']} onClick={() => handleCustomAll()}>全选</span>
-              <span className={styles['custom-btn-invert']} onClick={() => handleCustomInvert()}>反选</span>
+              <Button className={styles['custom-btn-invert']} onClick={() => handleCustomInvert()} type='link' disabled={invertDisable}>反选</Button>
               {isLocation && <Tooltip title={<CityLevelPartition/>}>划分说明</Tooltip>}
               <Button
                 type='link' 

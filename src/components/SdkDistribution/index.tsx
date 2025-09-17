@@ -100,10 +100,14 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
           className={[styles['percentage-group-tab']].join(' ')}
           destroyInactiveTabPane
           tabBarStyle={abTesting ? {} : { display: 'none' }}
+          onTabClick={(key) => {
+            const [currentTargetId, currentPercentageId] = key.split('_')[0].split('-');
+            distributionDispatcher.setCurrentTargetId(currentTargetId);
+          }}
           items={
             // 这个是 流量分组的 ab 测试
-            sdkDistributionState[distributionState.adspotId].percentageList?.map(percentageGroup => ({
-              key: percentageGroup.trafficPercentage.percentageId + '',
+            sdkDistributionState[distributionState.adspotId].percentageList?.filter(percentageGroup => percentageGroup.trafficPercentage.status).map(percentageGroup => ({
+              key: percentageGroup.trafficGroupList[0].groupStrategy.groupTargetId + '-' + percentageGroup.trafficPercentage.percentageId,
               label: (
                 <>
                   {`${percentageGroup.trafficPercentage.tag}: ${percentageGroup.trafficPercentage.percentage}%`}

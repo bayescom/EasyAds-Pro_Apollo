@@ -208,9 +208,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       if (item.targetPercentageId && item.targetPercentageId < 0) {
         delete item.targetPercentageId;
       }
-      if (item.copyPercentageTag) {
-        delete item.copyPercentageTag;
-      }
+      delete item.copyPercentageTag;
       item.percentage = Number(item.percentage);
       delete item.copy;
     });
@@ -234,7 +232,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       adspotId,
       targetPercentageObj: targetPercentageObj,
       percentageGroupId: distributionModel.currentGroupTargetId,
-      targetId: distributionModel.currentTargetId
+      targetId: form.getFieldValue('groupId')
     });
     onFinish && onFinish();
     result && onCancel();

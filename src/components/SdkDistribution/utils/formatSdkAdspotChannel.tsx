@@ -137,6 +137,18 @@ export function formatPayloadDataFromTargetingGroupModal(formData) {
         property: initialSdkProperty || 'include',
         value: initialSdkVersion == '' ? [] : initialSdkVersion.split(',') || []
       },
+      location: {
+        property: formData.locationProperty == '!' ? 'exclude' : 'include',
+        value: formData.location == '' ? [] : formData.location.split(',') || []
+      },
+      osv: {
+        property: formData.osvProperty == '!' ? 'exclude' : 'include',
+        value: formData.osv == '' ? [] : formData.osv.split(',') || []
+      },
+      maker: {
+        property: formData.makerProperty == '!' ? 'exclude' : 'include',
+        value: formData.maker == '' ? [] : formData.maker.split(',') || []
+      },
     },
   };
   return newData;
@@ -168,6 +180,13 @@ export function formatTargetingGroupDataFromPayload(payloadData) {
 
     appVersion: getVersionProperty(direction.appVersion.property) + direction.appVersion.value.join(',') || '',
     sdkVersion: getVersionProperty(direction.sdkVersion.property) + direction.sdkVersion.value.join(',') || '',
+    location: direction.location.value.join(',') || '',
+    locationProperty: ['', 'include'].includes(direction.location.property) ? '' : '!',
+
+    maker: direction.maker.value.join(',') || '',
+    makerProperty: ['', 'include'].includes(direction.maker.property) ? '' : '!',
+    osv: direction.osv.value.join(',') || '',
+    osvProperty: ['', 'include'].includes(direction.osv.property) ? '' : '!',
   };
   return data;
 }

@@ -11,9 +11,8 @@ export const dataMapToFloat = {
   'imp': 'imp',
   'impRate': 'impRateFloat',
   'income': 'income',
-  'req': 'req',
-  'reqEcpm': 'reqEcpm'
+  'req': 'req'
 };
 
-export const dataDimension = ['bid', 'bidRate', 'bidWin', 'bidWinRate', 'click', 'clickRate', 'ecpc', 'ecpm', 'imp', 'impRate', 'income', 'req', 'reqEcpm'];
+export const dataDimension = ['bid', 'bidRate', 'bidWin', 'bidWinRate', 'click', 'clickRate', 'ecpc', 'ecpm', 'imp', 'impRate', 'income', 'req'];
 

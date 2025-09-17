@@ -74,14 +74,7 @@ type GroupStrategyType = {
   groupTargetId: number,
   name: string,
   priority: number,
-  direction: directionType,
-  customerDirection: CustomerDirectionType []
-}
-
-type CustomerDirectionType = {
-  dimensionId: number, 
-  property: string,
-  valueIdList: []
+  direction: directionType
 }
 
 type directionType = {
@@ -117,6 +110,5 @@ export {
   TargetPercentageStrategyListType,
   sdkSuppliers,
   TargetPercentageObjByWaterfall,
-  TargetPercentageObj,
-  CustomerDirectionType
+  TargetPercentageObj
 };

@@ -201,16 +201,14 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       if (item.percentageId && item.percentageId < 0) {
         delete item.percentageId;
       }
-      if (item.copyPercentageTag) {
-        delete item.copyPercentageTag;
-      }
+      delete item.copyPercentageTag;
       item.percentage = Number(item.percentage);
       delete item.copy;
     });
 
     const currentTrafficGroupList = distribution.percentageList[0];
     const targetPercentageObj = {
-      trafficPercentageList: values.trafficPercentageList,
+      trafficPercentageList: values.trafficPercentageList.map(item => ({...item, status: item.status ? 1 : 0})),
       experiment: {
         expId: currentTrafficGroupList.expId,
         expName: values.expName

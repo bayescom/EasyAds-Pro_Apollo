@@ -1,7 +1,7 @@
 import AppVersionPicker from '@/components/Utils/AppVersionPicker';
 import { BaseModel } from '@/models/types/common';
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { Button, Col, Form, FormItemProps, Row } from 'antd';
+import { Button, Col, Form, FormItemProps, Input, Row } from 'antd';
 import Location from './Location';
 import Maker from './Maker';
 import Osv from './Osv';
@@ -32,6 +32,7 @@ type Props = {
   fieldName?,
   onRemove: (key: TargetingItemConfig['key']) => void,
   notRequired?: boolean
+  isSdkGroup?: boolean
 } & Pick<FormItemProps, 'labelCol' | 'wrapperCol'>;
 
 function TargetingItem({
@@ -42,6 +43,7 @@ function TargetingItem({
   labelCol,
   fieldName,
   wrapperCol,
+  isSdkGroup,
   notRequired
 }: Props) {
   const form = Form.useFormInstance();
@@ -70,11 +72,11 @@ function TargetingItem({
             {(name) => {
               switch (config.key) {
               case 'location':
-                return (<Location name={name} notRequired={notRequired}/>);
+                return (<Location isSdkGroup={isSdkGroup} name={fieldName || name} notRequired={notRequired}/>);
               case 'maker':
-                return (<Maker name={name} notRequired={notRequired}/>);
+                return (<Maker isSdkGroup={isSdkGroup} name={fieldName || name} notRequired={notRequired}/>);
               case 'osv':
-                return (<Osv name={name} mediumId={mediumId} notRequired={notRequired}/>);
+                return (<Osv isSdkGroup={isSdkGroup} name={fieldName || name} mediumId={mediumId} notRequired={notRequired}/>);
               default:
                 return <></>;
               }

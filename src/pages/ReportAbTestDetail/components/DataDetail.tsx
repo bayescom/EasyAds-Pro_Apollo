@@ -131,8 +131,7 @@ function Index() {
     const endTime = reportAbTestDetail.queryParams.endTime;
     const isThird = reportAbTestDetail.queryParams.isThird;
 
-    const queryString = 'token=' + encodeURI(`Basic ${tokenState.accessToken}`);
-    window.open(`${config.galileo}/sdk_experiment/download?adspotId=${adspotId}&expId=${expId}&expType=${expType}&beginTime=${beginTime}&endTime=${endTime}&isThird=${isThird}&${queryString}&display=${showCheckedKey}&expName=${reportAbTestDetail.currentExperiment.experimentName}`, '_blank');
+    window.open(`${config.luna}/sdk_experiment/download?adspotId=${adspotId}&expId=${expId}&expType=${expType}&beginTime=${beginTime}&endTime=${endTime}&isThird=${isThird}&display=${showCheckedKey}&expName=${reportAbTestDetail.currentExperiment.experimentName}`, '_blank');
   };
 
   const rowSelection = reportAbTestDetail?.detailList?.length > 2 ? {

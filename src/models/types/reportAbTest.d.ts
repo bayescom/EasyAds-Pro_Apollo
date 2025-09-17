@@ -48,7 +48,6 @@ interface DimensionChartItemData {
   impRateFloat: [],
   income: [],
   req: [],
-  reqEcpm: [],
   groupId: number,
   tag: string
 }
@@ -80,7 +79,6 @@ type IReportReportAbTestDetailList = {
   impRateFloat: string,
   income: string,
   req: number,
-  reqEcpm: string,
   timestamp: number,
 }
 
