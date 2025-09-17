@@ -100,10 +100,6 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
           className={[styles['percentage-group-tab']].join(' ')}
           destroyInactiveTabPane
           tabBarStyle={abTesting ? {} : { display: 'none' }}
-          onTabClick={(key) => {
-            const [currentTargetId, currentPercentageId] = key.split('_')[0].split('-');
-            distributionDispatcher.setCurrentTargetId(currentTargetId);
-          }}
           items={
             // 这个是 流量分组的 ab 测试
             sdkDistributionState[distributionState.adspotId].percentageList?.filter(percentageGroup => percentageGroup.trafficPercentage.status).map(percentageGroup => ({
@@ -124,7 +120,7 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
                 abTesting
               >
                 {(trafficGroup) => (<>
-                  <TargetingGroupInfo />
+                  <TargetingGroupInfo group={trafficGroup}/>
                   <ProCard className={styles['toolbar-button-container']}>
                     <Dropdown
                       overlay={<Menu
@@ -179,7 +175,7 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
                 abTesting
               >
                 {(trafficGroup) => (<>
-                  <TargetingGroupInfo />
+                  <TargetingGroupInfo group={trafficGroup} />
                   <AbTestByWaterfall 
                     targetPercentageStrategyList={trafficGroup.targetPercentageStrategyList.filter(targetPercentage => targetPercentage.targetPercentage.status) || []}
                   >

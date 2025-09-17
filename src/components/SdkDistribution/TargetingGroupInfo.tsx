@@ -3,17 +3,18 @@ import { Space } from 'antd';
 import { useEffect } from 'react';
 import styles from './index.module.less';
 import store from '@/store';
+import { TrafficGroupType } from '@/models/types/sdkDistribution';
 
 const distributionDispatcher = store.getModelDispatchers('distribution');
 
-function TargetingGroup() {
+function TargetingGroup({group}: {group: TrafficGroupType}) {
   const distributionState = store.useModelState('distribution');
 
   useEffect(() => {
-    if (distributionState.currentTargetId) {
-      distributionDispatcher.getSdkStrategyDirection({targetId: distributionState.currentTargetId});
+    if (group) {
+      distributionDispatcher.getSdkStrategyDirection({targetId: group.groupStrategy.groupTargetId});
     }
-  }, [distributionState.currentTargetId]);
+  }, [group]);
 
   return (<>
     {
