@@ -1,9 +1,12 @@
 import { IPercentage, TrafficGroupType } from '@/models/types/sdkDistribution';
 import { CloseOutlined, EditOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Popconfirm, Tabs } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import TargetingGroupListForm from './modals/TargetingGroupListForm';
 import styles from './index.module.less';
+import store from '@/store';
+
+const distributionDispatcher = store.getModelDispatchers('distribution');
 
 function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDelete, children }: {
   group: IPercentage,
@@ -37,6 +40,11 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
     dom.classList.remove('ant-tabs-card');
   }, []);
 
+  const handleClick = useCallback((currentId, currentPercentageId) => {
+    distributionDispatcher.setCurrentTargetId(currentId);
+    distributionDispatcher.setCurrentGroupTargetId(currentPercentageId);
+  }, [distributionDispatcher]);
+
   return (
     <>
       <Tabs
@@ -45,11 +53,16 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
         tabBarExtraContent={{ left: EditTargetingGroupsButton }}
         destroyInactiveTabPane
         tabBarStyle={showTargetingGroups ? {} : { display: 'none' }}
+        onTabClick={(key, e) => {
+          // 从key中解析出需要的信息
+          const [currentTargetId, currentPercentageId] = key.split('_')[0].split('-');
+          handleClick(Number(currentTargetId), Number(currentPercentageId));
+        }}
         items={group.trafficGroupList.map(trafficGroup => ({
-          key: trafficGroup.groupStrategy.groupTargetId + '',
+          key: trafficGroup.groupStrategy.groupTargetId + '-' + group.trafficPercentage.percentageId,
           label: (<>
             {
-              trafficGroup.suppliers.some(innerSuppliers => !innerSuppliers.length)
+              trafficGroup.targetPercentageStrategyList[0].suppliers.some(innerSuppliers => !innerSuppliers.length) || !trafficGroup.targetPercentageStrategyList[0].suppliers.length
                 ? <ExclamationCircleFilled style={{ color: '#f8b601' }} />
                 : <></>
             }
@@ -60,7 +73,7 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
               title="确定要删除这个流量分组吗"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => deleteTargetingGroup(trafficGroup.trafficId)}
+              onConfirm={() => deleteTargetingGroup(trafficGroup.targetPercentageStrategyList[0].trafficId)}
             >
               <CloseOutlined
                 className={styles['targeting-close-icon']}

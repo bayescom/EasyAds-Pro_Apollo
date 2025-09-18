@@ -1,7 +1,7 @@
 import { Select, Tooltip, Typography, Input } from 'antd';
 import { maxTagPlaceholder } from '@/components/Utils';
 import styles from './index.module.less';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react'; // 引入 useRef
 import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
 import { FilterOptionHasLabel } from '@/models/types/common';
 
@@ -23,55 +23,80 @@ type IProps = {
 const TargetingAppVersionSelect: React.FC<IProps> = ({value, mode, options, onChange, onSearch, onDropdownVisibleChange} : IProps) => {
   const [showRightList, setShowRightList] = useState<FilterOptionHasLabel[]>([]);
   const [filterOption, setFilterOption] = useState<FilterOptionHasLabel[]>([]);
+  const [customInputValue, setCustomInputValue] = useState<string | undefined>();
+  const [manualVersions, setManualVersions] = useState<string[]>([]);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null); // 存储防抖定时器
 
   useEffect(() => {
     if (options) {
-      setFilterOption(options);
+      // 合并 options 和手动输入的版本号（去重）
+      const manualOptions = manualVersions
+        .filter(manual => !options.some(opt => opt.value === manual))
+        .map(manual => ({ value: manual, label: `${manual} (0%)` }));
+      setFilterOption([...manualOptions, ...options]);
     }
-  }, [options]);
+  }, [options, manualVersions]);
 
   useEffect(() => {
-    // 手动输入的percent反正都是0%
     if (value && value.length) {
       const resultExcludes: FilterOptionHasLabel[] = [];
-      const valueList = mode ? value : Array(value);
-      if (Array.isArray(valueList)) {
-        valueList.forEach(item => {
-          const test = options.filter(inner => inner.value == item);
-          resultExcludes.push(...test);
-          if (!test.length) {
-            resultExcludes.push({value: item, label: `${item}`});
-          }
-        });
-        setShowRightList(resultExcludes);
-      }
+      // 无论是单选还是多选，value 都转为数组处理
+      const valueArray = Array.isArray(value) ? value : [value];
+      
+      valueArray.forEach(item => {
+        const matchedOption = options.find(opt => opt.value === item);
+        resultExcludes.push(
+          matchedOption || { value: item, label: `${item} (0%)` }
+        );
+      });
+      setShowRightList(resultExcludes);
     } else {
       setShowRightList([]);
     }
-  }, [value, options, mode]);
-  
-  const handleSearch = (e) => {
-    if (e.target.value) {
-      const text: string = e.target.value.trim();
-      const result = options.filter(item => item.value.toString().includes(text)
-       || item.label.toString().toLowerCase().includes(text.toLowerCase()));
-      if (result.length) {
-        // options里找到了
-        setFilterOption(result);
-      } else {
-        // 这里是自定义输入
-        onSearch(e.target.value);
-      }
-    } else {
-      setFilterOption(options);
+  }, [value, options]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setCustomInputValue(text);
+
+    // 清除之前的防抖定时器（避免多次触发）
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
     }
+
+    // 设置新的防抖定时器（500ms 后执行）
+    searchTimeoutRef.current = setTimeout(() => {
+      const trimmedText = text.trim();
+      if (trimmedText) {
+        // 1. 先尝试在现有 options 中匹配
+        const matchedOptions = options.filter(item =>
+          item.value.toString().includes(trimmedText) ||
+          item.label.toLowerCase().includes(trimmedText.toLowerCase())
+        );
+
+        if (matchedOptions.length > 0) {
+          setFilterOption(matchedOptions);
+        } else {
+          // 2. 如果没有匹配项，则调用 onSearch 进行搜索
+          onSearch(trimmedText);
+          // 3. 如果仍然没有匹配项，则添加到手动版本号列表
+          if (!manualVersions.includes(trimmedText)) {
+            setManualVersions(prev => [...prev, trimmedText]);
+          }
+        }
+      } else {
+        // 输入为空时，恢复完整 options
+        setFilterOption(options);
+      }
+    }, 500); // 防抖延迟时间（可调整）
   };
 
   const handleCustomAll = () => {
-    const checkOther = options.filter(item => !value.includes(item.value));
-    const checkOtherValues = checkOther.map(item => item.value);
-    onChange([...value, ...checkOtherValues]);
-    setShowRightList([...showRightList, ...checkOther]);
+    const contrastList = customInputValue ? filterOption : options;
+    const unselectedOptions = contrastList.filter(item => !value.includes(item.value));
+    const unselectedValues = unselectedOptions.map(item => item.value);
+    onChange([...value, ...unselectedValues]);
+    setShowRightList([...showRightList, ...unselectedOptions]);
   };
 
   const clearAll = () => {
@@ -79,11 +104,25 @@ const TargetingAppVersionSelect: React.FC<IProps> = ({value, mode, options, onCh
     setShowRightList([]);
   };
 
-  const clearOption = (clearValue) => {
+  const clearOption = (clearValue: string) => {
     const newValue = value.filter(item => item !== clearValue);
-    const rightList = showRightList.filter(item => item.value !== clearValue);
+    const newShowRightList = showRightList.filter(item => item.value !== clearValue);
     onChange(newValue);
-    setShowRightList(rightList);
+    setShowRightList(newShowRightList);
+  };
+
+  const handleDropdownVisibleChange = (open: boolean) => {
+    if (!open) {
+      setCustomInputValue(undefined);
+      // 关闭下拉框时，清理防抖定时器
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    } else {
+      setCustomInputValue(undefined);
+      setFilterOption(options);
+    }
+    onDropdownVisibleChange(open);
   };
 
   return (<>
@@ -97,11 +136,12 @@ const TargetingAppVersionSelect: React.FC<IProps> = ({value, mode, options, onCh
       onChange={(value) => onChange(value)}
       maxTagCount='responsive'
       maxTagPlaceholder={(omittedValues) => maxTagPlaceholder(omittedValues)}
-      onDropdownVisibleChange={(open) => onDropdownVisibleChange(open)}
+      onDropdownVisibleChange={handleDropdownVisibleChange}
       dropdownRender={(originDom) => (<>
         <div className={styles['select-container']}>
           <div className={styles['left-container']}>
-            <Input onChange={(e) => handleSearch(e)}
+            <Input
+              onChange={(e) => handleSearch(e)}
               className={styles['custom-input']}
               allowClear 
               prefix={<SearchOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }}/>}
@@ -110,7 +150,9 @@ const TargetingAppVersionSelect: React.FC<IProps> = ({value, mode, options, onCh
                   input?.focus();
                 },100);
               }}
+              autoComplete='off'
               onKeyDown={(e) => e.stopPropagation()}
+              value={customInputValue}
             />
             <p className={styles['custom-btn']}>
               <span className={styles['custom-btn-all']} onClick={() => handleCustomAll()}>全选</span>

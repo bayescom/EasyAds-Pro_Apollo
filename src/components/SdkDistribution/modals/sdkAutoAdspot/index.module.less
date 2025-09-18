@@ -1,0 +1,82 @@
+// 公共样式
+.third-adspot-modal {
+  :global {
+    .ant-drawer-wrapper-body {
+      .ant-drawer-header .ant-drawer-header-title {
+        flex-direction: row-reverse;
+        .ant-drawer-close {
+          font-size: 24px;
+          color: #000;
+        }
+      }
+
+      .ant-drawer-body {
+        padding: 0;
+        .ant-alert.ant-alert-info {
+          margin-top: 0;
+        }
+
+        .ant-col {
+          .ant-form-item {
+            .ant-form-item-control-input .ant-form-item-control-input-content .ant-input-disabled {
+              cursor: default;
+              padding-top: 2px;
+            }
+
+            .ant-input-borderless {
+              color: #000;
+            }
+
+            .ant-radio-group {
+              .ant-radio-button-wrapper {
+                width: 126px;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// 穿山甲
+.csj-drawer-modal {
+  .inline-row {
+    width: 500px;
+    margin-left: 160px;
+    :global {
+      .ant-col.ant-col-12 {
+        margin-right: 9px;
+        .ant-input {
+          width: 252px;
+        }
+      }
+    }
+  }
+}
+
+.ylh-auto-adspot {
+  :global {
+    .ant-checkbox.ant-checkbox-disabled,
+    .ant-checkbox.ant-checkbox-disabled:hover {
+      + span {
+        color: #838486 !important;
+      }
+    }
+
+    .ant-checkbox-disabled + span {
+      color: #838486 !important;
+    }
+    .ant-checkbox.ant-checkbox-checked.ant-checkbox-disabled {
+      .ant-checkbox-inner {
+        border-color: #A2C5F4 !important;
+        background-color: #A2C5F4 !important;
+      }
+    }
+
+    .ant-checkbox-disabled.ant-checkbox-checked .ant-checkbox-inner::after {
+      border-color: #fff;
+    }
+  }
+}

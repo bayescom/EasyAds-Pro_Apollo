@@ -9,6 +9,7 @@ const specialRoutes = new Set(['/login']);
 const pathList = [
   { path: '/traffic/list/media', fatherKey: '/traffic/media' },
   { path: '/traffic/list/adspot', fatherKey: '/traffic/adspot' },
+  {path: '/data_report/ab_report_detail', fatherKey: '/data_report/ab_report'}
 ];
 
 export default (WrappedComponent) => {

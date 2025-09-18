@@ -15,12 +15,15 @@ type Props = {
  */
 type TargetingType = 0 | 1;
 
+const sdkDistributionDirectionCommonList = ['osv', 'location', 'maker'];
+
 function TargetingType({ includeKey, excludeKey, model, children, fieldName }: Props) {
+  const commonProperty = fieldName ? `${fieldName[1]}Property` : '';
   const form = Form.useFormInstance();
   const [targetingType, setTargetingType] = useState<TargetingType>(
     () => {
       if (fieldName) {
-        return model.deviceProperty == '!' ? 1 : 0;
+        return model[`${commonProperty}`] == '!' ? 1 : 0;
       } else {
         return !model[includeKey] && model[excludeKey] ? 1 : 0;
       }
@@ -30,12 +33,10 @@ function TargetingType({ includeKey, excludeKey, model, children, fieldName }: P
   useEffect(() => {
     if (model[includeKey] || model[excludeKey]) {
       if (fieldName) {
-        model.deviceProperty == '!' ? setTargetingType(1) : setTargetingType(0);
+        model[`${commonProperty}`] == '!' ? setTargetingType(1) : setTargetingType(0);
       } else {
         !model[includeKey] ? setTargetingType(1) : setTargetingType(0);
       }
-    } else {
-      setTargetingType(0);
     }
   }, [model, includeKey, excludeKey, fieldName]);
 
@@ -49,13 +50,17 @@ function TargetingType({ includeKey, excludeKey, model, children, fieldName }: P
       const currentChangeItemIndex = fieldName[0];
       groupStrategyList.map((item, groupStrategyIndex) => {
         // 这里是个坑，因为是list，所以用 else 下面那个赋值方法不行，includeKey 和 excludeKey 交换的方式也不行，所以，只能多加了一个参数，来取对的值
-        if (groupStrategyIndex == currentChangeItemIndex) {
-          item.deviceProperty = (value === 0 ? '' : '!');
-        } else {
-          item.deviceProperty = '';
+        if (sdkDistributionDirectionCommonList.includes(fieldName[1])) {
+          if (groupStrategyIndex == currentChangeItemIndex) {
+            item[`${commonProperty}`] = (value === 0 ? '' : '!');
+          } else {
+            item[`${commonProperty}`] = '';
+          }
         }
+        
         return item;
       });
+      form.setFieldValue('groupStrategyList', groupStrategyList);
     } else {
       form.setFieldValue(
         value === 0 ? includeKey : excludeKey,

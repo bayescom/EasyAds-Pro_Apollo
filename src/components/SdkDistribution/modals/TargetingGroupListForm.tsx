@@ -17,6 +17,9 @@ type GroupType = {
   name: string,
   appVersion: string,
   sdkVersion: string,
+  location: string,
+  osv: string,
+  maker: string
 }
 
 const { Text } = Typography;
@@ -54,7 +57,9 @@ const getDraggableStyle = (isDragging) => {
   return {};
 };
 
-const distributionDispatcher = store.getModelDispatchers('sdkDistribution');
+const sdkDistributionDispatcher = store.getModelDispatchers('sdkDistribution');
+const distributionDispatcher = store.getModelDispatchers('distribution');
+
 function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId }: {
   visible: boolean,
   onClose: () => void,
@@ -64,6 +69,7 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
   const [form] = Form.useForm();
   const distributionState = store.useModelState('sdkDistribution');
   const distribution = distributionState[adspotId];
+  const distributionModel = store.useModelState('distribution');
 
   // 仅获取 ITargetingGroup的字段，去掉suppliers和percentageGroups
   const _groupStrategyList = distribution.percentageList.find(item => item.trafficPercentage.percentageId === percentageGroupId)?.trafficGroupList.map(item => item.groupStrategy);
@@ -80,14 +86,19 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
         }
         return formatPayloadDataFromTargetingGroupModal(item);
       });
-
-      const data = await distributionDispatcher.updateTargetingGroups({
+      console.log(groupsToSubmit, 'groupsToSubmit')
+      // return ;
+      const data = await sdkDistributionDispatcher.updateTargetingGroups({
         adspotId,
         groupStrategyList: groupsToSubmit,
         percentageGroupId
       });
 
       if (data) {
+        // 修改流量分组的信息之后，还要重新获取一下 使得最外面的定向信息能够更新
+        if (distributionModel.currentTargetId) {
+          distributionDispatcher.getSdkStrategyDirection({targetId: distributionModel.currentTargetId});
+        }
         onCancel();
       }
     } catch (errorInfo) {
@@ -117,6 +128,9 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
       name: '',
       appVersion: '',
       sdkVersion: '',
+      location: '',
+      osv: '',
+      maker: ''
     };
 
     form.getFieldValue('groupStrategyList').forEach(item => {
@@ -139,20 +153,21 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
     }, 500);
   };
 
+
   return (
     <Modal
       title="编辑流量分组"
       open={visible}
       okText="提交"
       cancelText="取消"
-      width={720}
+      width={820}
       maskClosable={false}
       onOk={onSubmit}
       onCancel={onCancel}
       afterClose={() => form.resetFields()}
       wrapClassName={styles['targeting-group-container']}
     >
-      <Form form={form} initialValues={{groupStrategyList}} >
+      <Form form={form} initialValues={{groupStrategyList}}>
         <Alert
           style={{marginBottom: 10}}
           message="流量按从左到右顺序依次请求流量分组，直至命中分组规则"

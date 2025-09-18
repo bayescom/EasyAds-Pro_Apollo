@@ -10,7 +10,8 @@ type Iprops = {
   setMetaAppIdDisabled: (value: boolean) => void,
   setSavePervMetaAppId: (value) => void,
   customColSpan?: number,
-  className?: string
+  className?: string,
+  disabledMetaAppId: boolean
 }
 
 export default function MetaAppId({
@@ -21,9 +22,17 @@ export default function MetaAppId({
   setMetaAppIdDisabled,
   setSavePervMetaAppId,
   customColSpan,
-  className
+  className,
+  disabledMetaAppId
 }: Iprops) {
   const form = Form.useFormInstance();
+
+  const handleClick = () => {
+    if (disabledMetaAppId) {
+      return;
+    }
+    setMetaAppIdDisabled(false);
+  };
 
   const handleEditMetaAppId = () => {
     // 保存输入框之前的值
@@ -61,7 +70,7 @@ export default function MetaAppId({
     }
   };
 
-  return (<div className={[styles['meta-app-item-container'], className ? className : ''].join(' ')}>
+  return (<div className={[styles['meta-app-item-container'], className ? className : '', disabledMetaAppId ? styles['disabled-app-id'] : ''].join(' ')}>
     {
       isSeverHasSaveMetaAppId ? <Col span={customColSpan ? customColSpan : 16} key={config.metaKey} className={['meta-app-id-edit', metaAppIdDisabled ? '' : 'meta-app-id-operation'].join(' ')}>
         {
@@ -88,7 +97,7 @@ export default function MetaAppId({
         }
         <div className='meta-app-id-edit-operation'>
           {
-            metaAppIdDisabled ? <span className='meta-app-id-edit-text-item' onClick={() => setMetaAppIdDisabled(false)}>编辑</span> 
+            metaAppIdDisabled ? <span className='meta-app-id-edit-text-item' onClick={() => handleClick()}>编辑</span> 
               : <span className='meta-app-id-operation-text-item'>
                 <CheckCircleOutlined onClick={() => handleEditMetaAppId()}/>
                 <CloseCircleOutlined onClick={() => handleCancelEditMetaAppId()}/>

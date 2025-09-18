@@ -1,6 +1,6 @@
 import { DateType } from '@/models/types/common';
 import { ISdkAdspotChannel } from '@/models/types/sdkAdspotChannel';
-import { TrafficPercentageType, GroupStrategyType } from '@/models/types/sdkDistribution';
+import { GroupStrategyType, TargetPercentageObjByWaterfall, TargetPercentageObj } from '@/models/types/sdkDistribution';
 import { request } from 'ice';
 
 export default {
@@ -92,12 +92,24 @@ export default {
   // 更新广告位的流量分组
   async updatePercentageGroups(
     adspotId: number,
-    trafficPercentageList: TrafficPercentageType[]
+    targetPercentageObj: TargetPercentageObj
+    // trafficPercentageList: TrafficPercentageType[]
   ) {
     
-    return await request.put(`/adspot/sdk/traffic_percentage/${adspotId}`, {
-      trafficPercentageList
-    }, {
+    return await request.put(`/adspot/sdk/traffic_percentage/${adspotId}`, targetPercentageObj, {
+      instanceName: 'luna'
+    });
+  },
+
+  // 更新广告位的流量分组
+  async updatePercentageGroupsByWaterfall(
+    adspotId: number,
+    targetPercentageObj: TargetPercentageObjByWaterfall,
+    percentageId: number,
+    targetId: number
+  ) {
+    
+    return await request.put(`adspot/sdk/traffic_percentage/${adspotId}/${percentageId}/${targetId}`, targetPercentageObj, {
       instanceName: 'luna'
     });
   },
@@ -115,6 +127,41 @@ export default {
   // sdk广告源弹窗新建时，根据当前广告源获取是否填写过应用ID/媒体ID
   async getMetaAppId({adspotId, sdkChannelId}) {
     return await request.get(`adspot/sdk_meta/${adspotId}/${sdkChannelId}`, {
+      instanceName: 'luna'
+    });
+  },
+
+  // 根据分组id 获取分组的定向规则信息，之前是前端自己根据value，和list，自己算的。现在改为接口返回
+  async getSdkStrategyDirection(targetId) {
+    return await request.get(`/adspot/sdk/strategy_direction/${targetId} `, {
+      instanceName: 'luna'
+    });
+  },
+
+  // 三方创建
+  // 获取
+  async getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId, source, adspotType } : { adspotId: number, sdkAdspotChannelId: number, source: string, adspotType: number}) {
+    return await request.get(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannelId}/${adspotType}/${source}`, {
+      instanceName: 'luna'
+    });
+  },
+
+  // 创建
+  async createAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source } : { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
+    return await request.post(`/adspot/sdk/auto_adspot/${adspotId}/${adspotType}/${source}`, {
+      sdk_channel: sdkAdspotChannel,
+      auto_adspot: sdkAutoAdspot
+    }, {
+      instanceName: 'luna'
+    });
+  },
+
+  // 更新
+  async updateAutoAdspotSdkChannel({ sdkAdspotChannel, sdkAutoAdspot, adspotId, adspotType, source } : { sdkAdspotChannel: ISdkAdspotChannel, sdkAutoAdspot, adspotId: number, adspotType: number, source: string }) {
+    return await request.put(`/adspot/sdk/auto_adspot/${adspotId}/${sdkAdspotChannel.id}/${adspotType}/${source}`, {
+      sdk_channel: sdkAdspotChannel,
+      auto_adspot: sdkAutoAdspot
+    }, {
       instanceName: 'luna'
     });
   },

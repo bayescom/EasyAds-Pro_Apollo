@@ -1,7 +1,7 @@
 import { IPercentage } from '@/models/types/sdkDistribution';
 import store from '@/store';
 import { Col, message, Modal, Radio, Row, Typography } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import styles from './index.module.less';
 
 const { Paragraph } = Typography;
@@ -9,6 +9,7 @@ const { Paragraph } = Typography;
 type Props = {
   open: boolean,
   adspotId: number,
+  currentIsWaterfall: boolean,
   targetingGroupId?: number,
   percentageGroups?: IPercentage[],
   onClose: () => void
@@ -16,18 +17,34 @@ type Props = {
 
 const sdkDistributionDispatcher = store.getModelDispatchers('sdkDistribution');
 
-function StopAbForm({ open, adspotId, percentageGroups, onClose }: Props) {
+function StopAbForm({ open, adspotId, currentIsWaterfall, percentageGroups, onClose }: Props) {
   const [groupIdToUse, setGroupIdToUse] = useState(null);
+  const distributionState = store.useModelState('distribution');
+
+  const options = useMemo(() => {
+    if (!percentageGroups) {
+      return [];
+    }
+
+    if (currentIsWaterfall) {
+      return (percentageGroups[0].trafficGroupList.filter(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.currentTargetId).map(trafficGroup => {
+        return trafficGroup.targetPercentageStrategyList.filter(targetPercentageStrategy => targetPercentageStrategy.targetPercentage.status == 1).map(targetPercentageStrategy => ({
+          label: targetPercentageStrategy.targetPercentage.tag + '组',
+          value: targetPercentageStrategy.targetPercentage.targetPercentageId || 0
+        }));
+      })).flat();
+    } else {
+      return percentageGroups.filter(item => item.trafficPercentage.percentageId && item.trafficPercentage.status == 1)
+        .map(item => ({
+          label: item.trafficPercentage.tag + '组',
+          value: item.trafficPercentage.percentageId || 0
+        }));
+    }
+  }, [currentIsWaterfall, distributionState.currentTargetId, percentageGroups]);
 
   if (!percentageGroups) {
     return <></>;
   }
-
-  const options = percentageGroups.filter(item => item.trafficPercentage.percentageId)
-    .map(item => ({
-      label: item.trafficPercentage.tag + '组',
-      value: item.trafficPercentage.percentageId || 0
-    }));
 
   const onSubmit = async () => {
     if (!groupIdToUse) {
@@ -35,17 +52,43 @@ function StopAbForm({ open, adspotId, percentageGroups, onClose }: Props) {
       return;
     }
 
-    const selectedGroup = percentageGroups.find(item => item.trafficPercentage.percentageId === groupIdToUse);
-    if (!selectedGroup) {
-      message.error('选择的分组无效');
-      return;
+    if(currentIsWaterfall) {
+      const currentTrafficGroup = percentageGroups[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.currentTargetId);
+      const expName = currentTrafficGroup?.expName || '';
+      const expId = currentTrafficGroup?.expId || 0;
+      const targetPercentageObj = {
+        targetPercentageList: [{ targetPercentageId: groupIdToUse, tag: 'A', percentage: 100, status: 1, copyTargetPercentageId: undefined}],
+        experiment: {
+          expId,
+          expName
+        }
+      };
+      const result = await sdkDistributionDispatcher.updatePercentageGroupsByWaterfall({
+        adspotId,
+        targetPercentageObj,
+        percentageGroupId: distributionState.currentGroupTargetId,
+        targetId: distributionState.currentTargetId
+      });
+      result && onCancel();
+    } else {
+      const selectedGroup = percentageGroups.find(item => item.trafficPercentage.percentageId === groupIdToUse);
+      if (!selectedGroup) {
+        message.error('选择的分组无效');
+        return;
+      }
+      const targetPercentageObj = {
+        trafficPercentageList: [{ percentageId: selectedGroup.trafficPercentage.percentageId, tag: 'A', percentage: 100, status: 1 }],
+        experiment: {
+          expId: selectedGroup.expId,
+          expName: selectedGroup.expName
+        }
+      };
+      const result = await sdkDistributionDispatcher.updatePercentageGroups({
+        adspotId,
+        targetPercentageObj
+      });
+      result && onCancel();
     }
-
-    await sdkDistributionDispatcher.updatePercentageGroups({
-      adspotId,
-      trafficPercentageList: [{ percentageId: selectedGroup.trafficPercentage.percentageId, tag: 'A', percentage: 100 }]
-    });
-    onCancel();
   };
 
   const onCancel = () => {
@@ -71,7 +114,9 @@ function StopAbForm({ open, adspotId, percentageGroups, onClose }: Props) {
             buttonStyle="solid"
             value={groupIdToUse}
             options={options}
-            onChange={(e) => setGroupIdToUse(e.target.value)}
+            onChange={(e) => {
+              setGroupIdToUse(e.target.value);
+            }}
           />
         </Col>
       </Row>

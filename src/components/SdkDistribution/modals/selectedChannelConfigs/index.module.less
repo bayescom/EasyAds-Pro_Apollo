@@ -82,7 +82,7 @@
       .meta-app-id-edit-operation {
         line-height: 38px;
         .meta-app-id-operation-text-item {
-          margin-left: 18px;
+          margin-left: 8px;
           :global {
             .anticon {
               width: 17px;
@@ -111,6 +111,18 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+  }
+}
+
+.disabled-app-id {
+  :global {
+    .meta-app-id-info-text .meta-app-id-info-content, .meta-app-id-edit .meta-app-id-edit-operation .meta-app-id-edit-text-item {
+      color: #b8b8b8;
+    }
+
+    .meta-app-id-edit .meta-app-id-edit-operation .meta-app-id-edit-text-item {
+      cursor: not-allowed;
     }
   }
 }

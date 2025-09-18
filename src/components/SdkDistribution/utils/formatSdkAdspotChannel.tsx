@@ -1,3 +1,4 @@
+import { sdkReportApiChannels } from '@/components/Utils/Constant';
 import { firstLetterToOperatorMap, firstLetterToPropertyMap } from '@/models/common';
 
 export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
@@ -9,11 +10,12 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
   const operatorRegex = Object.values(firstLetterToOperatorMap).map(item => `(${item})`).join('|');
   const initialVersion = appVersion.replace(new RegExp(operatorRegex), '');
   const initialProperty = firstLetterToPropertyMap[appVersion.substr(0, 1)];
-  const newReportApiParam = [2, 3, 5].includes(sdkAdspotChannelFormData.adnId) ? {
+  const newReportApiParam = sdkReportApiChannels.includes(sdkAdspotChannelFormData.adnId) ? {
     id: sdkAdspotChannelFormData.reportApiParam.id || null,
     name: sdkAdspotChannelFormData.reportApiParam.name,
     channelParams: sdkAdspotChannelFormData.reportApiParam.channelParams,
-    status: sdkAdspotChannelFormData.reportApiParam.status
+    status: sdkAdspotChannelFormData.reportApiParam.status,
+    autoCreateStatus: sdkAdspotChannelFormData.reportApiParam.autoCreateStatus
   } : {};
 
   const sdkAdspotChannelNew = {
@@ -56,6 +58,8 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
     params: sdkAdspotChannelFormData.params,
     adnParamsMeta: sdkAdspotChannelFormData.adnParamsMeta,
     reportApiParam: newReportApiParam,
+    isAutoCreate: sdkAdspotChannelFormData.isAutoCreate || 0,
+    cpmUpdateTime: sdkAdspotChannelFormData.cpmUpdateTime
   };
   return sdkAdspotChannelNew;
 }
@@ -101,7 +105,9 @@ export function formatModalDataFromPayload(sdkAdspotChannelPayloadData) {
     excludeDeviceMaker: direction.deviceMaker.property == 'include' ? '' : direction.deviceMaker.value.join(','),
     osv: direction.osVersion.property == 'include' ? direction.osVersion.value.join(',') : '',
     excludeOsv: direction.osVersion.property == 'include' ? '' : direction.osVersion.value.join(','),
-    appVersion: appVersionProperty + direction.appVersion.value.join(',') || ''
+    appVersion: appVersionProperty + direction.appVersion.value.join(',') || '',
+    isAutoCreate: sdkAdspotChannelPayloadData.isAutoCreate,
+    cpmUpdateTime: sdkAdspotChannelPayloadData.cpmUpdateTime
   };
   return sdkAdspotChannel;
 }
@@ -130,6 +136,18 @@ export function formatPayloadDataFromTargetingGroupModal(formData) {
       sdkVersion: {
         property: initialSdkProperty || 'include',
         value: initialSdkVersion == '' ? [] : initialSdkVersion.split(',') || []
+      },
+      location: {
+        property: formData.locationProperty == '!' ? 'exclude' : 'include',
+        value: formData.location == '' ? [] : formData.location.split(',') || []
+      },
+      osv: {
+        property: formData.osvProperty == '!' ? 'exclude' : 'include',
+        value: formData.osv == '' ? [] : formData.osv.split(',') || []
+      },
+      maker: {
+        property: formData.makerProperty == '!' ? 'exclude' : 'include',
+        value: formData.maker == '' ? [] : formData.maker.split(',') || []
       },
     },
   };
@@ -162,6 +180,13 @@ export function formatTargetingGroupDataFromPayload(payloadData) {
 
     appVersion: getVersionProperty(direction.appVersion.property) + direction.appVersion.value.join(',') || '',
     sdkVersion: getVersionProperty(direction.sdkVersion.property) + direction.sdkVersion.value.join(',') || '',
+    location: direction.location.value.join(',') || '',
+    locationProperty: ['', 'include'].includes(direction.location.property) ? '' : '!',
+
+    maker: direction.maker.value.join(',') || '',
+    makerProperty: ['', 'include'].includes(direction.maker.property) ? '' : '!',
+    osv: direction.osv.value.join(',') || '',
+    osvProperty: ['', 'include'].includes(direction.osv.property) ? '' : '!',
   };
   return data;
 }

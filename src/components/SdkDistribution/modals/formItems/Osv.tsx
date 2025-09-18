@@ -6,6 +6,7 @@ type Props = {
   name: string,
   mediumId: number | undefined,
   notRequired?: boolean,
+  isSdkGroup?: boolean
 };
 
 const platformTypeMap = {
@@ -21,7 +22,7 @@ const mediumDispatcher = store.getModelDispatchers('medium');
 const osvOptions = store.getModelState('dimension').options.osv;
 const dimensionDispatcher = store.getModelDispatchers('dimension');
 
-function Osv({ name, mediumId, notRequired }: Props) {
+function Osv({ name, mediumId, notRequired, isSdkGroup }: Props) {
   const dimensionState = store.useModelState('dimension');
   const optionsData = dimensionState.options.osv || [];
 
@@ -61,7 +62,7 @@ function Osv({ name, mediumId, notRequired }: Props) {
     }
   };
 
-  return (<TargetIngTreeSelect formName={name} notRequired={notRequired} optionList={currentOsVersionOptions()} errorMessage='请选择操作系统版本'/>);
+  return (<TargetIngTreeSelect isSdkGroup={isSdkGroup} formName={name} notRequired={notRequired} optionList={currentOsVersionOptions()} errorMessage='请选择操作系统版本'/>);
 }
 
 export default Osv;

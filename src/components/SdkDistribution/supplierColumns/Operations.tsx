@@ -7,6 +7,7 @@ import { ISdkAdspotChannel } from '@/models/types/sdkAdspotChannel';
 import { formatModalDataFromPayload } from '@/components/SdkDistribution/utils/formatSdkAdspotChannel';
 import sdkChannelService from '@/services/sdkChannel';
 import { getLocalDateType } from '../utils';
+import { channelSource } from '../modals/sdkAutoAdspot/utils';
 
 const sdkAdspotChannelDispatcher = store.getModelDispatchers('sdkAdspotChannel');
 const sdkDistributionDispatcher = store.getModelDispatchers('sdkDistribution');
@@ -37,6 +38,8 @@ function Operation({
 
   const [visible, setVisible] = useState(false);
   const [modalData, setModalData] = useState<ISdkAdspotChannel>();
+ 
+  const adspotType = distributionState.adspotListMap[adspotId]?.adspotType || 0;
 
   const filterDistributionGroup = () => {
     // 如果为false
@@ -85,6 +88,20 @@ function Operation({
     }
   };
 
+  const handleEdit = async (e) => {
+    e.stopPropagation();
+    // 旧数据使用老接口，新数据使用三方接口
+    if (model.isAutoCreate) {
+      const data = await sdkAdspotChannelDispatcher.getAutoAdspotSdkChannel({adspotId, sdkAdspotChannelId: model.id, adspotType, source: channelSource[model.adnId]});
+      setModalData(formatModalDataFromPayload(data));
+      setVisible(true);
+    } else {
+      const data = await sdkChannelService.getSdkAdspotChannel({adspotId, sdkAdspotChannelId: model.id});
+      setModalData(formatModalDataFromPayload(data.sdkChannel));
+      setVisible(true);
+    }
+  };
+
   return (<>
     <Switch
       size="small"
@@ -92,12 +109,7 @@ function Operation({
       onChange={(newStatus) => onChange(newStatus)}
     />
     <Space size={8} style={{marginLeft: '10px', verticalAlign: 'middle', fontSize: '12px'}}>
-      <a onClick={async (e) => {
-        e.stopPropagation();
-        const data = await sdkChannelService.getSdkAdspotChannel({adspotId, sdkAdspotChannelId: model.id});
-        setModalData(formatModalDataFromPayload(data.sdkChannel));
-        setVisible(true);
-      }}>编辑</a>
+      <a onClick={async (e) => handleEdit(e)}>编辑</a>
       <Popconfirm
         title={
           <>

@@ -23,14 +23,14 @@ type dimensionListType = {
 
 const chartDimensionList = {
   'req': { key: 'req', name: '请求', color: '#7D26CD', topGradient: 'rgba(125, 38, 205, 0.1)', tailGradient: 'rgba(125, 38, 205, 0)'},
-  'bid': { key: 'bid', name: '广告返回', color: '#FFBF00', topGradient: 'rgba(255, 191, 0, 0.1)', tailGradient: 'rgba(255, 191, 0, 0)'},
+  'bid': { key: 'bid', name: '返回', color: '#FFBF00', topGradient: 'rgba(255, 191, 0, 0.1)', tailGradient: 'rgba(255, 191, 0, 0)'},
   'bidRate': { key: 'bidRate', name: '填充率', color: '#FF3030',format: 'percent' },
-  'imp': { key: 'imp', name: '展现', color: '#37A2FF', topGradient: 'rgba(55, 162, 255, 0.1)', tailGradient: 'rgba(55, 162, 255, 0)'},
-  'impRate': { key: 'impRate', name: '展现率', format: 'percent', color: '#2364FB', topGradient: 'rgba(35, 100, 251, 0.1)', tailGradient: 'rgba(35, 100, 251, 0)'},
+  'imp': { key: 'imp', name: '展示', color: '#37A2FF', topGradient: 'rgba(55, 162, 255, 0.1)', tailGradient: 'rgba(55, 162, 255, 0)'},
+  'impRate': { key: 'impRate', name: '展示率', format: 'percent', color: '#2364FB', topGradient: 'rgba(35, 100, 251, 0.1)', tailGradient: 'rgba(35, 100, 251, 0)'},
   'click': { key: 'click', name: '点击', color: '#FF0087', topGradient: 'rgba(255, 0, 135, 0.1)', tailGradient: 'rgba(255, 0, 135, 0)'},
   'ctr': { key: 'ctr', name: '点击率', format: 'percent', color: '#76c911', topGradient: 'rgba(118, 201, 17, 0.1)', tailGradient: 'rgba(118, 201, 17, 0)'},
   'clickRate': { key: 'clickRate', name: '点击率', format: 'percent', color: '#76c911' },
-  'income': { key: 'income', name: '收入(¥)', format: 'rmbYuan', color: '#ff00ff', topGradient: 'rgba(255, 0, 255, 0.1)', tailGradient: 'rgba(255, 0, 255, 0)'},
+  'income': { key: 'income', name: '预估收益(¥)', format: 'rmbYuan', color: '#ff00ff', topGradient: 'rgba(255, 0, 255, 0.1)', tailGradient: 'rgba(255, 0, 255, 0)'},
   'ecpm': { key: 'ecpm', name: 'eCPM(¥)', format: 'rmbYuan', color: '#80FFA5', topGradient: 'rgba(128, 255, 165, 0.1)', tailGradient: 'rgba(128, 255, 165, 0)'},
   'ecpc': { key: 'ecpc', name: 'eCPC(¥)', format: 'rmbYuan', color: '#FFBF00', topGradient: 'rgba(255, 191, 0, 0.1)', tailGradient: 'rgba(255, 191, 0, 0)'},
   'cpa': { key: 'cpa', name: 'CPA(¥)', format: 'rmbYuan', color: '#0099cc' },
@@ -78,4 +78,16 @@ const channelIconMap = {
   99: adx
 };
 
-export { dimensionListType, chartDimensionList, adspotTypeAllList, platformIconMap, mediaIconMap, channelIconMap };
+/** 2, 3, 4, 5 穿山甲，优量汇，百度，快手 */
+const sdkReportApiChannels = [2, 3, 4, 5];
+
+const autoCreateStatusTipMap = {
+  2: '请确保您的优量汇账号拥有应用代码位管理API权限。若无此权限，可向优量汇对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在优量汇后台同步创建广告代码位。',
+  3: '请确保您的穿山甲账号拥有应用代码位管理API权限。若无此权限，可向穿山甲对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在穿山甲后台同步创建广告代码位。',
+  4: '请确保您的百度账号拥有应用代码位管理API权限。若无此权限，可向百度对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在百度后台同步创建广告代码位。',
+  5: '请确保您的快手账号拥有应用代码位管理API权限。若无此权限，可向快手对接人进行申请。开启自动创建广告源功能，当您在平台创建广告源时，平台会自动在快手后台同步创建广告代码位。',
+};
+
+const adspotTypeListMap = { 1: '开屏', 2: '信息流', 3: '横幅', 4: '插屏', 5: '激励视频' };
+
+export { dimensionListType, chartDimensionList, adspotTypeAllList, platformIconMap, mediaIconMap, channelIconMap, sdkReportApiChannels, autoCreateStatusTipMap, adspotTypeListMap };

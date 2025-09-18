@@ -1,0 +1,70 @@
+@import '/src/styles/common.less';
+
+.ab-test-table-container {
+  :global {
+    .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+    .ant-input-affix-wrapper:focus, .ant-input-affix-wrapper-focused,
+    .ant-select-selector:focus, .ant-select-selector:hover,
+    .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+      border-color: transparent !important;
+    }
+
+    .ant-form-item:hover, .ant-form-item:focus {
+      border-color: #2364FB !important;
+    }
+
+    .ant-select.ant-select-sm.ant-pagination-options-size-changer.ant-select-single.ant-select-show-arrow.ant-select-focused,
+    .ant-pagination-options-size-changer:hover {
+      .ant-select-selector {
+        border-color: #2364FB !important;
+        box-shadow: none;
+      }
+    }
+
+    .ant-pro-card:last-child {
+      .ant-pro-card-body {
+        padding: 0px;
+        .ant-table-thead, .ant-table-tbody .ant-table-row {
+          .ant-table-cell:first-child {
+            padding-left: 20px;
+          }
+        }
+
+        .ant-pro-table-list-toolbar-container {
+          padding: 0px;
+        }
+      }
+    }
+
+    .ant-pro-card.ant-pro-table-search {
+      margin-bottom: 9px;
+      .ant-form .ant-row .ant-col-8,
+      .ant-form .ant-row .ant-col-6{
+        flex: 0 0 20%;
+        max-width: 300px;
+        min-width: 300px;
+        padding-right: 0px !important;
+        padding-left: 10px !important;
+      }
+    }
+
+    .ant-pro-card.ant-pro-table-search.ant-pro-table-search-query-filter {
+      padding: 21px 21px 0px 21px
+    }
+
+    .ant-picker.ant-picker-range {
+      border: none;
+    }
+    .ant-picker-focused {
+      box-shadow: none;
+    }
+
+    .common-ant-form-item();
+  }
+}
+
+.media-select-wrap {
+  border: none !important;
+}
+
+

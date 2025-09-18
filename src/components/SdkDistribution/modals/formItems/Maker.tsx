@@ -5,12 +5,13 @@ import { useEffect } from 'react';
 type Props = {
   name: string,
   notRequired?: boolean,
+  isSdkGroup?: boolean
 };
 
 const makerOptions = store.getModelState('dimension').options.make;
 const dimensionDispatcher = store.getModelDispatchers('dimension');
 
-function Maker({ name, notRequired }: Props) {
+function Maker({ name, notRequired, isSdkGroup }: Props) {
   const dimensionState = store.useModelState('dimension');
   useEffect(() => {
     makerOptions || dimensionDispatcher.getCommonDimensionOptions('make');
@@ -19,6 +20,7 @@ function Maker({ name, notRequired }: Props) {
   return (
     <MultipleSelect
       name={name}
+      isSdkGroup={isSdkGroup}
       options={dimensionState.options.make || []}
       label=''
       keyType='value'

@@ -17,6 +17,8 @@ import treeSelect from './models/treeSelect';
 import dataTargetOperation from './models/dataTargetOperation';
 import appVersion from './models/appVersion';
 import sdkVersion from './models/sdkVersion';
+import reportAbTest from './models/reportAbTest';
+import reportAbTestDetail from './models/reportAbTestDetail';
 
 interface IAppStoreModels extends IStoreModels {
   token: typeof token,
@@ -36,7 +38,9 @@ interface IAppStoreModels extends IStoreModels {
   treeSelect: typeof treeSelect,
   dataTargetOperation: typeof dataTargetOperation,
   appVersion: typeof appVersion,
-  sdkVersion: typeof sdkVersion
+  sdkVersion: typeof sdkVersion,
+  reportAbTest: typeof reportAbTest,
+  reportAbTestDetail: typeof reportAbTestDetail
 }
 
 const appModels: IAppStoreModels = {
@@ -57,7 +61,9 @@ const appModels: IAppStoreModels = {
   treeSelect,
   dataTargetOperation,
   appVersion,
-  sdkVersion
+  sdkVersion,
+  reportAbTest,
+  reportAbTestDetail
 };
 
 const store = createStore(appModels);

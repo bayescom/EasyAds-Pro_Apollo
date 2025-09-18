@@ -5,7 +5,8 @@ import { FormListActionType, ModalForm, ProFormInstance, ProFormList, ProFormSwi
 import { Alert, Button, Col, Divider, Popconfirm, Row, Image } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './index.module.less';
-import { channelIconMap } from '@/components/Utils/Constant';
+import { channelIconMap, autoCreateStatusTipMap, sdkReportApiChannels } from '@/components/Utils/Constant';
+import { cloneDeep } from 'lodash';
 
 const channelDispatcher = store.getModelDispatchers('channel');
 
@@ -26,7 +27,7 @@ function ChannelForm({
       name: string;
     }>
   >();
-  const [sdkReportApiStatusMap, setSdkReportApiStatusMap] = useState<{[x in number]: boolean}>();
+  const [sdkReportApiStatusMap, setSdkReportApiStatusMap] = useState<Record<number, { status: boolean, autoCreateStatus: boolean }>>();
 
   const resetForm = useCallback(() => {
     if (!channel) {
@@ -36,11 +37,14 @@ function ChannelForm({
     const sdkReportApiStatusMap = {};
     if (channel.reportApiParams.length) {
       channel.reportApiParams.forEach((ele, index) => {
-        sdkReportApiStatusMap[index] = !!ele.status;
+        sdkReportApiStatusMap[index] = {
+          status: !!ele.status,
+          autoCreateStatus: !!ele.autoCreateStatus
+        };
       });
       setSdkReportApiStatusMap(sdkReportApiStatusMap);
     } else {
-      setSdkReportApiStatusMap({0: true});
+      setSdkReportApiStatusMap({0: {status: true, autoCreateStatus: channel.supportAutoCreate ? true : false}});
     }
   }, [channel]);
 
@@ -58,7 +62,8 @@ function ChannelForm({
       id: null,
       name: '',
       channelParams: {},
-      status: 1
+      status: 1,
+      autoCreateStatus: channel.supportAutoCreate ? 1 : 0
     }];
     setTimeout(() => {
       formRef.current?.setFieldsValue(defaultChannel);
@@ -84,7 +89,8 @@ function ChannelForm({
         newValues.reportApiParams = newValues.reportApiParams.map(item => {
           return {
             ...item,
-            status: item.status !== undefined ? +item.status : 1
+            status: item.status !== undefined ? +item.status : 1,
+            autoCreateStatus: channel.supportAutoCreate ? +item.autoCreateStatus : 0
           };
         });
 
@@ -110,7 +116,7 @@ function ChannelForm({
     >
       {/* 2, 3, 5 穿山甲，优量汇，快手； 4，7，9，10 百度，阿里SDK，OPPP SDK，TapTap */}
       {[2, 3, 5, 4, 7, 9, 10].includes(channel.adnId) ? <Alert
-        message={[2, 3, 5].includes(channel.adnId) ? <>根据账户ID、Key等信息将第三方数据回传，展示在数据报表中</> : <>该广告网络暂不支持三方拉取数据</>}
+        message={sdkReportApiChannels.includes(channel.adnId) ? <>根据账户ID、Key等信息将第三方数据回传，展示在数据报表中</> : <>该广告网络暂不支持三方拉取数据</>}
         type="info"
         showIcon
         banner
@@ -136,8 +142,9 @@ function ChannelForm({
                 creatorButtonText: '账户',
                 onClickCapture: () => {
                   const currentList = formRef.current?.getFieldValue('reportApiParams');
-                  const newSdkReportApiStatusMap = {...sdkReportApiStatusMap};
-                  newSdkReportApiStatusMap[currentList.length] = true;
+                  const newSdkReportApiStatusMap = cloneDeep(sdkReportApiStatusMap);
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  newSdkReportApiStatusMap![currentList.length] = {status: true, autoCreateStatus: channel.supportAutoCreate ? true : false};
                   setSdkReportApiStatusMap(newSdkReportApiStatusMap);
                 }
               } : false
@@ -147,18 +154,20 @@ function ChannelForm({
               const reportApiParams: ISdkChannel['reportApiParams'] = formRef.current?.getFieldValue('reportApiParams');
               if (reportApiParams) {
                 return [
-                  <Popconfirm
+                  <Button
                     key="delete"
-                    title={(<>各广告网络需要通过Reporting API将数据给回传，删除后<br />将无法再统计到您在此广告网络中产生的真实数据。</>)}
-                    okText="删除"
-                    onConfirm={() => action.remove(field.name)}
-                  >
-                    <Button
-                      type="link"
-                      icon={<DeleteOutlined style={{color: '#999'}}/>}
-                      danger
-                    />
-                  </Popconfirm>
+                    type="link"
+                    icon={<DeleteOutlined style={{ color: '#999', display: formRef.current?.getFieldValue('reportApiParams')[field.name].usedCount ? 'none' : 'inline-block'}}/>}
+                    danger
+                    disabled={formRef.current?.getFieldValue('reportApiParams')[field.name].usedCount}
+                    onClick={() => {
+                      action.remove(field.name);
+                      const currentList = formRef.current?.getFieldValue('reportApiParams');
+                      const newSdkReportApiStatusMap = {};
+                      currentList.forEach((item, index) => newSdkReportApiStatusMap[index] = {status: !!item.status, autoCreateStatus: !!item.autoCreateStatus});
+                      setSdkReportApiStatusMap(newSdkReportApiStatusMap);
+                    }}
+                  />
                 ];
               } else {
                 return [];
@@ -199,31 +208,52 @@ function ChannelForm({
                     label="报表API"
                     labelCol={{ flex: '0 1 120px' }}
                     wrapperCol={{ flex: '1 1 auto' }}
+                    initialValue={true}
                     fieldProps={{
                       size: 'small',
                       defaultChecked: true,
                       onChange: (value) => {
                         const data = getCurrentRowData();
-                        if (!value) {
+                        if (!value && !data.autoCreateStatus) {
+                          setCurrentRowData({...data, channelParams: {}});
+                        }
+                        const currentList = formRef.current?.getFieldValue('reportApiParams');
+                        const newSdkReportApiStatusMap = {};
+                        currentList.forEach((ele, index) => {
+                          newSdkReportApiStatusMap[index] = { status: ele.status, autoCreateStatus: ele.autoCreateStatus};
+                        });
+                        
+                        setSdkReportApiStatusMap(newSdkReportApiStatusMap);
+                      }
+                    }}
+                  />
+                  {channel.supportAutoCreate ? <ProFormSwitch
+                    name="autoCreateStatus"
+                    label="自动创建广告源"
+                    labelCol={{ flex: '0 1 120px' }}
+                    wrapperCol={{ flex: '1 1 auto' }}
+                    tooltip={autoCreateStatusTipMap[channel.adnId]}
+                    initialValue={channel.supportAutoCreate ? true : false}
+                    fieldProps={{
+                      size: 'small',
+                      onChange: (value) => {
+                        const data = getCurrentRowData();
+                        if (!value && !data.status) {
                           setCurrentRowData({...data, channelParams: {}});
                         }
                         const currentList = formRef.current?.getFieldValue('reportApiParams');
                         const newSdkReportApiStatusMap = {};
                         
                         currentList.forEach((ele, index) => {
-                          if (ele.status === undefined) {
-                            newSdkReportApiStatusMap[index] = true;
-                          } else {
-                            newSdkReportApiStatusMap[index] = ele.status;
-                          }
+                          newSdkReportApiStatusMap[index] = { status: ele.status, autoCreateStatus: ele.autoCreateStatus};
                         });
-                        
                         setSdkReportApiStatusMap(newSdkReportApiStatusMap);
                       }
                     }}
-                  /></> : (<></>)
+                  /> : <></>}
+                  </> : (<></>)
                 }
-                {sdkReportApiStatusMap && sdkReportApiStatusMap[_index] ?
+                {sdkReportApiStatusMap && sdkReportApiStatusMap[_index] && (sdkReportApiStatusMap[_index].status || sdkReportApiStatusMap[_index].autoCreateStatus) ?
                   channel.reportApiParamsMeta.map(paramMeta => (
                     <ProFormTextArea
                       key={paramMeta.metaKey}

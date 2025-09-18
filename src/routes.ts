@@ -16,6 +16,8 @@ const AdspotEdit = lazy(() => import('@/pages/Adspot/edit'));
 const User = lazy(() => import('@/pages/User'));
 const AppVersion = lazy(() => import('@/pages/AppVersion'));
 const SdkVersion = lazy(()=> import('@/pages/SdkVersion'));
+const ReportAbTest = lazy(() => import('@/pages/ReportAbTest'));
+const ReportAbTestDetail = lazy(() => import('@/pages/ReportAbTestDetail'));
 
 const routerConfig: IRouterConfig[] = [
   {
@@ -48,6 +50,14 @@ const routerConfig: IRouterConfig[] = [
       {
         path: '/traffic/distribution/:adspot_id?',
         component: Distribution
+      },
+      {
+        path: '/data_report/ab_report',
+        component: ReportAbTest
+      },
+      {
+        path: '/data_report/ab_report_detail/:id',
+        component: ReportAbTestDetail,
       },
       {
         path: '/traffic/list/media/new',

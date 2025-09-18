@@ -136,6 +136,115 @@
   }
 }
 
+.percentage-group-tab-waterfall {
+  :global {
+    .ant-tabs-tabpane {
+      // tabpane上有tab-index, 点击后会变成focus状态，显示outline； safari 14.0 (15610.1.28.1.9, 15610) 和 chrome 83 可重现
+      outline: none;
+    }
+
+    .ant-tabs-nav-operations {
+      // display: none !important;
+    }
+
+    .ant-tabs-tab {
+      border: none;
+    }
+
+    .ant-tabs-nav {
+      // border-top: 1px solid #dcdcdc;
+      background-color: #f1f4ff;
+      margin-bottom: 0px !important;
+      // border-radius: 0px !important;
+    }
+
+    .ant-tabs-content-holder .ant-tabs-content .ant-tabs-tabpane .ant-tabs-nav {
+      .ant-tabs-content-holder .ant-tabs-content .ant-tabs-tabpane .ant-tabs-nav {
+        background: #fff;
+      }
+    }
+
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: rgb(56, 56, 56);
+    }
+  }
+
+  & > :global(.ant-tabs-nav) {
+    margin-bottom: 5px;
+
+    :global {
+      .ant-tabs-tab {
+        padding: 0px;
+      }
+      .ant-tabs-tab:not(.ant-tabs-tab-active) {
+        // margin: 8px 0;
+        padding: 0 16px;
+        background: transparent;
+        border-width: 0px;
+
+        & + .ant-tabs-tab:not(.ant-tabs-tab-active) {
+          border-left: solid 1px #ccc;
+        }
+      }
+    }
+  }
+
+  .button-bar-right {
+    position: absolute;
+    top: 5px;
+    right: 0;
+  }
+
+  .button-bar-right::after {
+    // width: 0 !important;
+  }
+
+  .toolbar-button-container {
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+    padding: 11.7px 13.5px;
+    :global {
+      .ant-pro-card-body {
+        padding: 0px;
+      }
+
+      .ant-btn::after {
+        width: 0px;
+      }
+    }
+
+    .setting-right-container {
+      float: right;
+      display: flex;
+      :global {
+        .ant-form .ant-form-item, .ant-row.ant-form-item-row, .ant-col.ant-form-item-control, .ant-form-item-control-input, .ant-form-item-control-input-content, .ant-picker {
+          height: 30px;
+          min-height: 30px;
+        }
+
+        .ant-form {
+          .ant-form-item {
+            margin-bottom: 0px;
+            div.ant-picker {
+              padding: 3px 7px 0px;
+              .ant-picker-input {
+                width: 80px;
+              }
+              div.ant-picker-range-separator {
+                padding: 0 4px;
+              }
+              span.ant-picker-suffix {
+                margin-right: 0px;
+                margin-top: -0.5px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 .create-button-dropdown {
   :global {
     .ant-dropdown-menu {
@@ -151,7 +260,31 @@
   }
 }
 
-.targeting-group-tab {
+.targeting-group-tab-no-ab-testing {
+  :global {
+    .ant-tabs-nav {
+      height: 0px !important;
+    }
+  }
+}
+
+.targeting-group-tab-by-waterfall {
+  .targeting-group-tab {
+    :global {
+      .ant-tabs-nav {
+        .ant-tabs-tab {
+          padding: 0 16px;
+        }
+      }
+    }
+  }
+  :global {
+    .ant-tabs-tab:not(.ant-tabs-tab-active) {
+      background-color: transparent !important;
+    }
+  }
+}
+.targeting-group-tab, .targeting-group-tab-by-waterfall {
   :global(.ant-tabs-nav) {
     height: 35px;
     :global {
@@ -217,10 +350,32 @@
   width: 115px;
 }
 
+.waterfall-to-detail {
+  position: absolute;
+  top: 95px;
+  right: 0;
+  z-index: 18;
+  font-size: 13px;
+}
+
+.to-detail {
+  position: absolute;
+  top: 63px;
+  right: 0;
+  z-index: 18;
+  font-size: 13px;
+}
+
 .no-supplier-alert:global(.ant-alert) {
   :global(.ant-alert-message) {
     color: #f6aa38;
   }
+}
+
+.missing-disbriton-img {
+  color: #f8b601;
+  display: inline-block;
+  margin-bottom: 20px;
 }
 
 // 每一组的外框
@@ -239,10 +394,6 @@
 
   // 每一组里面的每一项
   .draggable-channel {
-    border-radius: 3px;
-    border-left-style: solid;
-    border-left-color: #FBAB00;
-    border-left-width: 5px;
     &:last-child {
       margin-bottom: 0;
     }
@@ -263,19 +414,12 @@
   }
 }
 
-.draggable-bidding-container {
-  .draggable-channel {
-    border-left-color: #0076FF;
-  }
-}
-
 // 未分发
 .unused-channels-container {
   overflow: auto hidden;
   background-color: #f5f5f5;
   :global {
     .ant-row:not(.ant-form.ant-form-horizontal .ant-row) {
-      border-left: 5px solid #bebebe;
       .ant-col {
         display: flex;
         align-items: center;
@@ -297,6 +441,7 @@
     :global {
       .ant-row.ant-row-no-wrap.ant-row-middle {
         height: 48px;
+        background-color: transparent;
         .ant-col:first-child .ant-col:first-child {
           padding-left: 20px;
         }

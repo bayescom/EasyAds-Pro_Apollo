@@ -4,6 +4,7 @@ import styles from './index.module.less';
 import { useEffect, useState } from 'react';
 import { CloseOutlined, SearchOutlined } from '@ant-design/icons';
 import DefaultIcon from '@/assets/icons/channel/defaultIcon.png';
+import { ProFormInstance } from '@ant-design/pro-form';
 // adspotType 专用 后期后端有空 可以改为后端返回
 import bannerActiveIcon from '@/assets/icons/adspot/bannerActive.png';
 import splashActiveIcon from '@/assets/icons/adspot/splashActive.png';
@@ -13,7 +14,8 @@ import textActiveIcon from '@/assets/icons/adspot/textActive.png';
 import rollActiveIcon from '@/assets/icons/adspot/rollActive.png';
 import incentiveActiveIcon from '@/assets/icons/adspot/incentiveActive.png';
 import { Rule } from 'antd/lib/form';
-import { platformIconMap, mediaIconMap, channelIconMap } from '../Utils/Constant';
+import { platformIconMap } from '../Utils/Constant';
+import { areArraysEqual } from '@/services/utils/utils';
 
 type IProps = {
   options: any[],
@@ -37,7 +39,7 @@ type IProps = {
   isMedia?: boolean,
   isChannel?: boolean,
   urlKey?: string
-  onChange?: () => void,
+  onChange?: (value) => void,
   /**
    * 父组件用来捕获该子组件change事件的函数
    */
@@ -59,25 +61,34 @@ type IProps = {
   isDimension?: boolean,
   // 是否隐藏全选和反选
   hideSelectAllAndInvert?: boolean,
+  formRef?: React.MutableRefObject<ProFormInstance | undefined>,
+  setSelectIsOpen?: (open: boolean) => void,
+  disabled?: boolean,
+  // label 下面是显示除了 keyType 值以外的其他值，而且这个值是什么字段，
+  isValueSectionShown?: boolean,
+  valueSectionKey?: string,
+  isSdkGroup?: boolean
 }
 
 const adspotTypeImageMap = {
-  1: splashActiveIcon,  // 开屏
-  2: feedActiveIcon,  // 信息流
-  3: bannerActiveIcon,  // 横幅
-  4: interstitialActiveIcon,  // 插屏
-  5: incentiveActiveIcon,  // 激励视频
+  1: bannerActiveIcon,  // 横幅
+  2: splashActiveIcon,  // 开屏
+  3: interstitialActiveIcon,  // 插屏
+  6: feedActiveIcon,  // 信息流
   8: textActiveIcon,  // 文字链
   9: rollActiveIcon,  // 视频贴片
+  12: incentiveActiveIcon,  // 激励视频
   20: interstitialActiveIcon,  // 气泡角标
 };
 
 const { Option } = Select;
 const { Text } = Typography;
 
-const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRight, changeFormValue, isMedia, onChange, isChannel, onChangeCurrentSelect, isNoShowIdOrValue, placeholder, urlKey, hasPlatform, platformKey, notShowSearchInput, isValueTypeArray, rules, optionValueType, noStyle, isDimension, hideSelectAllAndInvert} : IProps) => {
+const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRight, changeFormValue, isMedia, onChange, isChannel, onChangeCurrentSelect, isNoShowIdOrValue, placeholder, urlKey, hasPlatform, platformKey, notShowSearchInput, isValueTypeArray, rules, optionValueType, noStyle, isDimension, hideSelectAllAndInvert, formRef, setSelectIsOpen, disabled, isValueSectionShown, valueSectionKey, isSdkGroup} : IProps) => {
+
   const form = Form.useFormInstance();
-  const watchFormItem = Form.useWatch(name, form);
+  const watchFormItem = Form.useWatch(isSdkGroup ? ['groupStrategyList', name[0], name[1]] : name, form);
+  const newName = isSdkGroup ? ['groupStrategyList', name[0], name[1]] : name;
 
   const [rightSelectList, setRightSelectList] = useState<any[]>([]);
   const [filterOptions, setFilterOptions] = useState<any[]>([]);
@@ -92,7 +103,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
       const dataList = isValueTypeArray ? watchFormItem : watchFormItem.split(',');
       const newRightSelectList = dataList.map(item => {
         const result = options.filter(listItem => {
-          return optionValueType ? listItem[keyType] == item : listItem[keyType] == +item;
+          return optionValueType ? listItem[keyType] == item : listItem[keyType] == item;
         });
         return result;
       });
@@ -107,7 +118,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
 
   useEffect(() => {
     if (watchFormItem != undefined) {      
-      onChange && onChange();
+      onChange && onChange(watchFormItem);
     }
   }, [watchFormItem]);
 
@@ -119,17 +130,17 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
     
     if (isValueTypeArray) {
       const newValue = newRightSelectList.map(item => item[keyType]);
-      form.setFieldValue(name, newValue);
+      form.setFieldValue(newName, newValue);
     } else {
       const newWatchFormItem = watchFormItem.replace(key + '', '').replace(/,(?=,)/g, '').replace(/[&,]$/, '').replace(/^[&,]/, '');
-      form.setFieldValue(name, newWatchFormItem ? newWatchFormItem : undefined);
+      form.setFieldValue(newName, newWatchFormItem ? newWatchFormItem : undefined);
     }
     changeFormValue && changeFormValue();
   };
 
   const clearAll = () => {
     setRightSelectList([]);
-    isValueTypeArray ? form.setFieldValue(name, []) : form.setFieldValue(name, undefined);
+    isValueTypeArray ? form.setFieldValue(newName, []) : form.setFieldValue(newName, undefined);
     changeFormValue && changeFormValue();
   };
 
@@ -154,41 +165,53 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
   const handleCustomAll = () => {
     const contrastList = customInputValue ? filterOptions : options;
     // 节流
-    if (rightSelectList.length !== contrastList.length) {
-      setRightSelectList(contrastList);
-      const currentFormItemData = contrastList.map(item => item[keyType]);
+    // 不能直接对比长度 因为有时候筛选的时候 刚好前后筛选结果都只有2个 那么点击全选此时就没用
+    if (!areArraysEqual(rightSelectList, contrastList)) {
+      const currentList = new Set([...rightSelectList, ...contrastList]);
+      setRightSelectList(Array.from(currentList));
+      const currentFormItemData = Array.from(currentList).map(item => item[keyType]);
       if (isValueTypeArray) {
-        currentFormItemData.length ? form.setFieldValue(name, currentFormItemData) : form.setFieldValue(name, []);
+        currentFormItemData.length ? form.setFieldValue(newName, currentFormItemData) : form.setFieldValue(newName, []);
       } else {
-        currentFormItemData.length ? form.setFieldValue(name, currentFormItemData.toString()) : form.setFieldValue(name, undefined);
+        currentFormItemData.length ? form.setFieldValue(newName, currentFormItemData.toString()) : form.setFieldValue(newName, undefined);
       }
       changeFormValue && changeFormValue();
     }
   };
 
   const handleCustomInvert = () => {
-    const contrastList = customInputValue ? filterOptions : options;
     if (rightSelectList.length) {
-      if (rightSelectList.length !== contrastList.length) { 
+      if (rightSelectList.length !== options.length) { 
         const currentSelect = isValueTypeArray ? watchFormItem : watchFormItem.split(',');
-        const invertList = contrastList.filter(item => !currentSelect.includes(String(item[keyType])));
+        const invertList = options.filter(item => !currentSelect.includes(String(item[keyType])));
         const invertListValues = invertList.map(item => item[keyType]);
         setRightSelectList(invertList);
-        isValueTypeArray ? form.setFieldValue(name, invertListValues) : form.setFieldValue(name, invertListValues.toString());
+        isValueTypeArray ? form.setFieldValue(newName, invertListValues) : form.setFieldValue(newName, invertListValues.toString());
       } else {
         setRightSelectList([]);
-        isValueTypeArray ? form.setFieldValue(name, []) : form.setFieldValue(name, undefined);
+        isValueTypeArray ? form.setFieldValue(newName, []) : form.setFieldValue(newName, undefined);
       }
     } else {
-      setRightSelectList(contrastList);
-      const currentFormItemData = contrastList.map(item => item[keyType]);
+      setRightSelectList(options);
+      const currentFormItemData = options.map(item => item[keyType]);
       if (isValueTypeArray) {
-        currentFormItemData.length ? form.setFieldValue(name, currentFormItemData) : form.setFieldValue(name, []);
+        currentFormItemData.length ? form.setFieldValue(newName, currentFormItemData) : form.setFieldValue(newName, []);
       } else {
-        currentFormItemData.length ? form.setFieldValue(name, currentFormItemData.toString()) : form.setFieldValue(name, undefined);
+        currentFormItemData.length ? form.setFieldValue(newName, currentFormItemData.toString()) : form.setFieldValue(newName, undefined);
       }
     }
     changeFormValue && changeFormValue();
+  };
+
+  const onDropdownVisibleChange = (open) => {
+    setSelectIsOpen && setSelectIsOpen(open);
+    // 关闭下拉框的时候，将input 值空
+    // if (!open && formRef) {
+    //   formRef.current?.setFieldValue(`${name}-customInputSearch'`, undefined);
+    //   setFilterOptions(options);
+    // }
+    setFilterOptions(options);
+    setCustomInputValue(undefined);
   };
 
   return (<>
@@ -207,6 +230,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
         allowClear
         onChange={() => onChangeCurrentSelect && onChangeCurrentSelect(name, watchFormItem)}
         mode="multiple"
+        disabled={disabled}
         showArrow={true}
         placeholder={placeholder ? placeholder : '请选择'}
         maxTagCount={isDimension ? 'responsive' : rightSelectList.length > 1 ? 0 : 1}
@@ -221,6 +245,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
                   allowClear 
                   prefix={<SearchOutlined style={{ color: 'rgba(0, 0, 0, 0.25)' }}/>}
                   ref={input => input?.focus()}
+                  autoComplete='off'
                   onKeyDown={(e) => e.stopPropagation()}
                   value={customInputValue}
                 />}
@@ -255,12 +280,12 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
           </div> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} className={styles['empty-container']}/>}
         </>
         )}
+        onDropdownVisibleChange={(open) => onDropdownVisibleChange(open)}
       >
         {filterOptions.map(item => (
           <Option key={item[keyType]} value={item[keyType].toString()} label={item.name}>
             <Space size={0} style={{width:'100%', display: 'flex'}} className={(isNoShowIdOrValue && !['adspotTypes'].includes(name)) ? styles['not-show-value'] : ''}>
-              {isMedia && platformKey && <Image src={mediaIconMap[item[platformKey]] || DefaultIcon} preview={false} style={{width: '32px', height: 'auto', marginRight: '4px'}}/>}
-              {isChannel && keyType && <Image src={channelIconMap[item[keyType]] || DefaultIcon} preview={false} style={{width: '20px', height: 'auto', marginRight: '4px'}}/>}
+              {(isMedia || isChannel) && urlKey && <Image src={item[urlKey] || DefaultIcon} preview={false} style={{width: isChannel ? '20px' : '32px', height: 'auto', marginRight: '4px'}}/>}
               {['adspotTypes'].includes(name) && <Image src={adspotTypeImageMap[item.value]} preview={false} style={{width: '28px', height: 'auto', marginRight: '4px'}}/>}
               <Space direction="vertical" size={0}>
                 {
@@ -273,7 +298,7 @@ const MultipleSelect: React.FC<IProps> = ({options, label, name, keyType, isRigh
                     style={{ width: '16px', height: '15px', marginTop: -17 }} 
                     preview={false}
                   />}
-                  <Text type="secondary">{item[keyType]}</Text>
+                  <Text type="secondary">{isValueSectionShown && valueSectionKey ? item[valueSectionKey] : item[keyType]}</Text>
                 </div>}
               </Space>
             </Space>
