@@ -50,7 +50,7 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
         value: !deviceMaker ? [] : deviceMaker.split(',')
       },
       osVersion: {
-        property: !sdkAdspotChannelFormData.osv ? 'exclude' : 'include',
+        property: !sdkAdspotChannelFormData.excludeOsv ? 'include' : 'exclude',
         value: !osv ? [] : osv.split(',')
       }
     },
