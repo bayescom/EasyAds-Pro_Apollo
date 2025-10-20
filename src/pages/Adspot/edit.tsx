@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Form, Space, Button, Row, Typography, Breadcrumb } from 'antd';
 import styles from './index.module.less';
 import AdspotForm from './components/form';
+import { randomString } from '@/services/utils/utils';
 
 const { Text } = Typography;
 const { Item } = Breadcrumb;
@@ -25,15 +26,25 @@ export default function EditAdspot() {
 
   const [form] = Form.useForm();
   const switchFcrequency = Form.useWatch('switchFcrequency', form);
+  const integrationType = Form.useWatch('integrationType', form);
 
   const [showFcrequencySetting, setShowFcrequencySetting] = useState(false);
   const [filterOption, setFilterOption] = useState<any[]>([]);
+  const [securityKey, setSecurityKey] = useState('');
+  const [isShowRewardReveal, setIsShowRewardReveal] = useState(false);
  
   useEffect(() => {
     if (!adspot) {
       adspotDispatcher.getEditingOne(adspotId);
     } else {
       adspotDispatcher.getLayoutList();
+
+      if (adspot.rewardReveal) {
+        setIsShowRewardReveal(true);
+        setSecurityKey(adspot?.securityKey);
+      } else {
+        setIsShowRewardReveal(false);
+      }
     }
   }, [adspot]);
 
@@ -54,6 +65,16 @@ export default function EditAdspot() {
     formRef.current?.setFieldsValue(adspot);
   });
 
+  const changeRewardReveal = (value) => {
+    if (value) {
+      setSecurityKey(randomString(16));
+      setIsShowRewardReveal(true);
+    } else {
+      setSecurityKey('');
+      setIsShowRewardReveal(false);
+    }
+  };
+
   const handleValues = (value) => {
     const data = {
       ...adspot,
@@ -65,6 +86,14 @@ export default function EditAdspot() {
       data.deviceDailyImpLimit = null;
       data.deviceReqInterval = null;
     }
+
+    if (data.adspotType == 5 && !data.rewardReveal) {
+      data.rewardName = '';
+      data.rewardAmount = null;
+      data.rewardCallback = '';
+    }
+
+    data.securityKey = securityKey;
 
     return data;
   };
@@ -129,6 +158,11 @@ export default function EditAdspot() {
               setShowFcrequencySetting={(value) => setShowFcrequencySetting(value)}
               setFilterOption={(value) => setFilterOption(value)}
               filterOption={filterOption}
+              currentImplementMethod={integrationType}
+              isShowRewardReveal={isShowRewardReveal}
+              securityKey={securityKey}
+              setSecurityKey={(value) => setSecurityKey(value)}
+              changeRewardReveal={changeRewardReveal}
             />
             <ProCard style={{maxWidth: '900px', height: '72px', margin: '9px auto 0px', textAlign: 'right' }}>
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

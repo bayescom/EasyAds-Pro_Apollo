@@ -7,6 +7,13 @@ interface IAdspot {
   mediaId: number,
   integrationType: number,
   adspotType: number,
+  
+  // property 
+  rewardReveal: number | null,
+  rewardAmount: number | null,
+  rewardName: string,
+  rewardCallback: string,
+  securityKey : string,
 
   // 频次控制 requestLimit
   /**
