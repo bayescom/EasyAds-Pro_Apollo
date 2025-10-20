@@ -164,4 +164,18 @@ function areArraysEqual<T>(arr1: T[], arr2: T[]): boolean {
   return arr1.every((value, index) => value === arr2[index]);
 }
 
-export { formatData, formatString2Array, getUrlParams, generateRandomID, sortByOrder, floatAdd, getTimeDifference, generateRandomString, convertNumbersToStrings, convertStringsToNumbers, getCurrentDateTimeFormatted, areArraysEqual };
+/**
+ * 生成数字+小写字母的随机字符串
+ * @param len 需要生成的位数
+ */
+const randomString = (len) => {
+  const strVals = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const maxLen = strVals.length;
+  let randomStr = '';
+  for (let i = 0; i < len; i++) {
+    randomStr += strVals.charAt(Math.floor(Math.random() * maxLen));
+  }
+  return randomStr;
+};
+
+export { formatData, formatString2Array, getUrlParams, generateRandomID, sortByOrder, floatAdd, getTimeDifference, generateRandomString, convertNumbersToStrings, convertStringsToNumbers, getCurrentDateTimeFormatted, areArraysEqual, randomString };

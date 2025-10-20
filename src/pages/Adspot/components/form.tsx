@@ -1,11 +1,11 @@
 import ProCard from '@ant-design/pro-card';
 import { Form, Row, Col, Radio, Select, Typography,Image, Space, Input, Switch } from 'antd';
 import store from '@/store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import mediumService from '@/services/medium';
 import { IMedium } from '@/models/types/medium';
 import styles from '../index.module.less';
-import { SearchOutlined } from '@ant-design/icons';
+import { CopyOutlined, SearchOutlined } from '@ant-design/icons';
 import bannerIcon from '@/assets/icons/adspot/banner.png';
 import bannerActiveIcon from '@/assets/icons/adspot/bannerActive.png';
 import bannerReadonlyIcon from '@/assets/icons/adspot/bannerReadonly.png';
@@ -22,6 +22,8 @@ import splashIcon from '@/assets/icons/adspot/splash.png';
 import splashActiveIcon from '@/assets/icons/adspot/splashActive.png';
 import splashReadonlyIcon from '@/assets/icons/adspot/splashReadonly.png';
 import { platformIconMap, mediaIconMap } from '@/components/Utils/Constant';
+import { randomString } from '@/services/utils/utils';
+import CopyableText from '@/components/CopyableText';
 
 const ImageNameMap = {
   // 横幅
@@ -73,6 +75,11 @@ interface IProps {
   setShowFcrequencySetting: (value: boolean) => void,
   setFilterOption?: (value: any[]) => void,
   filterOption?: any[],
+  currentImplementMethod: number,
+  isShowRewardReveal: boolean,
+  securityKey: string,
+  setSecurityKey: (value: string) => void,
+  changeRewardReveal?: (value: number) => void,
 }
 
 const { Option } = Select;
@@ -88,7 +95,12 @@ export default function AdspotForm({
   showFcrequencySetting,
   setShowFcrequencySetting,
   setFilterOption,
-  filterOption
+  filterOption,
+  currentImplementMethod,
+  isShowRewardReveal,
+  securityKey,
+  setSecurityKey,
+  changeRewardReveal
 }: IProps) {
   const adspot = store.useModelState('adspot');
 
@@ -113,6 +125,9 @@ export default function AdspotForm({
       return pre;
     }, {}));
   });
+
+  // 聚合SDK && 激励视频 && 安卓、ios媒体 显示服务端激励回调
+  const isShowBasicServerCallback = currentImplementMethod == 0 && currentAdspotType == '5' && mediaId && mediumMap[mediaId] && [0, 1].includes(mediumMap[mediaId].platformType);
   
   const mediaOnChange = (value: string | number) => {
     if (value) {
@@ -289,6 +304,79 @@ export default function AdspotForm({
           </Form.Item>
         </Col>
       </Row>
+      {isShowBasicServerCallback && <Row gutter={16}>
+        <Col span={13}>
+          <Form.Item
+            label="服务端激励回调"
+            name="rewardReveal"
+            tooltip='激励视频广告类型可以设置服务端回调激励，在用户观看完成视频后，Blink服务端会向您的服务器回调激励信息。聚合-Android SDK v5.1.4及以上版本，iOS SDK v5.1.5及以上版本支持。'
+            normalize={(checked) => +checked}
+            valuePropName='checked'
+          >
+            <Switch size='small' onChange={(checked) => changeRewardReveal && changeRewardReveal(+checked)}/>
+          </Form.Item>
+        </Col>
+        {
+          isShowRewardReveal ? <>
+            <Col span={13}>
+              <Form.Item
+                label="激励名称"
+                name="rewardName"
+                getValueFromEvent={e => e.target.value.trim()}
+                rules={[{required: true, message: '请输入激励名称'}]}
+              >
+                <Input style={{width: '290px'}}/>
+              </Form.Item>
+            </Col>
+            <Col span={13}>
+              <Form.Item
+                label="激励数量"
+                name="rewardAmount"
+                getValueFromEvent={e => e.target.value.trim()}
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入激励数量',
+                  },
+                  {
+                    validator: (_, value) => {
+                      if (!value) {
+                        return Promise.resolve();
+                      }
+                      if (!/^\d+$/.test(value)){
+                        return Promise.reject('激励数量只能是正整数');
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input type='number' style={{width: '290px'}}/>
+              </Form.Item>
+            </Col>
+            <Col span={13}>
+              <Form.Item
+                label="回调URL"
+                name="rewardCallback"
+                getValueFromEvent={e => e.target.value.trim()}
+                rules={[{required: true, message: '请输入回调URL'}]}
+              >
+                <Input style={{width: '290px'}}/>
+              </Form.Item>
+            </Col>
+            <Col span={13} className={styles['adspot-security-key']}>
+              <span className={styles['security-key-label']}>Security Key</span>
+              <div className={styles['security-input']}>
+                <span className={styles['security-key-value']}>{securityKey}</span>
+                <CopyableText text={securityKey} nameInTooltip='Security Key'>
+                  <CopyOutlined />
+                </CopyableText>
+              </div>
+              <span className={styles['security-key-reload']} onClick={() => setSecurityKey(randomString(16))}>刷新</span>
+            </Col>
+          </> : <></>
+        }
+      </Row>}
     </ProCard>
     {/* 频次控制 */}
     <ProCard style={{ maxWidth: '900px', margin: '9px auto'}} className={[styles['collapse-wrap'], styles['fcrequency-container']].join(' ')}>
