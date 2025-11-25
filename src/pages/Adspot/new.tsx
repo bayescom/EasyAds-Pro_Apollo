@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Form, Space, Button, Row, Breadcrumb } from 'antd';
 import styles from './index.module.less';
 import AdspotForm from './components/form';
+import { randomString } from '@/services/utils/utils';
 
 const { Item } = Breadcrumb;
 
@@ -24,11 +25,14 @@ export default function CreateAdspot() {
   const adspotType = Form.useWatch('adspotType', form);
   const integrationType = Form.useWatch('integrationType', form);
   const switchFcrequency = Form.useWatch('switchFcrequency', form);
+  const rewardReveal = Form.useWatch('rewardReveal', form);
   
   const [mediaName, setMediaName] = useState(state && state.mediumName ? state.mediumName : '');
   const [adspotTypeName, setAdspotTypeName] = useState('');
   const [showFcrequencySetting, setShowFcrequencySetting] = useState(false);
   const [filterOption, setFilterOption] = useState<any[]>([]);
+  const [securityKey, setSecurityKey] = useState('');
+  const [isShowRewardReveal, setIsShowRewardReveal] = useState(false);
 
   useEffect(() => {
     if (integrationType !== undefined) {
@@ -62,10 +66,24 @@ export default function CreateAdspot() {
     }
   }, [mediaId]);
 
+  useEffect(() => {
+    rewardReveal ? setIsShowRewardReveal(true) : setIsShowRewardReveal(false);
+  }, [rewardReveal]);
+
+  useEffect(() => {
+    if (rewardReveal) {
+      setSecurityKey(randomString(16));
+    } else {
+      setSecurityKey('');
+      form.setFieldValue('rewardName', '');
+      form.setFieldValue('rewardAmount', '');
+      form.setFieldValue('rewardCallback', '');
+    }
+  }, [rewardReveal]);
+
   const adspotTypeChanged = (value) => {
     setAdspotTypeName(value);
   };
-
 
   const mediaChanged = async (value) => {
     setMediaName(value);
@@ -77,6 +95,7 @@ export default function CreateAdspot() {
       ...value,
     };
 
+    data.securityKey = securityKey;
     return data;
   };
 
@@ -129,6 +148,7 @@ export default function CreateAdspot() {
               'integrationType': 0,
               'mediaId': state && state.mediumId ? Number(state.mediumId) : null,
               'timeout': 2000,
+              'rewardReveal': 0
             }}
           >
             <AdspotForm 
@@ -140,6 +160,10 @@ export default function CreateAdspot() {
               setShowFcrequencySetting={(value) => setShowFcrequencySetting(value)}
               setFilterOption={(value) => setFilterOption(value)}
               filterOption={filterOption}
+              currentImplementMethod={integrationType}
+              isShowRewardReveal={isShowRewardReveal}
+              securityKey={securityKey}
+              setSecurityKey={(value) => setSecurityKey(value)}
             />
             <ProCard style={{maxWidth: '900px', height: '72px', margin: '9px auto 0px', textAlign: 'right' }}>
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

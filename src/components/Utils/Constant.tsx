@@ -13,6 +13,11 @@ import oppo from '@/assets/icons/channel/oppo.png';
 import csj from '@/assets/icons/channel/csj.png';
 import own from '@/assets/icons/channel/own.png';
 import kuaishou from '@/assets/icons/channel/kuaishou.png';
+import sigmob from '@/assets/icons/channel/sigmob.png';
+import huawei from '@/assets/icons/channel/huawei.png';
+import xiaomi from '@/assets/icons/channel/xiaomi.png';
+import vivo from '@/assets/icons/channel/vivo.png';
+import honor from '@/assets/icons/channel/honor.jpg';
 
 type dimensionListType = {
   key: string,
@@ -74,8 +79,13 @@ const channelIconMap = {
   5: kuaishou,
   7: tanx,
   9: oppo,
+  12: huawei,
+  13: xiaomi,
+  14: vivo,
+  15: honor,
   10: tapTap,
-  99: adx
+  99: adx,
+  11: sigmob
 };
 
 /** 2, 3, 4, 5 穿山甲，优量汇，百度，快手 */

@@ -34,6 +34,13 @@ const adspotDefaultValue: IAdspot = {
   integrationType: 0,
   adspotType: 0,
 
+  // property
+  rewardReveal: null,
+  rewardAmount: null,
+  rewardName: '',
+  rewardCallback: '',
+  securityKey : '',
+
   // 频次控制
   timeout: 0,
   deviceDailyReqLimit: 0,
