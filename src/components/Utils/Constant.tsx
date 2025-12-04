@@ -85,7 +85,11 @@ const channelIconMap = {
   15: honor,
   10: tapTap,
   99: adx,
-  11: sigmob
+  11: sigmob,
+  12: huawei,
+  13: xiaomi,
+  14: vivo,
+  15: honor
 };
 
 /** 2, 3, 4, 5 穿山甲，优量汇，百度，快手 */
