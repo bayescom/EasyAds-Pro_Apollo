@@ -99,8 +99,7 @@ function AbTestButton({ abTesting, adspotId, percentageList }: Props) {
     { abTesting
       ? <div className={currentIsWaterfall ? styles['waterfall-to-detail'] : styles['to-detail']}><a onClick={() => {
         if (currentIsWaterfall) {
-          console.log(distributionModel.currentTargetId, distributionModel.currentGroupTargetId);
-          const currentTrafficGroup = percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
+          const currentTrafficGroup = percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.groupTargetId);
           history.push(`/data_report/ab_report_detail/${currentTrafficGroup?.expId}`);
         } else {
           history.push(`/data_report/ab_report_detail/${distribution.percentageList[0].expId}`);

@@ -36,8 +36,22 @@ type IState = {
   mediumList: IMedium[],
   adspotList: IAdspot[],
   time: DateType,
-  currentTargetId: number,
-  currentGroupTargetId: number,
+  // 最外层是流量分组的A，B，里面是分组，最内层是瀑布流的A，B。一种广告位有三层，但是只会有两层有数据，
+  // 比如对于流量分组来说，最外层 percentageList 的长度要大于1，但是最内层的 targetPercentageStrategyList 的长度是1，
+  // 比如对于瀑布流来说，最外层的 percentageList 的长度等于1，但是最内层的 targetPercentageStrategyList 要大于1
+
+  /**
+   * 这个是 第二层的 groupTargetId，就是分组的信息
+   */
+  groupTargetId: number,
+ /**
+  *  这个是 最外层的 percentageId
+  */
+  currentPercentageId: number,
+  /**
+   * 还要加一层，瀑布流最里层的 ab 分组信息
+   */
+  currentTargetPercentageStrategyTrafficId: number,
   sdkStrategyDirection: SdkStrategyDirectionType
 }
 
@@ -141,9 +155,9 @@ const defaultState:IState = {
   adspotList: [],
   adspotListMap: {},
   time: defaultTime,
-  currentTargetId: 0,
-  // currentTrafficId: 0,
-  currentGroupTargetId: 0,
+  groupTargetId: 0,
+  currentTargetPercentageStrategyTrafficId: 0,
+  currentPercentageId: 0,
   sdkStrategyDirection: []
 };
 
@@ -220,8 +234,19 @@ export default {
     },
 
 
-    setCurrentGroupTargetId(prevState:IState, currentGroupTargetId) {
-      prevState.currentGroupTargetId = currentGroupTargetId;
+    setGroupTargetId(prevState:IState, groupTargetId) {
+      return {
+        ...prevState,          // 复制旧状态
+        groupTargetId,        // 更新目标字段
+      };
+    },
+
+    setCurrentTargetPercentageStrategyTrafficId(prevState:IState, currentTargetPercentageStrategyTrafficId) {
+      prevState.currentTargetPercentageStrategyTrafficId = currentTargetPercentageStrategyTrafficId;
+    },
+
+    setCurrentPercentageId(prevState:IState, currentPercentageId) {
+      prevState.currentPercentageId = currentPercentageId;
     },
 
     setMediaId(prevState:IState, mediaId) {

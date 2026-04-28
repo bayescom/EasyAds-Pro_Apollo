@@ -69,12 +69,12 @@ function BasicInfo () {
       if (reportAbTestDetailState.currentExperiment.experimentType == '2') {
         // 如果是ab 实验的话, 需要根据 currentExperiment 的id ,找到  percentageList 里面对应的 currentTrafficGroup。他们是 id  = expId 的关系
         const currentTrafficGroup = sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.expId == reportAbTestDetailState.currentExperiment.id);
-        distributionDispatcher.setCurrentTargetId(currentTrafficGroup?.groupStrategy.groupTargetId);
-        distributionDispatcher.setCurrentGroupTargetId(sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficPercentage.percentageId);
+        distributionDispatcher.setGroupTargetId(currentTrafficGroup?.groupStrategy.groupTargetId);
+        distributionDispatcher.setCurrentPercentageId(sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficPercentage.percentageId);
       } else {
         // 如果是 普通的流量分组实验，
-        distributionDispatcher.setCurrentTargetId(sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficGroupList[0].groupStrategy.groupTargetId);
-        distributionDispatcher.setCurrentGroupTargetId(sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficPercentage.percentageId);
+        distributionDispatcher.setGroupTargetId(sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficGroupList[0].groupStrategy.groupTargetId);
+        distributionDispatcher.setCurrentPercentageId(sdkDistributionState[reportAbTestDetailState.currentExperiment.adspotId].percentageList[0].trafficPercentage.percentageId);
       }
     }
     

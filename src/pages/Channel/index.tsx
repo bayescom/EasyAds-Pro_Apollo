@@ -3,6 +3,7 @@ import ChannelSdkModalForm from './sdkForm';
 import { ChannelFilter, ISdkChannel } from '@/models/types/channel';
 import type { ColumnsType } from 'antd/es/table';
 import store from '@/store';
+import { Link } from 'ice';
 import { SearchOutlined } from '@ant-design/icons';
 import { ProFormInstance } from '@ant-design/pro-form';
 import { ActionType, ProColumns } from '@ant-design/pro-table';
@@ -114,6 +115,7 @@ function Channel() {
     {
       title: '操作',
       render: (_dom, channel) => (<Space>
+        <Link to={`/traffic/sdk-channel-traffic/${channel.adnId}`}>广告源管理</Link>
         <a onClick={(e) => {
           e.stopPropagation();
           setModalSdkVisible(true);

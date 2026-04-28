@@ -94,16 +94,28 @@ function DistributionHeader() {
   }, [distributionState.adspotList]);
 
   useEffect(() => {
-    if (sdkDistributionState[distributionState.adspotId] && sdkDistributionState[distributionState.adspotId].percentageList.length <= 1) {
-      if (sdkDistributionState[distributionState.adspotId].percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.currentTargetId)?.targetPercentageStrategyList.length == 1) {
-        setIsCreateAbTesting(true);
-      } else {
-        setIsCreateAbTesting(false);
+    if (sdkDistributionState[distributionState.adspotId]) {
+      const percentageList = sdkDistributionState[distributionState.adspotId].percentageList;
+      
+      // 判断是否存在 AB 测试：有多个 percentage（A/B 组）或者某个分组下有多个 targetPercentageStrategy
+      let hasAbTesting = false;
+      
+      if (percentageList.length > 1) {
+        // 多个流量分组（如 A 组 50%，B 组 50%）
+        hasAbTesting = true;
+      } else if (percentageList.length === 1) {
+        // 只有一个分组，检查该分组下是否有多个目标策略
+        const targetPercentageStrategyList = percentageList[0].trafficGroupList?.[0]?.targetPercentageStrategyList;
+        if (targetPercentageStrategyList && targetPercentageStrategyList.length > 1) {
+          hasAbTesting = true;
+        }
       }
+      
+      setIsCreateAbTesting(hasAbTesting);
     } else {
       setIsCreateAbTesting(false);
     }
-  }, [sdkDistributionState, distributionState.adspotId, distributionState.currentTargetId]);
+  }, [sdkDistributionState, distributionState.adspotId, distributionState.groupTargetId]);
 
   /** 设置广告位初始相关信息 */
   const baseChangeDistributionStateAdspotCorrelation = (currentAdspot) => {
@@ -146,6 +158,10 @@ function DistributionHeader() {
     distributionDispatcher.setMediaId(value);
     distributionDispatcher.setAdspotId(0);
     distributionDispatcher.getAdspotList({mediaIds: value});
+    distributionDispatcher.setCurrentPercentageId(0);
+    distributionDispatcher.setCurrentTargetPercentageStrategyTrafficId(0);
+    distributionDispatcher.setGroupTargetId(0);
+
     form.setFieldValue('search-medium', undefined);
     history.push(`/traffic/distribution?mediaId=${value}`); // 为了让逻辑进入地址栏无adspotId的判断
   };
@@ -153,6 +169,10 @@ function DistributionHeader() {
   // 切换广告位
   const handleChangeAdspotId = (value) => {
     distributionDispatcher.setAdspotId(value);
+    distributionDispatcher.setCurrentPercentageId(0);
+    distributionDispatcher.setCurrentTargetPercentageStrategyTrafficId(0);
+    distributionDispatcher.setGroupTargetId(0);
+
     const currentAdspot = distributionState.adspotList.find(item => item.id == value);
     form.setFieldValue('search-adspot', undefined);
     setAdspotFilterOption(distributionState.adspotList);
