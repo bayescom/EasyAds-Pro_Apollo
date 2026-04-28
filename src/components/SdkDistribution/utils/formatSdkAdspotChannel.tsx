@@ -24,6 +24,8 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
     channelName: sdkAdspotChannelFormData.channelName,
     channelAlias: sdkAdspotChannelFormData.channelAlias,
     isHeadBidding: sdkAdspotChannelFormData.isHeadBidding,
+    enableCache: sdkAdspotChannelFormData.enableCache ? 1 : 0,
+    cacheTimeout: sdkAdspotChannelFormData.enableCache ? (sdkAdspotChannelFormData.cacheTimeout || 1800) : null,
     // 固价 或者 bidRatio 没有值的时候，默认为1
     bidRatio: !sdkAdspotChannelFormData.isHeadBidding ? 1 : (!sdkAdspotChannelFormData.bidRatio && String(sdkAdspotChannelFormData.bidRatio !== '0') ? 1 : sdkAdspotChannelFormData.bidRatio),
     bidPrice: sdkAdspotChannelFormData.bidPrice,
@@ -89,6 +91,8 @@ export function formatModalDataFromPayload(sdkAdspotChannelPayloadData) {
     bidRatio: sdkAdspotChannelPayloadData.bidRatio,
     bidPrice: sdkAdspotChannelPayloadData.bidPrice,
     timeout: sdkAdspotChannelPayloadData.timeout,
+    enableCache: sdkAdspotChannelPayloadData.enableCache ? 1 : 0,
+    cacheTimeout: sdkAdspotChannelPayloadData.enableCache ? sdkAdspotChannelPayloadData.cacheTimeout : null,
 
     params: params,
     adnParamsMeta: adnParamsMeta,
