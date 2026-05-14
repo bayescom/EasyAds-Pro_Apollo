@@ -17,15 +17,13 @@ function Operation({
   mediaId,
   model,
   onEditSubmit,
-  changeStatus,
-  setLoading
+  changeStatus
 }: {
   adspotId: number,
   mediaId: number | undefined,
   model: ISdkChannelTrafficList,
   onEditSubmit: () => void,
-  changeStatus: (status : boolean) => void,
-  setLoading: (value: boolean) => void
+  changeStatus: (status : boolean) => void
 }) {
 
   const [visible, setVisible] = useState(false);
@@ -76,18 +74,9 @@ function Operation({
         disabled={model.sdkChannelId === 1 || model.sdkChannelId === 99}
         className={model.sdkChannelId === 1 || model.sdkChannelId === 99 ? styles['distribution-disabled'] : ''}
       >
-        <a 
-          onClick={async(e) => {
-            // await sdkAdspotChannelDispatcher.getDeleteSdkAdspotChannelStatus({ sdkAdspotChannelId: model.id, adspotId });
-          }}
-        >删除</a>
+        <a>删除</a>
         <br/>
       </Popconfirm>
-      <a onClick={(e) => {
-        e.stopPropagation();
-        setActionLogModalOpen(true);
-        setCurrentActionLogAdspotChannelId(model.id);
-      }}>操作记录</a>
     </Space>
     <SdkAdspotChannelForm 
       model={modalData}
@@ -98,7 +87,6 @@ function Operation({
       cancel={(isSubmit?) => {
         setVisible(false); 
         if (isSubmit) {
-          setLoading(true);
           onEditSubmit();
         }
       }}

@@ -5,7 +5,7 @@ export default {
   async getList({params, sdkChannelId}) {
     return await request.get(`/sdk_channel/traffic/${sdkChannelId}`, {
       params: replacePageLimitSort(params),
-      instanceName: 'galileo'
+      instanceName: 'luna'
     });
   },
 
@@ -13,7 +13,7 @@ export default {
     return await request({
       method: 'PUT',
       url: `/sdk_channel/traffic/${sdkGroupId}/${adspotSdkChannelId}?status=${status}`,
-      instanceName: 'galileo'
+      instanceName: 'luna'
     });
   },
 
@@ -22,7 +22,7 @@ export default {
     return await request({
       method: 'DELETE',
       url: `/adspot/traffic/${adspotId}/${adspotChannelId}`,
-      instanceName: 'galileo'
+      instanceName: 'luna'
     });
   },
 
@@ -33,7 +33,7 @@ export default {
         data: {
           adspot_channel_detail_list: deleteData
         },
-        instanceName: 'galileo'
+        instanceName: 'luna'
       }
     );
   },

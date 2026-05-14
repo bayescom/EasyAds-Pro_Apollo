@@ -91,14 +91,11 @@ function Index() {
 
   const wrapRequest = useSimplePaginationCorrector(sdkChannelTrafficListState.total, actionRef);
 
-  // 操作记录的弹窗
-  const [loading, setLoading] = useState(false);
-
   const [mediumList, setMediumList] = useState<MediumFilterOption[]>([]);
   useState(async () => {
     const data = await mediumService.getList({});   
 
-    const newMediumList = data.medium.map((item: IMedium) => ({
+    const newMediumList = data.medias.map((item: IMedium) => ({
       id: item.id,
       name: item.mediaName,
       platform: item.platformType
@@ -263,17 +260,12 @@ function Index() {
           model={sdkChannelTrafficList} 
           adspotId={sdkChannelTrafficList.adspotId} 
           mediaId={sdkChannelTrafficList.mediaId} 
-          
           changeStatus={async (status ) => {
-            setLoading(true);
             const result = await sdkChannelTrafficListDispatcher.updateStatus({ channelTraffic: sdkChannelTrafficList, status });
-            setLoading(false);
             if (result) {
               formRef.current?.submit();
             }
-            
           }}
-          setLoading={(value) => setLoading(value)}
           onEditSubmit={() => formRef.current?.submit()}
         />
       </Space>)
