@@ -1,8 +1,10 @@
+const protocol = window.location.protocol;
+
 export default {
   default: {
-    luna: 'http://${DOMAIN_Luna}/Luna'
+    luna: `${protocol}//\${DOMAIN_Luna}/Luna`
   },
   production: {
-    luna: 'http://${DOMAIN_Luna}/Luna'
+    luna: `${protocol}//easyads-pro.bayescom.com/Luna`
   }
 };
