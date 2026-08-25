@@ -33,6 +33,8 @@ const adspotDefaultValue: IAdspot = {
   mediaId: 0,
   integrationType: 0,
   adspotType: 0,
+  renderType: 0,
+  platformType: 0,
 
   // property
   rewardReveal: null,

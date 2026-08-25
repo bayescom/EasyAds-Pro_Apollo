@@ -13,11 +13,15 @@ const channelDispatcher = store.getModelDispatchers('channel');
 function ChannelForm({
   channel,
   visible,
+  renderType,
+  platformType,
   onClose,
   onFinish,
 }: {
   channel: ISdkChannel | undefined,
   visible: boolean,
+  renderType?: number,
+  platformType?: number,
   onClose: () => void,
   onFinish: () => void,
 }) {
@@ -96,7 +100,9 @@ function ChannelForm({
 
         await channelDispatcher.updateSdkChannel({
           ...channel,
-          ...newValues
+          ...newValues,
+          renderType, 
+          platformType
         });
         onClose();
         onFinish();

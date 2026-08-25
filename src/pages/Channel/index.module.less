@@ -173,6 +173,34 @@
   }
 }
 
+.channel-sdk-toolbar-left {
+  :global {
+    .ant-pro-table-list-toolbar {
+      position: relative;
+      min-height: 46px;
+    }
+
+    .ant-pro-table-list-toolbar-container {
+      padding: 0;
+    }
+
+    .ant-pro-table-list-toolbar-left {
+      width: 0;
+      flex: 0 0 0;
+      overflow: visible;
+    }
+
+    .ant-pro-table-list-toolbar-right {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      flex: none;
+      justify-content: flex-start;
+    }
+  }
+}
+
 .user-channel-link {
   position: absolute;
   font-weight: 450;
