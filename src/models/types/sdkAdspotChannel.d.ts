@@ -13,7 +13,7 @@ interface ISdkAdspotChannel extends BaseModel {
     [key in string]: string
   },
   adnParamsMeta: AdnParamsMetaType [],
-
+  configExtra: ConfigExtra,
   direction: DirectionType,
   requestLimit: RequestLimit,
   isAutoCreate: number
@@ -45,6 +45,10 @@ type DirectionType = {
 type Direction = {
   property: string,
   value: string []
+}
+
+type ConfigExtra = {
+  channelCustomParam?: string,
 }
 
 type SortKey = 'id';

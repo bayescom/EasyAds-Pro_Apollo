@@ -33,6 +33,10 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
   const [form] = Form.useForm();
   const formRef = useRef<ProFormInstance>();  
 
+  const adspot = store.useModelState('adspot');
+  const renderType = adspot.editing?.renderType || 0;
+  const platformType = adspot.editing?.platformType;
+
   const newSdkAdspotChannel: ISdkAdspotChannel = { ...sdkAdspotChannelState.new, adspotId };
 
   const [batchEditDropdownSelect, setBatchEditDropdownSelect] = useState(defaultBatchEditDropdownSelect);
@@ -687,10 +691,12 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
     <SdkChannelModalForm
       channel={modalData}
       visible={modalVisible}
+      renderType={renderType}
+      platformType={platformType}
       onClose={() => setModalVisible(false)}
       onFinish={async () => {
         if (adnId) {
-          sdkChannelDispatcher.queryAll().then(res => {
+          sdkChannelDispatcher.queryAll({renderType, platformType}).then(res => {
             const data = res.data.filter(item => item.adnId == adnId)[0];
             let list: {value: number, label: string}[] = [];
             if (data.reportApiParams.length) {

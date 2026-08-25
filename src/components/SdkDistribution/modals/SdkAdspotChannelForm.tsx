@@ -1,7 +1,7 @@
 import { ISdkAdspotChannel } from '@/models/types/sdkAdspotChannel';
 import { ISdkChannel, ReportApiParam } from '@/models/types/sdkChannel';
 import store from '@/store';
-import { Col, Divider, Form, Input, Modal, Row, Select, Typography, Space, Image, Radio, Switch, Button, Alert } from 'antd';
+import { Col, Divider, Form, Input, Modal, Row, Select, Typography, Space, Image, Radio, Switch, Button, Alert, message } from 'antd';
 import { useEffect, useState } from 'react';
 import { isCommonConfig, TargetingItemConfig } from './formItems/TargetingItem';
 import styles from './index.module.less';
@@ -20,6 +20,7 @@ import auto from '@/assets/icons/distribution/auto.png';
 import SdkAutoAdspot from './sdkAutoAdspot';
 import { channelSource } from './sdkAutoAdspot/utils';
 import TextArea from 'antd/lib/input/TextArea';
+import { isJsonString } from '@/services/utils/utils';
 
 type Props = {
   model,
@@ -72,6 +73,7 @@ function SdkAdspotChannelForm({
   const [form] = Form.useForm();
   const isHeadBidding = Form.useWatch('isHeadBidding', form);
   const switchFcrequency = Form.useWatch('switchFcrequency', form);
+  const switchSpecialSetting = Form.useWatch('switchSpecialSetting', form);
   const bidPrice = Form.useWatch('bidPrice', form);
   const select = Form.useWatch('select', form);
   const switchReportApi = Form.useWatch('switchReportApi', form);
@@ -79,6 +81,7 @@ function SdkAdspotChannelForm({
   const checkedReportApi = Form.useWatch('checkedReportApi', form);
   const metaAppId = Form.useWatch(['params', 'app_id'], form);
   const channelAlias = Form.useWatch('channelAlias', form);
+  const isCustomChannel = selectedChannel?.isCustom;
 
   const [showFcrequencySetting, setShowFcrequencySetting] = useState(false);
   // 媒体Adx不显示广告源名称、超时时间、定向设置、频次设置
@@ -111,6 +114,7 @@ function SdkAdspotChannelForm({
   const [changeLeftContianerHeight, setChangeLeftContianerHeight] = useState(false);
   const sdkRightContainer = document.getElementById('sdk-right-container');
 
+  const [showSpecialSetting, setShowSpecialSetting] = useState(false);
   const [drawerFormVisible, setDrawerFormVisible] = useState(false);
   const [isCreateThird, setIsCreateThird] = useState(false);
   const [currentReportApiParam, setCurrentReportApiParam] = useState<ReportApiParam>(defaultReportApiParam);
@@ -120,7 +124,10 @@ function SdkAdspotChannelForm({
   const [disabledMetaAppId, setDisabledMetaAppId] = useState(false);
 
   /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
-  const adspotType = distributionState.adspotListMap[adspotId]?.adspotType || 0;
+  const adspotType = adspot.map[adspotId]?.adspotType || 0;
+  const renderType = adspot.map[adspotId]?.renderType || 0;
+  const platformType = adspot.map[adspotId]?.platformType;
+  const integrationType = adspot.map[adspotId]?.integrationType;
   const isBdBanner = adspotType == 3 && clickChannel == 4;
   /** 是否正在编辑 创建过三方广告位的广告源 */
   const isEditAutoCreate = !!(isEditing && model && model.isAutoCreate);
@@ -134,6 +141,12 @@ function SdkAdspotChannelForm({
     const itemArray = ['deviceRequestInterval', 'dailyReqLimit', 'dailyImpLimit', 'deviceDailyReqLimit', 'deviceDailyImpLimit'];
     const hasValueIndex = itemArray.findIndex(item => !!newModel[item]);
     newModel.switchFcrequency = hasValueIndex !== -1 ? true : false;
+    newModel.switchSpecialSetting = !!(
+      model.channelCustomParam
+      || model.configExtra?.channelCustomParam
+    );
+    newModel.channelCustomParam = model.channelCustomParam || model.configExtra?.channelCustomParam || '';
+
     newModel.switchReportApi = true;
     newModel.autoCreateStatus = true;
     newModel.adnId == 99 ? setIsMediaAdx(true) : setIsMediaAdx(false);
@@ -256,6 +269,18 @@ function SdkAdspotChannelForm({
     }
     sdkRightContainer?.clientHeight && setRightContainerHeight(sdkRightContainer?.clientHeight);
   }, [switchFcrequency]);
+
+  useEffect(() => {
+    if (switchSpecialSetting !== undefined) {
+      if(switchSpecialSetting) {
+        setShowSpecialSetting(true);
+      } else {
+        form.setFieldValue('channelCustomParam', undefined);
+        setShowSpecialSetting(false);
+      }
+    }
+    sdkRightContainer?.clientHeight && setRightContainerHeight(sdkRightContainer?.clientHeight);
+  }, [switchSpecialSetting]);
 
   useEffect(() => {
     const sdkTopProCard = document.getElementById('sdk-top-pro-card');
@@ -405,6 +430,10 @@ function SdkAdspotChannelForm({
       newModel.deviceDailyReqLimit = 0;
       newModel.deviceDailyImpLimit = 0;
     }
+
+    if (isEditing && !newModel.switchSpecialSetting) {
+      newModel.channelCustomParam = '';
+    }
     
     // 如果创建过reportApi参数
     if (clickChannel && sdkReportApiChannels.includes(clickChannel)) {
@@ -447,6 +476,7 @@ function SdkAdspotChannelForm({
       }
     }
     setSubmitLoading(true);
+    newModel.isCustom = sdkChannelState.list.find(item => item.adnId == newModel.adnId)?.isCustom;
 
     let result;
     if (selectedChannel?.supportAutoCreate && isCreateThird) { // 支持三方创建 && 创建了三方广告位 走新接口
@@ -465,7 +495,7 @@ function SdkAdspotChannelForm({
     }
 
     if (result) {
-      sdkChannelDispatchers.queryAll();
+      sdkChannelDispatchers.queryAll({renderType, platformType});
       setSubmitLoading(false);
       cancel(true);
       afterClose();
@@ -487,6 +517,13 @@ function SdkAdspotChannelForm({
 
   const changeSwitchFcrequency = (status) => {
     status ? setShowFcrequencySetting(true) : setShowFcrequencySetting(false);
+  };
+
+  const changeSwitchSpecialSetting = (status) => {
+    status ? setShowSpecialSetting(true) : setShowSpecialSetting(false);
+    if (!status) {
+      form.setFieldValue('channelCustomParam', undefined);
+    }
   };
 
   const clickScrollLi = async (adnId) => {
@@ -914,6 +951,44 @@ function SdkAdspotChannelForm({
                 </div>
               </>}
             </ProCard>
+            {(isCustomChannel) ? <ProCard className={styles['frequency-setting-container']}>
+              <Divider className={styles['segment-divider']} />
+              <Title level={5}>
+                特殊设置
+                <Form.Item
+                  name="switchSpecialSetting"
+                  valuePropName="checked"
+                >
+                  <Switch onChange={(status) => changeSwitchSpecialSetting(status)} size='small'/>
+                </Form.Item>
+              </Title>
+              {showSpecialSetting && <>
+                {isCustomChannel && <Col span={16}>
+                  <Form.Item
+                    name="channelCustomParam"
+                    label="自定义参数"
+                    tooltip='为满足您的特定需求,您可以将JSON格式的自定义参数透传给我们,我们将使用这些参数进行广告请求和处理'
+                    getValueFromEvent={e => e.target.value.trim()}
+                    rules={[
+                      {
+                        validator: (_, value) => {
+                          if (value) {
+                            const isJson = isJsonString(value.trim());
+                            if (isJson) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject('必须使用JSON格式');
+                          }
+                          return Promise.resolve();
+                        },
+                      },
+                    ]}
+                  >
+                    <Input placeholder="请输入，必须使用JSON格式" />
+                  </Form.Item>
+                </Col>}
+              </>}
+            </ProCard> : null}
           </div>
         </div>
       </Form>

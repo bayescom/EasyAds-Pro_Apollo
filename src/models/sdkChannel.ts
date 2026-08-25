@@ -106,8 +106,8 @@ export default {
   },
 
   effects: (dispatch: IRootDispatch) => ({
-    async queryAll() {
-      const data = await sdkChannelService.getSdkChannels();
+    async queryAll({ renderType, platformType }: { renderType?: number, platformType?: number }) {
+      const data = await sdkChannelService.getSdkChannels(renderType, platformType);
       dispatch.sdkChannel.setList(data.sdk_adns);
       return {
         data: data.sdk_adns

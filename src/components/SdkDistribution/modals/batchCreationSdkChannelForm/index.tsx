@@ -35,6 +35,8 @@ const sdkChannelDispatcher = store.getModelDispatchers('sdkChannel');
 function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adspotId, mediaId, onFinish } : IProps) {
   const sdkChannelState = store.useModelState('sdkChannel');
   const distributionState = store.useModelState('distribution');
+  const adspotState = store.useModelState('adspot');
+
   const [channelList, setChannelList] = useState<ChannelList[]>([]);
   const [dataSource, setDataSource] = useState<batchCreationAdspotChannelItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,11 +49,15 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
   const [form] = Form.useForm();
   const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
+  const currentAdspot = adspotState.editing;
+  const renderType = currentAdspot?.renderType || 0;
+  const platformType = currentAdspot?.platformType;
+
 
   // 每次打开弹窗都获取最新的channelList列表数据
   useEffect(() => {
     if (batchCreationVisible) {
-      sdkChannelDispatcher.queryAll();
+      sdkChannelDispatcher.queryAll({renderType, platformType});
     }
   }, [batchCreationVisible]);
 
@@ -832,10 +838,12 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
       <SdkChannelModalForm
         channel={modalData}
         visible={modalVisible}
+        renderType={renderType}
+        platformType={platformType}
         onClose={() => setModalVisible(false)}
         onFinish={async () => {
           if (sdkChannelState.currentEditReportApiChannelId) {
-            sdkChannelDispatcher.queryAll().then(res => {
+            sdkChannelDispatcher.queryAll({renderType, platformType}).then(res => {
               const data = res.data.filter(item => item.adnId == sdkChannelState.currentEditReportApiChannelId)[0];
               let list: {value: number, label: string}[] = [];
               const changeIndex = findIndex(sdkChannelState.currentEditReportApiId, dataSource);

@@ -5,8 +5,8 @@ import { request } from 'ice';
 
 export default {
   // 添加、编辑广告源的时候，渠道的列表
-  async getSdkChannels() {
-    return await request.get('/sdk_adn/adns', {
+  async getSdkChannels(renderType?: number, platformType?: number) {
+    return await request.get(`/sdk_adn/adns?&renderType=${renderType}&platformType=${platformType}`, {
       instanceName: 'luna'
     });
   },

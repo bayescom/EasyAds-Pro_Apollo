@@ -8,7 +8,7 @@ import { ProFormInstance } from '@ant-design/pro-form';
 import { ActionType, ProColumns } from '@ant-design/pro-table';
 import { DateType, PageParams, SortParams } from '@/models/types/common';
 import { getPageParams, getSortParams } from '@/services/utils/queryParamsFormatter';
-import { Space, Tag, Image, Form } from 'antd';
+import { Space, Tag, Image, Form, Button } from 'antd';
 import { useMemo, useRef, useState, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import styles from './index.module.less';
@@ -18,6 +18,7 @@ import { IReportDetail, initColumnsList } from '@/components/Utils/TableColumnCo
 import DateRange from '@/components/DateRange';
 import moment from 'moment';
 import { channelIconMap } from '@/components/Utils/Constant';
+import SdkCustomerChannelDrawer from './components/SdkCustomerChannelDrawer';
 
 const formatParams = (
   params,
@@ -48,6 +49,8 @@ function Channel() {
   const dataTargetOperationState = store.useModelState('dataTargetOperation');
   const [sdkModalData, setSdkModalData] = useState<ISdkChannel>();
   const [modalSdkVisible, setModalSdkVisible] = useState(false);
+  const [sdkCustomerChannelDrawerOpen, setSdkCustomerChannelDrawerOpen] = useState(false);
+
   const [time, setTime] = useState<DateType>(() => {
     const localDateType = window.sessionStorage.getItem('commonDateType');
     return localDateType ? JSON.parse(localDateType) : defaultTime;
@@ -178,7 +181,10 @@ function Channel() {
         }}
         sticky={{ offsetHeader: 52 }}
         scroll={{x: 1400}}
-        className={styles['channel-table']}
+        className={[
+          styles['channel-table'],
+          styles['channel-sdk-toolbar-left'],
+        ].filter(Boolean).join(' ')}
         rowKey='channelId'
         sortDirections={['descend', 'ascend', 'descend']}
         headerTitle={<>
@@ -213,6 +219,15 @@ function Channel() {
         dataSource={channelState.list}
         formRef={formRef}
         actionRef={actionRef}
+        toolBarRender={() => [
+          <Button
+            key="sdkCustomerChannel"
+            type="primary"
+            onClick={() => setSdkCustomerChannelDrawerOpen(true)}
+          >
+            管理自定义广告网络
+          </Button>
+        ]}
         size='middle'
       />
       <ChannelSdkModalForm 
@@ -223,6 +238,14 @@ function Channel() {
           actionRef.current?.reload();
         }}
       />
+      <SdkCustomerChannelDrawer
+        open={sdkCustomerChannelDrawerOpen}
+        onClose={() => {
+          actionRef.current?.reload();
+          setSdkCustomerChannelDrawerOpen(false);
+        }}
+      />
+
     </>
   );
 }

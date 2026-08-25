@@ -38,7 +38,7 @@ export default {
       const data = await channelService.updateSdkChannel(formatChannelFromModal(channel));
       if (data) {
         // 提交完后重新拉取分发页面的广告网络列表，这样不用刷新页面
-        await dispatchers.sdkChannel.queryAll();
+        await dispatchers.sdkChannel.queryAll({renderType, platformType});
       }
     }
   }),

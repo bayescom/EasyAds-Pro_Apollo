@@ -7,6 +7,8 @@ interface IAdspot {
   mediaId: number,
   integrationType: number,
   adspotType: number,
+  renderType: number,
+  platformType: number,
   
   // property 
   rewardReveal: number | null,

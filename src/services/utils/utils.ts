@@ -178,4 +178,16 @@ const randomString = (len) => {
   return randomStr;
 };
 
-export { formatData, formatString2Array, getUrlParams, generateRandomID, sortByOrder, floatAdd, getTimeDifference, generateRandomString, convertNumbersToStrings, convertStringsToNumbers, getCurrentDateTimeFormatted, areArraysEqual, randomString };
+/** 判断是否是JSON字符串 */
+const isJsonString = str => {
+  try {
+    const toObj = JSON.parse(str);
+    if (toObj && typeof toObj === 'object') { 
+      return true;
+    }
+  // eslint-disable-next-line no-empty
+  } catch {}
+  return false;
+};
+
+export { formatData, formatString2Array, getUrlParams, generateRandomID, sortByOrder, floatAdd, getTimeDifference, generateRandomString, convertNumbersToStrings, convertStringsToNumbers, getCurrentDateTimeFormatted, areArraysEqual, randomString, isJsonString };
