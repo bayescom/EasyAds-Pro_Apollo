@@ -1,14 +1,24 @@
 import { TargetPercentageStrategyListType } from '@/models/types/sdkDistribution';
 import { Tabs, Tooltip } from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './index.module.less';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import store from '@/store';
+
+const distributionDispatcher = store.getModelDispatchers('distribution');
 
 function PercentageGroup({ targetPercentageStrategyList, children }: {
   // 只显示 status = 1 的ab组
   targetPercentageStrategyList: TargetPercentageStrategyListType [],
   children: (targetPercentage: TargetPercentageStrategyListType) => React.ReactNode
 }) {
+  const distributionState = store.useModelState('distribution');
+
+  // 1. 使用状态管理当前的 activeKey
+  const [activeTabKey, setActiveTabKey] = useState(
+    // 初始化为 distributionState.currentTargetPercentageStrategyTrafficId
+    distributionState.currentTargetPercentageStrategyTrafficId + ''
+  );
 
   useEffect(() => {
     const dom = document.querySelector(`.${styles['targeting-group-tab']}`);
@@ -19,13 +29,24 @@ function PercentageGroup({ targetPercentageStrategyList, children }: {
     dom.classList.remove('ant-tabs-card');
   }, []);
 
+  useEffect(() => {
+    if (distributionState.currentTargetPercentageStrategyTrafficId) {
+      setActiveTabKey(distributionState.currentTargetPercentageStrategyTrafficId + '');
+    }
+  }, [distributionState.currentTargetPercentageStrategyTrafficId]);
+
   return (
     <>
       <Tabs
         className={[styles['targeting-group-tab'], targetPercentageStrategyList.length == 1 ? styles['targeting-group-tab-no-ab-testing'] : ''].join(' ')}
         destroyInactiveTabPane
+        activeKey={activeTabKey}
+        onTabClick={(key, e) => {
+          // 从key中解析出需要的信息
+          distributionDispatcher.setCurrentTargetPercentageStrategyTrafficId(Number(key));
+        }}
         items={targetPercentageStrategyList.map(targetPercentage => ({
-          key: targetPercentage.trafficId + '',
+          key: targetPercentage.targetPercentage.targetPercentageId + '',
           label: (<>
             {`${targetPercentage.targetPercentage.tag}: ${targetPercentage.targetPercentage.percentage}%`}
             {

@@ -71,14 +71,11 @@ type IProps = {
 }
 
 const adspotTypeImageMap = {
-  1: bannerActiveIcon,  // 横幅
-  2: splashActiveIcon,  // 开屏
-  3: interstitialActiveIcon,  // 插屏
-  6: feedActiveIcon,  // 信息流
-  8: textActiveIcon,  // 文字链
-  9: rollActiveIcon,  // 视频贴片
-  12: incentiveActiveIcon,  // 激励视频
-  20: interstitialActiveIcon,  // 气泡角标
+  1: splashActiveIcon,  // 开屏
+  2: feedActiveIcon,  // 信息流
+  3: bannerActiveIcon,  // 横幅
+  4: interstitialActiveIcon,  // 插屏
+  5: incentiveActiveIcon,  // 激励视频
 };
 
 const { Option } = Select;
