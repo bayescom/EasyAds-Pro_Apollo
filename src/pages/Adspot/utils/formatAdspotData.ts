@@ -20,6 +20,7 @@ export function formatPayloadDataFromModal(adspotFormData: IAdspot) {
     mediaId: adspotFormData.mediaId,
     integrationType: adspotFormData.integrationType,
     adspotType: adspotFormData.adspotType,
+    renderType: adspotFormData.renderType ?? 0,
     timeout: adspotFormData.timeout || 500,
     deviceDailyReqLimit: adspotFormData.deviceDailyReqLimit || null,
     deviceDailyImpLimit: adspotFormData.deviceDailyImpLimit || null,
@@ -38,6 +39,8 @@ export function formatModalDataFromPayload(adspotPayloadData) {
     mediaId: adspotPayloadData.mediaId,
     integrationType: adspotPayloadData.integrationType || 0,
     adspotType: adspotPayloadData.adspotType,
+    renderType: adspotPayloadData.renderType ?? 0,
+    platformType: adspotPayloadData.platformType,
 
     rewardReveal: adspotPayloadData.property.reward ? 1 : 0,
     rewardName: adspotPayloadData.property.reward ? adspotPayloadData.property.reward.rewardName : '',

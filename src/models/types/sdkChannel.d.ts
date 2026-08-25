@@ -1,4 +1,4 @@
-interface ISdkChannel {
+export interface ISdkChannel {
   adnId: number
   adnName: string,
   channelName?: string
@@ -11,7 +11,9 @@ interface ISdkChannel {
   reportApiParams: ReportApiParam [],
   reportApiStatus: number,
   /** 支持自动创建三方广告位 */
-  supportAutoCreate: number
+  supportAutoCreate: number,
+  /** 是否自定义广告网络 */
+  isCustom?: number
 }
 
 type ReportApiParam = {

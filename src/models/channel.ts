@@ -34,11 +34,12 @@ export default {
       };
     },
 
-    async updateSdkChannel(channel: ISdkChannel) {
-      const data = await channelService.updateSdkChannel(formatChannelFromModal(channel));
-      if (data) {
-        // 提交完后重新拉取分发页面的广告网络列表，这样不用刷新页面
-        await dispatchers.sdkChannel.queryAll({renderType, platformType});
+    async updateSdkChannel(channel: ISdkChannel & { renderType?: number, platformType?: number, adspotType?: number }) {
+      const { renderType, platformType, adspotType, ...channelPayload } = channel;
+      const data = await channelService.updateSdkChannel(formatChannelFromModal(channelPayload as ISdkChannel));
+      if (data && (renderType !== undefined || platformType !== undefined || adspotType !== undefined)) {
+        // 分发场景下提交完后重新拉取广告网络列表，这样不用刷新页面
+        await dispatchers.sdkChannel.queryAll({renderType, platformType, adspotType});
       }
     }
   }),

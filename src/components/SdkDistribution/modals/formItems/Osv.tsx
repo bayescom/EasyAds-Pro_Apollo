@@ -53,8 +53,7 @@ function Osv({ name, mediumId, notRequired, isSdkGroup }: Props) {
     }
     if (platformType !== null && platformTypeMap[platformType]) {
       return optionsData.filter(item =>
-        // dimension value: '1' - IOS, '2' - Android
-        // medium platformType: 0 - IOS, 1 - Android, 2 - H5;
+        // medium platformType: 0 - iOS, 1 - Android, 2 - HarmonyOS;
         item.value === platformTypeMap[platformType].value
       );
     } else if (platformType !== null && platformTypeMap[platformType]) {

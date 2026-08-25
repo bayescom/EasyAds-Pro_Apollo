@@ -17,10 +17,12 @@ import sdkChannelService from '@/services/sdkChannel';
 import SelectedChannelConfigs from './selectedChannelConfigs';
 import { channelIconMap, autoCreateStatusTipMap, sdkReportApiChannels } from '@/components/Utils/Constant';
 import auto from '@/assets/icons/distribution/auto.png';
+import DefaultIcon from '@/assets/icons/channel/defaultIcon.png';
 import SdkAutoAdspot from './sdkAutoAdspot';
 import { channelSource } from './sdkAutoAdspot/utils';
 import TextArea from 'antd/lib/input/TextArea';
 import { isJsonString } from '@/services/utils/utils';
+import getAdspotSdkChannelQueryParams from '@/services/utils/getAdspotSdkChannelQueryParams';
 
 type Props = {
   model,
@@ -124,9 +126,7 @@ function SdkAdspotChannelForm({
   const [disabledMetaAppId, setDisabledMetaAppId] = useState(false);
 
   /** 1 - 开屏， 2 信息流， 3 横幅， 4 插屏， 5 激励视频 */
-  const adspotType = adspot.map[adspotId]?.adspotType || 0;
-  const renderType = adspot.map[adspotId]?.renderType || 0;
-  const platformType = adspot.map[adspotId]?.platformType;
+  const { adspotType = 0, renderType, platformType } = getAdspotSdkChannelQueryParams(adspotId);
   const integrationType = adspot.map[adspotId]?.integrationType;
   const isBdBanner = adspotType == 3 && clickChannel == 4;
   /** 是否正在编辑 创建过三方广告位的广告源 */
@@ -137,6 +137,10 @@ function SdkAdspotChannelForm({
   }, [mediaId]);
 
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
     const newModel = {...model};
     const itemArray = ['deviceRequestInterval', 'dailyReqLimit', 'dailyImpLimit', 'deviceDailyReqLimit', 'deviceDailyImpLimit'];
     const hasValueIndex = itemArray.findIndex(item => !!newModel[item]);
@@ -151,7 +155,7 @@ function SdkAdspotChannelForm({
     newModel.autoCreateStatus = true;
     newModel.adnId == 99 ? setIsMediaAdx(true) : setIsMediaAdx(false);
     form.setFieldsValue(newModel);
-  }, [model, form]);
+  }, [visible, model, form]);
 
   useEffect(() => {
     if (visible) {
@@ -495,7 +499,7 @@ function SdkAdspotChannelForm({
     }
 
     if (result) {
-      sdkChannelDispatchers.queryAll({renderType, platformType});
+      sdkChannelDispatchers.queryAll({ renderType, platformType, adspotType, adspotId });
       setSubmitLoading(false);
       cancel(true);
       afterClose();
@@ -618,7 +622,7 @@ function SdkAdspotChannelForm({
             {
               scrollChannelList?.length ? scrollChannelList.map(channel => (<li onClick={() => clickScrollLi(channel.adnId)} className={clickChannel == channel.adnId ? styles['li-active'] : ''} key={channel.adnId}>
                 <Space>
-                  <Image src={channelIconMap[channel.adnId]} width={18} height={18} preview={false}/>
+                  <Image src={channelIconMap[channel.adnId] || DefaultIcon} width={18} height={18} preview={false}/>
                   <Text>{channel.adnName}</Text>
                   {!!channel.supportAutoCreate && <Image src={auto} preview={false}/>}
                 </Space>
@@ -997,6 +1001,9 @@ function SdkAdspotChannelForm({
     <SdkChannelModalForm
       channel={modalData}
       visible={modalVisible}
+      renderType={renderType}
+      platformType={platformType}
+      adspotType={adspotType}
       onClose={() => setModalVisible(false)}
       onFinish={() => console.log()}
     />

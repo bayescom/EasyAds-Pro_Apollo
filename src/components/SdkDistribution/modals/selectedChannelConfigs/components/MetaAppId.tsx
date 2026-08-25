@@ -3,7 +3,7 @@ import { Col, Form, Input, Tooltip } from 'antd';
 import styles from '../index.module.less';
 
 type Iprops = {
-  config: { metaKey: string, metaName: string },
+  config: { metaKey: string, metaName: string, metaRequired?: number | boolean },
   isSeverHasSaveMetaAppId: boolean,
   metaAppIdDisabled: boolean,
   savePervMetaAppId: string | null,
@@ -26,6 +26,7 @@ export default function MetaAppId({
   disabledMetaAppId
 }: Iprops) {
   const form = Form.useFormInstance();
+  const isRequired = !!config.metaRequired;
 
   const handleClick = () => {
     if (disabledMetaAppId) {
@@ -87,8 +88,8 @@ export default function MetaAppId({
               label={
                 <span className='channel-configs-label'>{config.metaName || config.metaKey.toUpperCase()}</span>
               }
-              rules={[{ required: true, type: 'string', message: '请输入' }]}
-              required={true}
+              rules={[{ required: isRequired, type: 'string', message: '请输入' }]}
+              required={isRequired}
               getValueFromEvent={e => e.target.value.trim()}
               className='meta-app-id-form-item'
             >
@@ -111,8 +112,8 @@ export default function MetaAppId({
           label={
             <span className='channel-configs-label'>{config.metaName || config.metaKey.toUpperCase()}</span>
           }
-          rules={[{ required: true, type: 'string', message: '请输入' }]}
-          required={true}
+          rules={[{ required: isRequired, type: 'string', message: '请输入' }]}
+          required={isRequired}
           getValueFromEvent={e => e.target.value.trim()}
         >
           <Input placeholder="请输入"/>

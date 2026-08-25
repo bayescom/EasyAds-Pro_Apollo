@@ -7,6 +7,7 @@ interface IAdspot {
   mediaName: string,
   adspotType: number,
   adspotTypeName: string,
+  renderType?: number,
   status: number,
   bundleName: string,
   platformType?: number,

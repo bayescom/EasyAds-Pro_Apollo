@@ -18,6 +18,8 @@ import BatchEditModal from './components/BatchEditModal';
 import BatchCopyModal from './components/BatchCopyModal';
 import { findIndex, targetingKeys } from './utils';
 import { channelIconMap } from '@/components/Utils/Constant';
+import getAdspotSdkChannelQueryParams from '@/services/utils/getAdspotSdkChannelQueryParams';
+import DefaultIcon from '@/assets/icons/channel/defaultIcon.png';
 
 const { Option } =  Select;
 
@@ -35,7 +37,6 @@ const sdkChannelDispatcher = store.getModelDispatchers('sdkChannel');
 function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adspotId, mediaId, onFinish } : IProps) {
   const sdkChannelState = store.useModelState('sdkChannel');
   const distributionState = store.useModelState('distribution');
-  const adspotState = store.useModelState('adspot');
 
   const [channelList, setChannelList] = useState<ChannelList[]>([]);
   const [dataSource, setDataSource] = useState<batchCreationAdspotChannelItem[]>([]);
@@ -49,15 +50,13 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
   const [form] = Form.useForm();
   const formRef = useRef<ProFormInstance>();
   const actionRef = useRef<ActionType>();
-  const currentAdspot = adspotState.editing;
-  const renderType = currentAdspot?.renderType || 0;
-  const platformType = currentAdspot?.platformType;
+  const { renderType, platformType, adspotType } = getAdspotSdkChannelQueryParams(adspotId);
 
 
   // 每次打开弹窗都获取最新的channelList列表数据
   useEffect(() => {
     if (batchCreationVisible) {
-      sdkChannelDispatcher.queryAll({renderType, platformType});
+      sdkChannelDispatcher.queryAll({ renderType, platformType, adspotType, adspotId });
     }
   }, [batchCreationVisible]);
 
@@ -810,7 +809,7 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
                 {
                   channelList.length ? channelList.map(item => (<div className={styles['batch-header-operation-item']} key={item.value}>
                     <div className={styles['batch-header-operation-item-top']}>
-                      <Image src={channelIconMap[item.value]} preview={false}/>
+                      <Image src={channelIconMap[item.value] || DefaultIcon} preview={false}/>
                       <span>{item.label}</span>
                     </div>
                     <div key='create' className={styles['batch-header-operation-item-bottom']}>
@@ -840,10 +839,11 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
         visible={modalVisible}
         renderType={renderType}
         platformType={platformType}
+        adspotType={adspotType}
         onClose={() => setModalVisible(false)}
         onFinish={async () => {
           if (sdkChannelState.currentEditReportApiChannelId) {
-            sdkChannelDispatcher.queryAll({renderType, platformType}).then(res => {
+            sdkChannelDispatcher.queryAll({ renderType, platformType, adspotType, adspotId }).then(res => {
               const data = res.data.filter(item => item.adnId == sdkChannelState.currentEditReportApiChannelId)[0];
               let list: {value: number, label: string}[] = [];
               const changeIndex = findIndex(sdkChannelState.currentEditReportApiId, dataSource);

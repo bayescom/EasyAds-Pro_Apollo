@@ -24,7 +24,8 @@ type AdnParamsMetaType = {
   metaKey: string;
   key: string,
   name: string,
-  value: string
+  value: string,
+  metaRequired?: number
 }
 
 type RequestLimit = {
