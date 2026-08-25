@@ -113,13 +113,7 @@ export default {
   effects: (dispatch: IRootDispatch) => ({
     async getList({ adspotId, dateType }: { adspotId: number, dateType: DateType }) {
       const data = await sdkChannelService.getSdkAdspotChannels(adspotId, dateType);
-      const currentAdspot = store.getModelState('adspot').editing;
-      const renderType = currentAdspot?.renderType || 0;
-      const platformType = currentAdspot?.platformType;
-
-      if (store.getModelState('sdkChannel').list.length === 0) {
-        await dispatch.sdkChannel.queryAll({renderType, platformType});
-      }
+      await dispatch.sdkChannel.queryAll({ adspotId });
       if (!data) {
         return;
       }

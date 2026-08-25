@@ -128,6 +128,7 @@ export default function AdspotForm({
 
   // 聚合SDK && 激励视频 && 安卓、ios媒体 显示服务端激励回调
   const isShowBasicServerCallback = currentImplementMethod == 0 && currentAdspotType == '5' && mediaId && mediumMap[mediaId] && [0, 1].includes(mediumMap[mediaId].platformType);
+  const isShowRenderType = currentImplementMethod == 0 && currentAdspotType == '2';
   
   const mediaOnChange = (value: string | number) => {
     if (value) {
@@ -304,6 +305,29 @@ export default function AdspotForm({
           </Form.Item>
         </Col>
       </Row>
+      {
+        isShowRenderType ? (<>
+          <Row gutter={8} wrap={false}>
+            <Col span={20}>
+              <Form.Item
+                label="渲染形式"
+                name="renderType"
+                required={true}
+                rules={[{
+                  required: true,
+                  message: '选择渲染形式',
+                }]}
+                className={styles['type-setting-item']}
+              >
+                <Radio.Group>
+                  <Radio.Button value={1}>模板渲染</Radio.Button>
+                  <Radio.Button value={0}>自渲染</Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+          </Row>
+        </>) : (<></>)
+      }
       {isShowBasicServerCallback && <Row gutter={16}>
         <Col span={13}>
           <Form.Item

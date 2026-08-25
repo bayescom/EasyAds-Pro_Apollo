@@ -15,6 +15,7 @@ function ChannelForm({
   visible,
   renderType,
   platformType,
+  adspotType,
   onClose,
   onFinish,
 }: {
@@ -22,6 +23,7 @@ function ChannelForm({
   visible: boolean,
   renderType?: number,
   platformType?: number,
+  adspotType?: number,
   onClose: () => void,
   onFinish: () => void,
 }) {
@@ -101,8 +103,9 @@ function ChannelForm({
         await channelDispatcher.updateSdkChannel({
           ...channel,
           ...newValues,
-          renderType, 
-          platformType
+          renderType,
+          platformType,
+          adspotType
         });
         onClose();
         onFinish();

@@ -36,7 +36,7 @@ export default function PlatformAdapterConfig({
   platformLabel,
   adapterOptions,
 }: PlatformAdapterConfigProps) {
-  const isHarmonyOs = osType === 4;
+  const isHarmonyOs = osType === 2;
   const form = Form.useFormInstance();
   Form.useWatch(['platforms', osType, 'enabled'], form);
   const platformValue: ISdkCustomerChannelPlatformConfig =

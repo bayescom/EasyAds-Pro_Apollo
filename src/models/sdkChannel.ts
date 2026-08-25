@@ -2,6 +2,7 @@ import sdkChannelService from '@/services/sdkChannel';
 import { IRootDispatch } from '@/store';
 import { ISdkChannel, IBatchCreationAdspotChannel, IBatchCreationAdspotChannelReportApiList, batchCreationAdspotChannelItem, IBatchTargetingModelMapType } from './types/sdkChannel';
 import { generateRandomID } from '@/services/utils/utils';
+import getAdspotSdkChannelQueryParams from '@/services/utils/getAdspotSdkChannelQueryParams';
 
 type IState = {
   list: ISdkChannel[],
@@ -106,8 +107,13 @@ export default {
   },
 
   effects: (dispatch: IRootDispatch) => ({
-    async queryAll({ renderType, platformType }: { renderType?: number, platformType?: number }) {
-      const data = await sdkChannelService.getSdkChannels(renderType, platformType);
+    async queryAll({ renderType, platformType, adspotType, adspotId }: { renderType?: number, platformType?: number, adspotType?: number, adspotId?: number } = {}) {
+      const resolved = getAdspotSdkChannelQueryParams(adspotId);
+      const data = await sdkChannelService.getSdkChannels(
+        renderType ?? resolved.renderType,
+        platformType ?? resolved.platformType,
+        adspotType ?? resolved.adspotType
+      );
       dispatch.sdkChannel.setList(data.sdk_adns);
       return {
         data: data.sdk_adns

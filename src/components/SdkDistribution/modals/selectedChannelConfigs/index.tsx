@@ -4,7 +4,7 @@ import MetaAppKey from './components/MetaAppKey';
 import styles from './index.module.less';
 
 type Iprops = {
-  config: { metaKey: string, metaName: string },
+  config: { metaKey: string, metaName: string, metaRequired?: number | boolean },
   isSeverHasSaveMetaAppId: boolean,
   isSeverHasSaveMetaAppKey: boolean,
   metaAppIdDisabled: boolean,
@@ -56,7 +56,8 @@ export default function SelectedChannelConfigs ({
         setMetaAppKeyDisabled={(value) => setMetaAppKeyDisabled(value)}
         setSavePervMetaAppKey={(value) => setSavePervMetaAppKey(value)}
       />);
-    default: 
+    default: {
+      const isRequired = !!config.metaRequired;
       return (<Col span={16} key={config.metaKey}>
         <Form.Item
           name={['params', config.metaKey]}
@@ -64,13 +65,14 @@ export default function SelectedChannelConfigs ({
           label={
             <span className={styles['channel-configs-label']}>{config.metaName || config.metaKey.toUpperCase()}</span>
           }
-          rules={[{ required: disabledMetaAdspotId ? false : true, type: 'string', message: '请输入' }]}
-          required={true}
+          rules={[{ required: disabledMetaAdspotId ? false : isRequired, type: 'string', message: '请输入' }]}
+          required={isRequired && !disabledMetaAdspotId}
           getValueFromEvent={e => e.target.value.trim()}
         >
           <Input placeholder="请输入" disabled={disabledMetaAdspotId}/>
         </Form.Item>
       </Col>);
+    }
     }
   };
   

@@ -61,7 +61,11 @@ export function formatPayloadDataFromModal(sdkAdspotChannelFormData) {
     adnParamsMeta: sdkAdspotChannelFormData.adnParamsMeta,
     reportApiParam: newReportApiParam,
     isAutoCreate: sdkAdspotChannelFormData.isAutoCreate || 0,
-    cpmUpdateTime: sdkAdspotChannelFormData.cpmUpdateTime
+    cpmUpdateTime: sdkAdspotChannelFormData.cpmUpdateTime,
+    configExtra: {
+      ...(sdkAdspotChannelFormData.configExtra || {}),
+      channelCustomParam: sdkAdspotChannelFormData.channelCustomParam ?? sdkAdspotChannelFormData.configExtra?.channelCustomParam ?? ''
+    }
   };
   return sdkAdspotChannelNew;
 }
@@ -111,7 +115,9 @@ export function formatModalDataFromPayload(sdkAdspotChannelPayloadData) {
     excludeOsv: direction.osVersion.property == 'include' ? '' : direction.osVersion.value.join(','),
     appVersion: appVersionProperty + direction.appVersion.value.join(',') || '',
     isAutoCreate: sdkAdspotChannelPayloadData.isAutoCreate,
-    cpmUpdateTime: sdkAdspotChannelPayloadData.cpmUpdateTime
+    cpmUpdateTime: sdkAdspotChannelPayloadData.cpmUpdateTime,
+    configExtra: sdkAdspotChannelPayloadData.configExtra,
+    channelCustomParam: sdkAdspotChannelPayloadData.configExtra?.channelCustomParam || '',
   };
   return sdkAdspotChannel;
 }
