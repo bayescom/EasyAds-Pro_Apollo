@@ -6,7 +6,9 @@ interface ISdkAdspotChannel extends BaseModel {
   channelName: string,
   channelAlias: string,
   isHeadBidding: number,
-  bidRatio: number
+  bidRatio: number,
+  cacheTimeout: null | number,
+  enableCache: number,
   bidPrice: number | null,
   timeout: number,
   params: {

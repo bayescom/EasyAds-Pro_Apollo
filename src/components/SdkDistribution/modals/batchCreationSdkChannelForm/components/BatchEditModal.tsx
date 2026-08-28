@@ -41,6 +41,7 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
 
   const [showChannelId, setShowChannelId] = useState(false);
   const [showIsHeadBidding, setShowIsHeadBidding] = useState(false);
+  const [showEnableCache, setShowEnableCache] = useState(false);
   const [showTimeout, setShowTimeout] = useState(false);
   const [showLocation, setShowLocation] = useState(false);
   const [showMaker, setShowMaker] = useState(false);
@@ -61,6 +62,7 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
   const [submitterLoading, setSubmitterLoading] = useState(false);
 
   const isHeadBidding = Form.useWatch('isHeadBidding', form);
+  const enableCache = Form.useWatch('enableCache', form);
   const adnId = Form.useWatch('adnId', form);
 
   useEffect(() => {
@@ -86,6 +88,9 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
       break;
     case 'isHeadBidding':
       type == 'open' ? setShowIsHeadBidding(true) : setShowIsHeadBidding(false);
+      break;
+    case 'enableCache':
+      type == 'open' ? setShowEnableCache(true) : setShowEnableCache(false);
       break;
     case 'timeout':
       type == 'open' ? setShowTimeout(true) : setShowTimeout(false);
@@ -261,9 +266,22 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
         newDataSource.splice(changIndex, 1, newDataSourceItem);
       }
 
+      // 如果是是否广告缓存发生了改变
+      if (values.enableCache !== undefined) {
+        newFormValue[`${selectedRowKey}-enableCache`] = values.enableCache;
+        if (values.enableCache) {
+          newFormValue[`${selectedRowKey}-cacheTimeout`] = values.cacheTimeout;
+          newDataSourceItem.cacheTimeout = values.cacheTimeout;
+        }
+        newDataSourceItem.enableCache = values.enableCache;
+
+        const changIndex = findIndex(selectedRowKey, dataSource);
+        newDataSource.splice(changIndex, 1, newDataSourceItem);
+      }
+
       const formatKeys: string[] = [];
       defaultBatchEditDropdownSelect.forEach(child => {
-        if (!['adnId', 'isHeadBidding', 'location', 'deviceMaker', 'osv', 'appVersion'].includes(child.key)) {
+        if (!['adnId', 'isHeadBidding', 'enableCache', 'location', 'deviceMaker', 'osv', 'appVersion'].includes(child.key)) {
           formatKeys.push(child.key);
         }
       });
@@ -337,6 +355,7 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
   const afterResetUseState = () => {
     showChannelId && setShowChannelId(false);
     showIsHeadBidding && setShowIsHeadBidding(false);
+    showEnableCache && setShowEnableCache(false);
     showTimeout && setShowTimeout(false);
     showLocation && setShowLocation(false);
     showMaker && setShowMaker(false);
@@ -378,7 +397,8 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
     wrapperCol={{ span: 24 }}
     initialValues={{
       isHeadBidding: 1,
-      timeout: 5000
+      timeout: 5000,
+      enableCache: 0,
     }}
   >
     {showEmpty && <Empty
@@ -497,6 +517,52 @@ export default function BatchCopyModal({editOpen, adspotId, mediaId, onClose, da
       </Col>
       <Col span={4} className={styles['batch-edit-close-col']}>
         <CloseOutlined className={styles['batch-edit-close-icon']} onClick={() => handleClickSelect({key: 'isHeadBidding'}, 'close')}/>
+      </Col>
+    </Row>}
+    {showEnableCache && <Row className={styles['batch-edit-row']}>
+      <Col span={20} className={styles['head-bidding-group']}>
+        <ProFormRadio.Group
+          name="enableCache"
+          label="是否广告缓存"
+          radioType="button"
+          options={[
+            {
+              label: '否',
+              value: 0,
+            },
+            {
+              label: '是',
+              value: 1,
+            }
+          ]}
+          required
+        />
+        { enableCache == 0 ? <></> :
+          <ProFormText
+            name='cacheTimeout'
+            label='缓存失效时间'
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+                  if (!/^[0-9]*[1-9][0-9]*$/.test(value)){
+                    return Promise.reject('缓存失效时间只能是正整数');
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+            getValueFromEvent={e => e.target.value.trim()}
+            placeholder="请输入缓存失效时间"
+            fieldProps={{
+              suffix: '秒'
+            }}
+          />}
+      </Col>
+      <Col span={4} className={styles['batch-edit-close-col']}>
+        <CloseOutlined className={styles['batch-edit-close-icon']} onClick={() => handleClickSelect({key: 'enableCache'}, 'close')}/>
       </Col>
     </Row>}
     {showTimeout && <Row className={styles['batch-edit-row']}>

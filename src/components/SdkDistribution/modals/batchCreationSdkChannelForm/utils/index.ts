@@ -10,6 +10,11 @@ export const defaultBatchEditDropdownSelect = [
     disable: false
   },
   {
+    label: '是否广告缓存',
+    key: 'enableCache',
+    disable: false
+  },
+  {
     label: '超时时间',
     key: 'timeout',
     disable: false
