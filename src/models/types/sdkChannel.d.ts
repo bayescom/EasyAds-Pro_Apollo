@@ -45,7 +45,9 @@ type batchCreationAdspotChannelItem = {
   adnId: number,
   reportApiParamId: number | undefined,
   isHeadBidding: nhumber,
-  bidRatioPrice: string
+  bidRatioPrice: string,
+  enableCache: number,
+  cacheTimeout: number | null,
   channelAlias: string,
   dailyImpLimit: string,
   dailyReqLimit: string,

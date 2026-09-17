@@ -71,6 +71,7 @@ function SdkAdspotChannelForm({
   const [selectedChannel, setSelectedChannel] = useState<ISdkChannel | null>();
   const [form] = Form.useForm();
   const isHeadBidding = Form.useWatch('isHeadBidding', form);
+  const enableCache = Form.useWatch('enableCache', form);
   const switchFcrequency = Form.useWatch('switchFcrequency', form);
   const bidPrice = Form.useWatch('bidPrice', form);
   const select = Form.useWatch('select', form);
@@ -375,6 +376,14 @@ function SdkAdspotChannelForm({
   // 每次切换排序方式的时候，都要把竞价系数重置为 1
   const changeIsHeadBidding = () => {
     form.setFieldValue('bidRatio', 1);
+  };
+
+  const changeEnableCache = (e) => {
+    if (e.target.value) {
+      form.setFieldValue('cacheTimeout', 1800);
+    } else {
+      form.setFieldValue('cacheTimeout', null);
+    }
   };
 
   const onSubmit = async () => {
@@ -742,6 +751,48 @@ function SdkAdspotChannelForm({
                   </Col>
                   )
                 }
+                <Row style={{marginLeft: '8px', height: '53px'}}>
+                  <Col span={16}>
+                    <Form.Item
+                      name="enableCache"
+                      label="是否广告缓存"
+                      required={true}
+                      tooltip='开启缓存请填写广告缓存有效时间，平台默认缓存有效时间1800秒。'
+                      className={styles['sdk-channel-bidding']}
+                    >
+                      <Radio.Group onChange={changeEnableCache}>
+                        <Radio.Button value={0}>否</Radio.Button>
+                        <Radio.Button value={1}>是</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Col>
+                  {
+                    enableCache ? <Col span={4} style={{marginLeft: '0px'}}>
+                      <Form.Item
+                        name="cacheTimeout"
+                        dependencies={['enableCache']}
+                        getValueProps={value => ({ value: value || null })}
+                        rules={[
+                          {
+                            validator: (_, value) => {
+                              if (!value) {
+                                return Promise.resolve();
+                              }
+                              if (!/^[0-9]*[1-9][0-9]*$/.test(value)){
+                                return Promise.reject('缓存失效时间只能是正整数');
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                        
+                        getValueFromEvent={e => e.target.value.trim()}
+                      >
+                        <Input placeholder="请输入"  suffix="秒" />
+                      </Form.Item>
+                    </Col> : <></>
+                  }
+                </Row> 
                 <div className={styles['channel-configs']}>
                   {
                     selectedChannel?.adnParamsMeta.map((item) => {

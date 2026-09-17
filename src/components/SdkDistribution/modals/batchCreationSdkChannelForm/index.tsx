@@ -79,7 +79,7 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
 
   const handleSubmit = async () => {
     // 过滤不需要验证的字段
-    const defaultExcludedKey = ['deviceRequestInterval', 'dailyReqLimit', 'dailyImpLimit', 'deviceDailyReqLimit', 'deviceDailyImpLimit', 'channelAlias', 'bidRatio', 'price', 'location', 'maker', 'osv', 'appVersion'];
+    const defaultExcludedKey = ['deviceRequestInterval', 'dailyReqLimit', 'dailyImpLimit', 'deviceDailyReqLimit', 'deviceDailyImpLimit', 'channelAlias', 'bidRatio', 'price', 'location', 'maker', 'osv', 'appVersion', 'cacheTimeout'];
     const currentDataSourceIds = dataSource.map(item => item.id);
     const excludedFieldKeys: string[] = [];
     for(let i = 0; i < currentDataSourceIds.length; i++) {
@@ -423,6 +423,60 @@ function BatchCreationSdkChannelFormMoadl({ batchCreationVisible, onCancel, adsp
           }
         </>);
       }
+    },
+    {
+      title: <>是否广告缓存<span className={styles['required-red']}></span></>,
+      dataIndex: 'enableCache',
+      width: '190px',
+      render: (_dom, channel, index) => (<div style={{display: 'flex'}}>
+        <Form.Item name={`${channel.id}-enableCache`} initialValue={channel.enableCache} style={{width: '70px'}}>
+          <Select
+            options={[
+              {label: '否', value: 0},
+              {label: '是', value: 1}
+            ]}
+            onChange={(value) => {
+              const newChannel = {...channel};
+              newChannel.enableCache = value;
+            
+              const newDataSource = [...dataSource];
+              const changeIndex = findIndex(channel.id, dataSource);
+              newDataSource.splice(changeIndex, 1, newChannel);
+              setDataSource(newDataSource);
+              if (value) {
+                form.setFieldValue(`${channel.id}-cacheTimeout`, 1800);
+              } else {
+                form.setFieldValue(`${channel.id}-cacheTimeout`, null);
+              }
+            }}
+          />
+        </Form.Item>
+        {
+          channel.enableCache ? <Form.Item
+            name={`${channel.id}-cacheTimeout`}
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (!value) {
+                    return Promise.resolve();
+                  }
+                  if (!/^[0-9]*[1-9][0-9]*$/.test(value)){
+                    return Promise.reject('缓存失效时间只能是正整数');
+                  }
+                  return Promise.resolve();
+                },
+              },
+              { type: 'number', transform: value => +value, min: 0, message: '应该大于${min}' },
+            ]}
+            initialValue={channel.cacheTimeout}
+            style={{width: '110px', marginLeft: '10px'}}
+            getValueFromEvent={e => e.target.value.trim()}
+          >
+            <Input placeholder="缓存失效时间" suffix="秒" />
+          </Form.Item> :
+            <></>
+        }
+      </div>)
     },
     {
       title: <Tooltip title='此媒体ID为您在第三方广告平台创建的媒体/应用ID，请填写在此处'><QuestionCircleOutlined />媒体ID<span className={styles['required-red']}></span></Tooltip>,

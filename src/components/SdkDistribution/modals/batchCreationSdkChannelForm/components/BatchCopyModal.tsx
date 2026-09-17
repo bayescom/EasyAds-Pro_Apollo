@@ -56,6 +56,7 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
   const [submitterLoading, setSubmitterLoading] = useState(false);
 
   const isHeadBidding = Form.useWatch('isHeadBidding', form);
+  const enableCache = Form.useWatch('enableCache', form);
   const adnId = Form.useWatch('adnId', form);
 
   useEffect(() => {
@@ -140,7 +141,7 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
   const handleSubmit = async (values) => {
     const flag = verificationBeforeSubmit();
     if (flag) {
-      message.error('竞价系数/价格、广告源名称的数量必须与广告位ID的数量相同！');
+      message.error('竞价系数/价格、缓存失效时间、广告源名称的数量必须与广告位ID的数量相同！');
       return;
     }
     
@@ -149,6 +150,7 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
     const addRowKeys = formatString2Array(values['adspot_id']);
     const bidRatio = formatString2Array(values.bidRatio);
     const price = formatString2Array(values.price);
+    const cacheTimeout = formatString2Array(values.cacheTimeout);
     const addDataSource: batchCreationAdspotChannelItem[] = [];
     const currnetChannel = sdkChannelState.map[values.adnId];
     // 广告网络、账户名称、超时时间、排序方式的值取自createRow
@@ -159,6 +161,7 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
         adnId: values.adnId,
         reportApiParamId: values.reportApiParamId,
         timeout: values.timeout,
+        enableCache: values.enableCache,
         showReportApi: showReportApi,
         hasMetaAppKey: showMetaAppKey,
         isBidRatio: values.isHeadBidding ? true : false,
@@ -202,6 +205,10 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
       } else {
         newFormValue[`${dataId}-price`] = price[index];
       }
+
+      if (values.enableCache) {
+        newFormValue[`${dataId}-cacheTimeout`] = cacheTimeout[index];
+      }
       
       if (values.channelAlias) {
         newFormValue[`${dataId}-channelAlias`] = channelAlias[index];
@@ -236,17 +243,21 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
   };
 
   const verificationBeforeSubmit = () => {
-    let priceOrBidRatio;
+    let priceOrBidRatio, cacheTimeout;
     let biddingFlag = false;
     let AliasFlag = false;
+    let cacheTimeoutFlag = false;
     if (isHeadBidding) {
       priceOrBidRatio = form.getFieldValue('bidRatio');
     } else {
       priceOrBidRatio = form.getFieldValue('price');
     }
+    if (enableCache) {
+      cacheTimeout = form.getFieldValue('cacheTimeout');
+    }
     const metaAdspotId = form.getFieldValue('adspot_id');
     const channelAlias = form.getFieldValue('channelAlias');
-    if (priceOrBidRatio || channelAlias) {
+    if (priceOrBidRatio || channelAlias || cacheTimeout) {
       const currentMetaAdspotId = formatString2Array(metaAdspotId);
       if (priceOrBidRatio) {
         const currentPriceOrBidRatio = formatString2Array(priceOrBidRatio);
@@ -257,9 +268,14 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
         const currentChannelAlias = formatString2Array(channelAlias);
         AliasFlag = currentChannelAlias.length == currentMetaAdspotId.length ? false : true;
       }
+
+      if (cacheTimeout) {
+        const currentCacheTimeout = formatString2Array(cacheTimeout);
+        cacheTimeoutFlag = currentCacheTimeout.length == currentMetaAdspotId.length ? false : true;
+      }
     }
 
-    return biddingFlag || AliasFlag;
+    return biddingFlag || AliasFlag || cacheTimeoutFlag;
   };
 
   const afterResetUseState = () => {
@@ -302,7 +318,9 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
     wrapperCol={{ span: 24 }}
     initialValues={{
       isHeadBidding: 1,
-      timeout: 5000
+      timeout: 5000,
+      enableCache: 0,
+      cacheTimeout: null,
     }}
   >
     <Row className={styles['batch-edit-row']}>
@@ -437,6 +455,45 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
               },
             ]}
           />}
+      </Col>
+    </Row>
+    <Row className={styles['batch-copy-row']}>
+      <Col span={20} className={styles['head-copy-group']}>
+        <ProFormRadio.Group
+          name="enableCache"
+          label="是否广告缓存"
+          radioType="button"
+          options={[
+            {
+              label: '否',
+              value: 0,
+            },
+            {
+              label: '是',
+              value: 1,
+            }
+          ]}
+          required
+        />
+        {enableCache == 1 ? <ProFormTextArea
+          name='cacheTimeout'
+          label='缓存失效时间'
+          placeholder="支持输入多个缓存失效时间，多个请用逗号或换行符隔开"
+          rules={[
+            {
+              validator: (_, value) => {
+                const formatValue = formatString2Array(value);
+                for(const key in formatValue) {
+                  if (isNaN(+formatValue[key])) {
+                    return Promise.reject('缓存失效时间不正确');
+                  }
+                }
+                return Promise.resolve(); 
+              },
+            },
+          ]}
+        /> : 
+          <></>}
       </Col>
     </Row>
     <Row className={styles['batch-edit-row']}>
