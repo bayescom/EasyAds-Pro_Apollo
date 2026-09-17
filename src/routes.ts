@@ -18,6 +18,7 @@ const AppVersion = lazy(() => import('@/pages/AppVersion'));
 const SdkVersion = lazy(()=> import('@/pages/SdkVersion'));
 const ReportAbTest = lazy(() => import('@/pages/ReportAbTest'));
 const ReportAbTestDetail = lazy(() => import('@/pages/ReportAbTestDetail'));
+const SdkChannelTrafficList = lazy(() => import('@/pages/SdkChannelTraffic/list'));
 
 const routerConfig: IRouterConfig[] = [
   {
@@ -70,6 +71,10 @@ const routerConfig: IRouterConfig[] = [
       {
         path: '/traffic/channel',
         component: ChannelList,
+      },
+      {
+        path: '/traffic/sdk-channel-traffic/:id',
+        component: SdkChannelTrafficList,
       },
       {
         path: '/data_report/media_report',

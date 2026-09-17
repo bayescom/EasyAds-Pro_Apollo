@@ -26,6 +26,7 @@ type Props = {
   adspotId: number,
   visible: boolean,
   isEditing: boolean,
+  currentAdspotType?: number,
   cancel: (isSubmit?: boolean) => void,
   mediaId: number | undefined
 };
@@ -62,6 +63,7 @@ function SdkAdspotChannelForm({
   model,
   adspotId,
   cancel,
+  currentAdspotType,
   isEditing,
   mediaId
 }: Props) {

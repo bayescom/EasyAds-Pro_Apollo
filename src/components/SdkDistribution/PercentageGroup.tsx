@@ -16,6 +16,7 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
   children: (group: TrafficGroupType) => React.ReactNode
 }) {
   const [isTargetingGroupsModalVisible, setIsTargetingGroupsModalVisible] = useState(false);
+  const distributionState = store.useModelState('distribution');
 
   const deleteTargetingGroup = (targetingGroupId?: number) => {
     if (!targetingGroupId) {
@@ -41,8 +42,8 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
   }, []);
 
   const handleClick = useCallback((currentId, currentPercentageId) => {
-    distributionDispatcher.setCurrentTargetId(currentId);
-    distributionDispatcher.setCurrentGroupTargetId(currentPercentageId);
+    distributionDispatcher.setGroupTargetId(currentId);
+    distributionDispatcher.setCurrentPercentageId(currentPercentageId);
   }, [distributionDispatcher]);
 
   return (
@@ -52,11 +53,12 @@ function PercentageGroup({ group, adspotId, abTesting: showTargetingGroups, onDe
         className={styles['targeting-group-tab']}
         tabBarExtraContent={{ left: EditTargetingGroupsButton }}
         destroyInactiveTabPane
+        defaultActiveKey={`${distributionState.groupTargetId}-${distributionState.currentPercentageId}`}
         tabBarStyle={showTargetingGroups ? {} : { display: 'none' }}
         onTabClick={(key, e) => {
           // 从key中解析出需要的信息
-          const [currentTargetId, currentPercentageId] = key.split('_')[0].split('-');
-          handleClick(Number(currentTargetId), Number(currentPercentageId));
+          const [groupTargetId, currentPercentageId] = key.split('_')[0].split('-');
+          handleClick(Number(groupTargetId), Number(currentPercentageId));
         }}
         items={group.trafficGroupList.map(trafficGroup => ({
           key: trafficGroup.groupStrategy.groupTargetId + '-' + group.trafficPercentage.percentageId,

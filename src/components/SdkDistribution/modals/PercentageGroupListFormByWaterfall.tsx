@@ -57,16 +57,16 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
 
   useEffect(() => {
     if (visible) {
-      const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
+      const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.groupTargetId);
 
       form.setFieldValue('expName', currentTrafficGroupList?.expName || '');
     }
-  }, [distribution, visible, distributionModel.currentTargetId, form]);
+  }, [distribution, visible, distributionModel.groupTargetId, form]);
 
   // 表单默认值
   const initialtargetPercentageList: TargetPercentageListType[] = useMemo(() => {
     if (visible) {
-      const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
+      const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.groupTargetId);
       const groups = currentTrafficGroupList?.targetPercentageStrategyList;
       if (!groups || !groups.length) {
         return [];
@@ -96,8 +96,8 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
   }, [distribution, visible]);
 
   useEffect(() => {
-    if (distributionModel.currentTargetId) {
-      form.setFieldValue('groupId', distributionModel.currentTargetId);
+    if (distributionModel.groupTargetId) {
+      form.setFieldValue('groupId', distributionModel.groupTargetId);
     } else {
       form.setFieldValue('groupId', groupStrategy[0].id);
     }
@@ -180,7 +180,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
 
   let isCreatingAb = false;
   if (distribution.percentageList.length <= 1) {
-    if (distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId)?.targetPercentageStrategyList.length == 1) {
+    if (distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.groupTargetId)?.targetPercentageStrategyList.length == 1) {
       isCreatingAb = true;
     } 
   }
@@ -208,7 +208,9 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       if (item.targetPercentageId && item.targetPercentageId < 0) {
         delete item.targetPercentageId;
       }
-      delete item.copyPercentageTag;
+      if (item.copyPercentageTag) {
+        delete item.copyPercentageTag;
+      }
       item.percentage = Number(item.percentage);
       delete item.copy;
     });
@@ -220,7 +222,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       targetPercentageId: item.targetPercentageId || null,
       copyTargetPercentageId: item.copyTargetPercentageId,
     }));
-    const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId);
+    const currentTrafficGroupList = distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.groupTargetId);
     const targetPercentageObj = {
       targetPercentageList,
       experiment: {
@@ -231,7 +233,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
     const result = await distributionDispatcher.updatePercentageGroupsByWaterfall({
       adspotId,
       targetPercentageObj: targetPercentageObj,
-      percentageGroupId: distributionModel.currentGroupTargetId,
+      percentageGroupId: distributionModel.currentPercentageId,
       targetId: form.getFieldValue('groupId')
     });
     onFinish && onFinish();

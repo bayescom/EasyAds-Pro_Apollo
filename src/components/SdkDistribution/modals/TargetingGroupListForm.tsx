@@ -6,6 +6,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautif
 import styles from './index.module.less';
 import TargetingGroupRow from './TargetingGroupRow';
 import { formatPayloadDataFromTargetingGroupModal, formatTargetingGroupDataFromPayload } from '@/components/SdkDistribution/utils/formatSdkAdspotChannel';
+import { useEffect, useState } from 'react';
 
 type FormValuesType = {
   groupStrategyList: GroupStrategyType[] | GroupType [] | undefined
@@ -72,9 +73,16 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
   const distributionModel = store.useModelState('distribution');
 
   // 仅获取 ITargetingGroup的字段，去掉suppliers和percentageGroups
-  const _groupStrategyList = distribution.percentageList.find(item => item.trafficPercentage.percentageId === percentageGroupId)?.trafficGroupList.map(item => item.groupStrategy);
+  const [groupStrategyList, setGroupStrategyList] = useState([]);
+  useEffect(() => {
+    const _groupStrategyList = distribution.percentageList.find(item => item.trafficPercentage.percentageId == percentageGroupId)?.trafficGroupList.map(item => item.groupStrategy);
+    const groupStrategyList = _groupStrategyList?.map(item => formatTargetingGroupDataFromPayload(item));
+    if (groupStrategyList?.length) {
+      setGroupStrategyList(groupStrategyList);
+      form.setFieldValue('groupStrategyList', groupStrategyList);
+    }
+  }, [distribution.percentageList, distributionState[adspotId], adspotId]);
 
-  const groupStrategyList = _groupStrategyList?.map(item => formatTargetingGroupDataFromPayload(item));
 
   const onSubmit = async () => {
     try {
@@ -86,7 +94,6 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
         }
         return formatPayloadDataFromTargetingGroupModal(item);
       });
-      console.log(groupsToSubmit, 'groupsToSubmit')
       // return ;
       const data = await sdkDistributionDispatcher.updateTargetingGroups({
         adspotId,
@@ -96,8 +103,8 @@ function TargetingGroupListForm({ visible, onClose, adspotId, percentageGroupId 
 
       if (data) {
         // 修改流量分组的信息之后，还要重新获取一下 使得最外面的定向信息能够更新
-        if (distributionModel.currentTargetId) {
-          distributionDispatcher.getSdkStrategyDirection({targetId: distributionModel.currentTargetId});
+        if (distributionModel.groupTargetId) {
+          distributionDispatcher.getSdkStrategyDirection({targetId: distributionModel.groupTargetId});
         }
         onCancel();
       }

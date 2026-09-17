@@ -27,7 +27,7 @@ function StopAbForm({ open, adspotId, currentIsWaterfall, percentageGroups, onCl
     }
 
     if (currentIsWaterfall) {
-      return (percentageGroups[0].trafficGroupList.filter(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.currentTargetId).map(trafficGroup => {
+      return (percentageGroups[0].trafficGroupList.filter(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.groupTargetId).map(trafficGroup => {
         return trafficGroup.targetPercentageStrategyList.filter(targetPercentageStrategy => targetPercentageStrategy.targetPercentage.status == 1).map(targetPercentageStrategy => ({
           label: targetPercentageStrategy.targetPercentage.tag + '组',
           value: targetPercentageStrategy.targetPercentage.targetPercentageId || 0
@@ -40,7 +40,7 @@ function StopAbForm({ open, adspotId, currentIsWaterfall, percentageGroups, onCl
           value: item.trafficPercentage.percentageId || 0
         }));
     }
-  }, [currentIsWaterfall, distributionState.currentTargetId, percentageGroups]);
+  }, [currentIsWaterfall, distributionState.groupTargetId, percentageGroups]);
 
   if (!percentageGroups) {
     return <></>;
@@ -53,7 +53,7 @@ function StopAbForm({ open, adspotId, currentIsWaterfall, percentageGroups, onCl
     }
 
     if(currentIsWaterfall) {
-      const currentTrafficGroup = percentageGroups[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.currentTargetId);
+      const currentTrafficGroup = percentageGroups[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionState.groupTargetId);
       const expName = currentTrafficGroup?.expName || '';
       const expId = currentTrafficGroup?.expId || 0;
       const targetPercentageObj = {
@@ -66,8 +66,8 @@ function StopAbForm({ open, adspotId, currentIsWaterfall, percentageGroups, onCl
       const result = await sdkDistributionDispatcher.updatePercentageGroupsByWaterfall({
         adspotId,
         targetPercentageObj,
-        percentageGroupId: distributionState.currentGroupTargetId,
-        targetId: distributionState.currentTargetId
+        percentageGroupId: distributionState.currentPercentageId,
+        targetId: distributionState.groupTargetId
       });
       result && onCancel();
     } else {

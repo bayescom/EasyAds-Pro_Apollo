@@ -50,23 +50,21 @@ function SdkDistribution({ visible, setVisible, loading, setLoading }: IProps) {
     }
   }, [distributionState.adspotId]);
 
-  // 这个地方，当用户的广告位id变了之后，将 currentTargetId 和 currentGroupTargetId 置为0，是因为，主要是搭配下面一个 useEffect 使用的.但是会在 切换广告位的时候，因为缓存，导致 currentTargetId 还是未切换之前的分组id,因此，在切换广告位之后将 currentTargetId重新变为0。
-  useEffect(() => {
-    distributionDispatcher.setCurrentTargetId(0);
-    distributionDispatcher.setCurrentGroupTargetId(0);
-  }, [distributionState.adspotId]);
-
+  // 只有发送了请求sdkDistributionState[distributionState.adspotId]才会有数据
   // 只有发送了请求sdkDistributionState[distributionState.adspotId]才会有数据
   useEffect(() => {
     // 默认给附上 【默认分组的 groupTargetId】，以便在未进行任何ab测试，且未进行任何分组点击切换时，也就是默认分组的时候，打开创建ab测试的弹窗，要选中【默认分组】
     if (sdkDistributionState[distributionState.adspotId] && sdkDistributionState[distributionState.adspotId].percentageList) {
-      // 在瀑布流的时候，如果有两个分组1，2，点击分组2的编辑ab测试表单并保存之后，会导致sdkDistributionState 变化，从而导致currentTargetId会变为最初始状态，  =》（如果没有这个判断的话 if (!distributionState.currentTargetId)，会导致 currentTargetId 变为分组1的targetId, 加了这个判断之后，就不会重置为分组1）
-      // 但是会在 切换广告位的时候，因为缓存，导致 currentTargetId 还是未切换之前的分组id,因此，在切换广告位之后将 currentTargetId重新变为0。
-      // 再切换广告位的时候，先 currentTargetId = 0.然后会走这个if。
+      // 在瀑布流的时候，如果有两个分组1，2，点击分组2的编辑ab测试表单并保存之后，会导致sdkDistributionState 变化，从而导致currentTargetId会变为最初始状态，  =》（如果没有这个判断的话 if (!distributionState.groupTargetId)，会导致 groupTargetId 变为分组1的targetId, 加了这个判断之后，就不会重置为分组1）
+      // 但是会在 切换广告位的时候，因为缓存，导致 groupTargetId 还是未切换之前的分组id,因此，在切换广告位之后将 currentTargetId重新变为0。
+      // 再切换广告位的时候，先 groupTargetId = 0.然后会走这个if。
       // 除了切换广告位和页面初始化，其他都不会走这个if，就保证了 sdkDistributionState 变化（比如我在ab表单新建或者更新的时候）之后，不会将currentTargetId 变化。
-      if (!distributionState.currentTargetId) {
-        distributionDispatcher.setCurrentTargetId(sdkDistributionState[distributionState.adspotId].percentageList[0].trafficGroupList[0].groupStrategy.groupTargetId);
-        distributionDispatcher.setCurrentGroupTargetId(sdkDistributionState[distributionState.adspotId].percentageList[0].trafficPercentage.percentageId);
+      if (!distributionState.groupTargetId) {
+        // 这个是 第二层的 groupTargetId
+        distributionDispatcher.setGroupTargetId(sdkDistributionState[distributionState.adspotId].percentageList[0].trafficGroupList[0].groupStrategy.groupTargetId);
+        // 这个是 最外层的 percentageId
+        distributionDispatcher.setCurrentPercentageId(sdkDistributionState[distributionState.adspotId].percentageList[0].trafficPercentage.percentageId);
+        distributionDispatcher.setCurrentTargetPercentageStrategyTrafficId(sdkDistributionState[distributionState.adspotId].percentageList[0].trafficGroupList[0].targetPercentageStrategyList[0].targetPercentage.targetPercentageId);
       }
     }
     if (distributionState.adspotId && sdkDistributionState[distributionState.adspotId] && (sdkDistributionState[distributionState.adspotId].percentageList[0].trafficGroupList.some(trafficGroup => trafficGroup.targetPercentageStrategyList.length > 1) || sdkDistributionState[distributionState.adspotId].percentageList.length > 1)) {

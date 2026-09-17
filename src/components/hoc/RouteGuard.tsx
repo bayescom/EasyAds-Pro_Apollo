@@ -9,6 +9,7 @@ const specialRoutes = new Set(['/login']);
 const pathList = [
   { path: '/traffic/list/media', fatherKey: '/traffic/media' },
   { path: '/traffic/list/adspot', fatherKey: '/traffic/adspot' },
+  {path: '/traffic/sdk-channel-traffic', fatherKey: '/traffic/channel'},
   {path: '/data_report/ab_report_detail', fatherKey: '/data_report/ab_report'}
 ];
 

@@ -56,7 +56,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
 
       form.setFieldValue('expName', currentTrafficGroupList?.expName || '');
     }
-  }, [distribution, visible, distributionModel.currentTargetId, form]);
+  }, [distribution, visible, distributionModel.groupTargetId, form]);
 
   const groupStrategy = distribution.percentageList[0].trafficGroupList.map(item => ({
     name: item.groupStrategy.name,
@@ -91,8 +91,8 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
   }, [distribution]);
 
   useEffect(() => {
-    if (distributionModel.currentTargetId) {
-      form.setFieldValue('groupId', distributionModel.currentTargetId);
+    if (distributionModel.groupTargetId) {
+      form.setFieldValue('groupId', distributionModel.groupTargetId);
     } else {
       form.setFieldValue('groupId', groupStrategy[0].id);
     }
@@ -174,7 +174,7 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
 
   let isCreatingAb = false;
   if (distribution.percentageList.length <= 1) {
-    if (distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.currentTargetId)?.targetPercentageStrategyList.length == 1) {
+    if (distribution.percentageList[0].trafficGroupList.find(trafficGroup => trafficGroup.groupStrategy.groupTargetId == distributionModel.groupTargetId)?.targetPercentageStrategyList.length == 1) {
       isCreatingAb = true;
     } 
   }
@@ -201,14 +201,16 @@ function PercentageGroupListForm({ visible, onClose, adspotId, onFinish, isFromD
       if (item.percentageId && item.percentageId < 0) {
         delete item.percentageId;
       }
-      delete item.copyPercentageTag;
+      if (item.copyPercentageTag) {
+        delete item.copyPercentageTag;
+      }
       item.percentage = Number(item.percentage);
       delete item.copy;
     });
 
     const currentTrafficGroupList = distribution.percentageList[0];
     const targetPercentageObj = {
-      trafficPercentageList: values.trafficPercentageList.map(item => ({...item, status: item.status ? 1 : 0})),
+      trafficPercentageList: values.trafficPercentageList.map(item => ({...item, status: item.status ? 1: 0})),
       experiment: {
         expId: currentTrafficGroupList.expId,
         expName: values.expName
