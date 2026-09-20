@@ -14,6 +14,8 @@ import MetaAppKey from '../../selectedChannelConfigs/components/MetaAppKey';
 import { formatString2Array, generateRandomID } from '@/services/utils/utils';
 import { defaultBatchCrearionTableData } from '@/models/sdkChannel';
 import { channelIconMap } from '@/components/Utils/Constant';
+import getAdspotSdkChannelQueryParams from '@/services/utils/getAdspotSdkChannelQueryParams';
+import DefaultIcon from '@/assets/icons/channel/defaultIcon.png';
 
 type Iprops = {
   copyOpen: boolean,
@@ -31,7 +33,8 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
   const sdkChannelState = store.useModelState('sdkChannel');
   const distributionState = store.useModelState('distribution');
   const [form] = Form.useForm();
-  const formRef = useRef<ProFormInstance>();  
+  const formRef = useRef<ProFormInstance>();
+  const { renderType, platformType, adspotType } = getAdspotSdkChannelQueryParams(adspotId);
 
   const [channelList, setChannelList] = useState<ChannelList[]>([]);
   const [showMetaAppKey, setShowMetaAppKey] = useState(false);
@@ -334,7 +337,7 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
           options={channelList}
           fieldProps={{
             optionItemRender(item) {
-              return (<><Image src={channelIconMap[item.value]} style={{width: '20px', height: 'auto', marginRight: '10px'}} preview={false}/>{item.label}</>);
+              return (<><Image src={channelIconMap[item.value] || DefaultIcon} style={{width: '20px', height: 'auto', marginRight: '10px'}} preview={false}/>{item.label}</>);
             },
             allowClear: false,
             onChange: (value) => handleChangeChannelId(value)
@@ -542,10 +545,13 @@ export default function BatchCopyModal({copyOpen, adspotId, onClose, dataSource,
     <SdkChannelModalForm
       channel={modalData}
       visible={modalVisible}
+      renderType={renderType}
+      platformType={platformType}
+      adspotType={adspotType}
       onClose={() => setModalVisible(false)}
       onFinish={async () => {
         if (adnId) {
-          sdkChannelDispatcher.queryAll().then(res => {
+          sdkChannelDispatcher.queryAll({ renderType, platformType, adspotType, adspotId }).then(res => {
             const data = res.data.filter(item => item.adnId == adnId)[0];
             let list: {value: number, label: string}[] = [];
             if (data.reportApiParams.length) {

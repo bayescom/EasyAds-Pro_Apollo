@@ -13,7 +13,9 @@ interface ISdkChannel {
   isDsp: boolean,
   data: ChannelData,
   reportApiStatus: number,
-  supportAutoCreate: number
+  supportAutoCreate: number,
+  /** 是否自定义广告网络 */
+  isCustom?: number
 }
 
 interface ReportApiParams {

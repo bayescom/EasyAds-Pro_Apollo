@@ -83,6 +83,11 @@ export default function CreateAdspot() {
 
   const adspotTypeChanged = (value) => {
     setAdspotTypeName(value);
+    if (value == 2) {
+      form.setFieldValue('renderType', 1);
+    } else {
+      form.setFieldValue('renderType', 0);
+    }
   };
 
   const mediaChanged = async (value) => {

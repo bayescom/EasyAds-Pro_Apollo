@@ -20,6 +20,7 @@ import sdkVersion from './models/sdkVersion';
 import reportAbTest from './models/reportAbTest';
 import reportAbTestDetail from './models/reportAbTestDetail';
 import sdkChannelTrafficList from './models/sdkChannelTrafficList';
+import sdkCustomerChannel from './models/sdkCustomerChannel';
 
 interface IAppStoreModels extends IStoreModels {
   token: typeof token,
@@ -43,6 +44,7 @@ interface IAppStoreModels extends IStoreModels {
   reportAbTest: typeof reportAbTest,
   reportAbTestDetail: typeof reportAbTestDetail,
   sdkChannelTrafficList: typeof sdkChannelTrafficList
+  sdkCustomerChannel: typeof sdkCustomerChannel,
 }
 
 const appModels: IAppStoreModels = {
@@ -66,7 +68,8 @@ const appModels: IAppStoreModels = {
   sdkVersion,
   reportAbTest,
   reportAbTestDetail,
-  sdkChannelTrafficList
+  sdkChannelTrafficList,
+  sdkCustomerChannel
 };
 
 const store = createStore(appModels);
